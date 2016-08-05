@@ -5,32 +5,33 @@
 
 
 namespace BestStealReplica {
-	namespace Character {
-		class CharacterCommon {
-		public:
-			enum Direction {
-				TOP,
-				RIGHT,
-				BOTTOM,
-				LEFT
-			};
+namespace Character {
 
-			static const int HEIGHT = 80;
-			static const int WIDTH = 80;
+class CharacterCommon {
+public:
+	enum Direction {
+		TOP,
+		RIGHT,
+		BOTTOM,
+		LEFT
+	};
 
-			static void SetTuTvs(Vertices<FloatPoint> chips[], int chipCount, int rowNum, int colNum);
-			static void CountUpAnimationCnt(int* currentAnimationCnt, int chipCntPerDir);
-			static int GetAnimationNumber(int currentAnimationCnt);
-			static Vertices<DrawingVertex> GetVertex(POINT topLeftXY, Vertices<POINT>(*getXY)(POINT), Vertices<FloatPoint> chip);
-			static Vertices<POINT> GetChipXY(POINT topLeftXY);
+	static const int HEIGHT = 80;
+	static const int WIDTH = 80;
 
-		private:
-			static const int CHIP_COUNT_PER_ROW = 6;
-			static const int CHIP_COUNT_PER_COL = 6;
-			static const int FRAME_COUNT_PER_CUT = 10;
-		};
-	}
+	static void SetTuTvs(Vertices<FloatPoint> chips[], int chipCount, int rowNum, int colNum);
+	static void CountUpAnimationCnt(int* currentAnimationCnt, int chipCntPerDir);
+	static int GetAnimationNumber(int currentAnimationCnt);
+	static Vertices<DrawingVertex> GetVertex(POINT topLeftXY, Vertices<POINT>(*getXY)(POINT), Vertices<FloatPoint> chip);
+	static Vertices<POINT> GetChipXY(POINT topLeftXY);
+
+private:
+	static const int CHIP_COUNT_PER_ROW = 6;
+	static const int CHIP_COUNT_PER_COL = 6;
+	static const int FRAME_COUNT_PER_CUT = 10;
+};
+
 }
-
+}
 
 #endif

@@ -19,9 +19,10 @@ Enermy::EnermyInfo::EnermyInfo(int chipPosX, int chipPosY, CharacterCommon::Dire
 	this->chipPos.y = chipPosY;
 }
 
-Enermy::Enermy(const POINT topLeftXY[], EnermyInfo enermiesInfo[], int enermyCount, Drawer* pDrawer) {
-	this->enermyCount = enermyCount;
-	this->pDrawer = pDrawer;
+Enermy::Enermy(const POINT topLeftXY[], EnermyInfo enermiesInfo[], int enermyCount, Drawer* pDrawer) : 
+	enermyCount(enermyCount),
+	pDrawer(pDrawer)
+{	
 	for (int i = 0; i < enermyCount; ++i) {
 		this->enermiesInfo[i] = enermiesInfo[i];
 		this->enermiesInfo[i].topLeftXY = topLeftXY[i];
@@ -144,7 +145,6 @@ void Enermy::ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius) {
 	}
 
 }
-
 
 
 Vertices<DrawingVertex> Enermy::GetVertex(int enermyNum) {

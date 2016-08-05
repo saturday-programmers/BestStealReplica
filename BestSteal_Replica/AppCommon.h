@@ -3,6 +3,7 @@
 
 #include <windows.h>
 
+// new演算子をオーバーロードしているクラスはcrtdbg.hより前にincludeする必要有
 #include <d3dx9math.h>
 
 #if _DEBUG
@@ -13,6 +14,7 @@
 
 
 namespace BestStealReplica {
+
 struct FloatPoint {
 	float x;
 	float y;
@@ -34,7 +36,6 @@ template<typename T> struct Vertices {
 };
 
 
-
 class AppCommon {
 public:
 	static const int WINDOW_DEFAULT_HEIGHT = 630;
@@ -45,6 +46,7 @@ public:
 	static int GetWindowHeight();
 	static int GetWindowWidth();
 };
+
 }
 
 #endif

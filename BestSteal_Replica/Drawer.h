@@ -8,25 +8,27 @@
 
 
 namespace BestStealReplica {
-	class Drawer {
-	public:
-		enum TextureType {
-			MAP,
-			CHARACTER
-		};
 
-		Drawer(HWND hWnd, IDirect3D9* pDirect3D, D3DPRESENT_PARAMETERS* d3dpp);
-		bool CreateTexture(const char* filePath, TextureType textureType);
-		void BeginDraw();
-		void Draw(Vertices<DrawingVertex> vertices, TextureType textureType) const;
-		void EndDraw();
-		void Release();
-
-	private:
-		IDirect3DDevice9*	pD3Device;
-		LPDIRECT3DTEXTURE9	pTexture[2];
-		void Draw(Vertices<DrawingVertex> vertices, LPDIRECT3DTEXTURE9 pTexture) const;
+class Drawer {
+public:
+	enum TextureType {
+		MAP,
+		CHARACTER
 	};
+
+	Drawer(HWND hWnd, IDirect3D9* pDirect3D, D3DPRESENT_PARAMETERS* d3dpp);
+	bool CreateTexture(const char* filePath, TextureType textureType);
+	void BeginDraw();
+	void Draw(Vertices<DrawingVertex> vertices, TextureType textureType) const;
+	void EndDraw();
+	void Release();
+
+private:
+	IDirect3DDevice9*	pD3Device;
+	LPDIRECT3DTEXTURE9	pTexture[2];
+	void Draw(Vertices<DrawingVertex> vertices, LPDIRECT3DTEXTURE9 pTexture) const;
+};
+
 }
 
 #endif

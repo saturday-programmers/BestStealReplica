@@ -3,6 +3,7 @@
 
 namespace BestStealReplica {
 namespace Map {
+
 Vertices<FloatPoint> MapChipSetting::GetTuTvs(int mapChipNumber) {
 	Vertices<FloatPoint> ret;
 
@@ -31,9 +32,9 @@ Vertices<POINT> MapChipSetting::GetXY(POINT topLeftXY) {
 
 MapChipSetting::MapChipSetting() {}
 
-MapChipSetting::MapChipSetting(MapCommon::MapChipType chipType) {
-	this->chipType = chipType;
-}
+MapChipSetting::MapChipSetting(MapCommon::MapChipType chipType) :
+	chipType(chipType)
+{}
 
 MapCommon::MapChipType MapChipSetting::GetChipType() {
 	return this->chipType;

@@ -3,7 +3,6 @@
 
 #include <windows.h>
 
-#include "AppCommon.h"
 #include "CharacterCommon.h"
 
 
@@ -11,6 +10,7 @@ namespace BestStealReplica {
 class Drawer;
 
 namespace Character {
+
 class Enermy {
 public:
 	struct EnermyInfo {
@@ -64,12 +64,13 @@ private:
 	Vertices<FloatPoint> exclamationMarkChip;
 
 	int enermyCount;
-	EnermyInfo enermiesInfo[Enermy::MAX_ENERMY_COUNT];
-	const Drawer* pDrawer;
+	EnermyInfo enermiesInfo[MAX_ENERMY_COUNT];
+	Drawer* pDrawer;
 
 	Vertices<DrawingVertex> GetVertex(int enermyNum);
 
 };
+
 }
 }
 

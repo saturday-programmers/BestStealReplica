@@ -9,6 +9,7 @@ class Map;
 }
 
 namespace Character{
+
 class Player;
 class Enermy;
 }
@@ -34,14 +35,14 @@ public:
 
 
 	Controller(Drawer* pDrawer);
-	void LoadStage(IStage* pStage);
+	void LoadStage(const IStage* pStage);
 	void Control(Key key);
 	void Draw();
 	void Release();
 
 private:
 	Drawer* pDrawer;
-	IStage* pStage;
+	const IStage* pStage;
 	Map::Map* pMap;
 	Character::Player* pPlayer;
 	Character::Enermy* pEnermy;

@@ -9,14 +9,14 @@
 using namespace BestStealReplica::Map;
 using namespace BestStealReplica::Character;
 
+
 namespace BestStealReplica {
 
-Controller::Controller(Drawer* pDrawer) {
-	this->pDrawer = pDrawer;
-}
+Controller::Controller(Drawer* pDrawer) :
+	pDrawer(pDrawer)
+{}
 
-void Controller::LoadStage(IStage* pStage) {
-
+void Controller::LoadStage(const IStage* pStage) {
 	// ƒ}ƒbƒvî•ñ
 	this->pStage = new Stage1();
 	this->pMap = new Map::Map(Stage1::Y_CHIP_COUNT, Stage1::X_CHIP_COUNT, this->pDrawer);
@@ -33,7 +33,6 @@ void Controller::LoadStage(IStage* pStage) {
 		enermiesXY[i] = this->pMap->GetTopLeftXYonChip(this->pStage->GetEnermyChipPos(i));
 	}
 	this->pEnermy = new Enermy(enermiesXY, this->pStage->GetEnermiesInfo(), this->pStage->GetEnermyCount(), this->pDrawer);
-
 }
 
 void Controller::Control(Key key) {

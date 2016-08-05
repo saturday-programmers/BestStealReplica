@@ -13,19 +13,18 @@
 #include "Player.h"
 
 
-
 namespace BestStealReplica {
-	static const char* TITLE = "Best Steal Replica";
+static const char* TITLE = "Best Steal Replica";
 
-	static IDirect3D9*			pDirect3D;
-	static D3DPRESENT_PARAMETERS d3dpp;
-	static LPDIRECTINPUT8        g_lpDI;
-	static LPDIRECTINPUTDEVICE8  g_lpDIDevice;
+static IDirect3D9*			 pDirect3D;
+static D3DPRESENT_PARAMETERS d3dpp;
+static LPDIRECTINPUT8        g_lpDI;
+static LPDIRECTINPUTDEVICE8  g_lpDIDevice;
 
-	static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
-	static Controller::Key WINAPI ProcessKBInput();
-	static void WINAPI DI_Term(void);
-};
+static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
+static Controller::Key WINAPI ProcessKBInput();
+static void WINAPI DI_Term();
+}
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow) {
@@ -153,66 +152,67 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 
 
 namespace BestStealReplica {
-	//-------------------------------------------------------------
-	//
-	//	メッセージ処理
-	//
-	//-------------------------------------------------------------
-	static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 
-		switch (msg) {
-			case WM_DESTROY:
-				PostQuitMessage(0);
-				return 0;
-		}
-		return DefWindowProc(hWnd, msg, wp, lp);
+//-------------------------------------------------------------
+//
+//	メッセージ処理
+//
+//-------------------------------------------------------------
+static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
+	switch (msg) {
+		case WM_DESTROY:
+			PostQuitMessage(0);
+			return 0;
+	}
+	return DefWindowProc(hWnd, msg, wp, lp);
+}
+
+static Controller::Key WINAPI ProcessKBInput() {
+	#define KEYDOWN(name, key) (name[key] & 0x80) 
+
+	Controller::Key ret;
+
+	// キーボードへのアクセスの獲得
+	if (g_lpDIDevice) {
+		g_lpDIDevice->Acquire();
 	}
 
-	static Controller::Key WINAPI ProcessKBInput() {
-		#define KEYDOWN(name, key) (name[key] & 0x80) 
-
-		Controller::Key ret;
-
-		// キーボードへのアクセスの獲得
-		if (g_lpDIDevice) {
-			g_lpDIDevice->Acquire();
-		}
-
-		char     buffer[256];
-		HRESULT  hr;
-		hr = g_lpDIDevice->GetDeviceState(sizeof(buffer), (LPVOID)&buffer);
-		if FAILED(hr) {
-			// If it failed, the device has probably been lost. 
-			// Check for (hr == DIERR_INPUTLOST) 
-			// and attempt to reacquire it here. 
-			ret.keyType = Controller::Key::KeyType::None;
-			return ret;
-		}
-
-		if (KEYDOWN(buffer, DIK_RIGHT)) {
-			ret.keyType = Controller::Key::KeyType::Right;
-		} else if (KEYDOWN(buffer, DIK_LEFT)) {
-			ret.keyType = Controller::Key::KeyType::Left;
-		} else if (KEYDOWN(buffer, DIK_UP)) {
-			ret.keyType = Controller::Key::KeyType::Up;
-		} else if (KEYDOWN(buffer, DIK_DOWN)) {
-			ret.keyType = Controller::Key::KeyType::Down;
-		}
-
+	char     buffer[256];
+	HRESULT  hr;
+	hr = g_lpDIDevice->GetDeviceState(sizeof(buffer), (LPVOID)&buffer);
+	if FAILED(hr) {
+		// If it failed, the device has probably been lost. 
+		// Check for (hr == DIERR_INPUTLOST) 
+		// and attempt to reacquire it here. 
+		ret.keyType = Controller::Key::KeyType::None;
 		return ret;
 	}
 
-
-	static void WINAPI DI_Term(void) {
-		if (g_lpDI) {
-			if (g_lpDIDevice) {
-				// Always unacquire device before calling Release(). 
-				g_lpDIDevice->Unacquire();
-				g_lpDIDevice->Release();
-				g_lpDIDevice = NULL;
-			}
-			g_lpDI->Release();
-			g_lpDI = NULL;
-		}
+	if (KEYDOWN(buffer, DIK_RIGHT)) {
+		ret.keyType = Controller::Key::KeyType::Right;
+	} else if (KEYDOWN(buffer, DIK_LEFT)) {
+		ret.keyType = Controller::Key::KeyType::Left;
+	} else if (KEYDOWN(buffer, DIK_UP)) {
+		ret.keyType = Controller::Key::KeyType::Up;
+	} else if (KEYDOWN(buffer, DIK_DOWN)) {
+		ret.keyType = Controller::Key::KeyType::Down;
 	}
-};
+
+	return ret;
+}
+
+
+static void WINAPI DI_Term(void) {
+	if (g_lpDI) {
+		if (g_lpDIDevice) {
+			// Always unacquire device before calling Release(). 
+			g_lpDIDevice->Unacquire();
+			g_lpDIDevice->Release();
+			g_lpDIDevice = NULL;
+		}
+		g_lpDI->Release();
+		g_lpDI = NULL;
+	}
+}
+
+}

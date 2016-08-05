@@ -7,14 +7,15 @@
 
 namespace BestStealReplica {
 namespace Map {
-Map::Map(int yChipCount, int xChipCount, Drawer* pDrawer) {
-	this->FILE_PATH = "image\\mapchip.png";
-	this->pDrawer = pDrawer;
-	this->yChipCount = yChipCount;
-	this->xChipCount = xChipCount;
-	this->topLeft.x = 0;
-	this->topLeft.y = 0;
 
+Map::Map(int yChipCount, int xChipCount, Drawer* pDrawer) :
+	FILE_PATH("image\\mapchip.png"),
+	pDrawer(pDrawer),
+	yChipCount(yChipCount),
+	xChipCount(xChipCount)
+{
+	topLeft.x = 0;
+	topLeft.y = 0;
 	pDrawer->CreateTexture(this->FILE_PATH, Drawer::TextureType::MAP);
 }
 

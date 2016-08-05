@@ -11,6 +11,7 @@ namespace BestStealReplica {
 class Drawer;
 
 namespace Map {
+
 class MapChipSetting {
 public:
 	static const int HEIGHT = 80;

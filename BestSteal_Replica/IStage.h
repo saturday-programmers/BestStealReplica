@@ -8,15 +8,17 @@
 
 
 namespace BestStealReplica {
-	class IStage {
-	public:
-		virtual Map::MapCommon::MapChipType GetMapChipType(int y, int x) const = 0;
-		virtual POINT GetPlayerFirstChipPos() const = 0;
-		virtual int GetEnermyCount() = 0;
-		virtual POINT GetEnermyChipPos(int enermyNum) = 0;
-		virtual Character::Enermy::EnermyInfo* GetEnermiesInfo() = 0;
-		virtual int GetEnermySearchableRadius() = 0;
-	};
+
+class IStage {
+public:
+	virtual Map::MapCommon::MapChipType GetMapChipType(int y, int x) const = 0;
+	virtual POINT GetPlayerFirstChipPos() const = 0;
+	virtual int GetEnermyCount() const = 0;
+	virtual POINT GetEnermyChipPos(int enermyNum) const = 0;
+	virtual Character::Enermy::EnermyInfo* GetEnermiesInfo() const = 0;
+	virtual int GetEnermySearchableRadius() const = 0;
 };
+
+}
 
 #endif
