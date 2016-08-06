@@ -42,7 +42,7 @@ public:
 
 private:
 	static const int MOVING_PIXEL_ON_RUNNING = 5;
-	static const int MOVING_PIXEL_ON_WALKING = 2;
+	static const int MOVING_PIXEL_ON_WALKING = 3;
 
 	Drawer* pDrawer;
 	const IStage* pStage;

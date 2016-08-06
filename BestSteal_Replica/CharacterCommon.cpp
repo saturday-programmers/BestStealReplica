@@ -2,14 +2,22 @@
 
 namespace BestStealReplica {
 namespace Character {
+
 void CharacterCommon::SetTuTvs(Vertices<FloatPoint> chips[], int chipCntPerDir, int rowNum, int colNum) {
 	for (int i = 0; i < chipCntPerDir; ++i) {
-		chips[i].topLeft.x = (colNum + i) / (float)CharacterCommon::CHIP_COUNT_PER_COL;
-		chips[i].topLeft.y = rowNum / (float)CharacterCommon::CHIP_COUNT_PER_ROW;
-		chips[i].bottomRight.x = (colNum + i + 1) / (float)CharacterCommon::CHIP_COUNT_PER_COL;
-		chips[i].bottomRight.y = (rowNum + 1) / (float)CharacterCommon::CHIP_COUNT_PER_ROW;
+		chips[i] = GetTuTv(rowNum + i, colNum + i);
 	}
 }
+
+Vertices<FloatPoint> CharacterCommon::GetTuTv(int rowNum, int colNum) {
+	Vertices<FloatPoint> ret;
+	ret.topLeft.x = colNum / (float)CharacterCommon::CHIP_COUNT_PER_COL;
+	ret.topLeft.y = rowNum / (float)CharacterCommon::CHIP_COUNT_PER_ROW;
+	ret.bottomRight.x = (colNum + 1) / (float)CharacterCommon::CHIP_COUNT_PER_COL;
+	ret.bottomRight.y = (rowNum + 1) / (float)CharacterCommon::CHIP_COUNT_PER_ROW;
+	return ret;
+}
+
 
 void CharacterCommon::CountUpAnimationCnt(int* currentAnimationCnt, int chipCntPerDir) {
 	++(*currentAnimationCnt);
