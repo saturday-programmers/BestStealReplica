@@ -91,7 +91,7 @@ Vertices<POINT> Enermy::GetEnermyXY(int enermyNum) {
 //	return this->enermyCount;
 //}
 
-void Enermy::ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius) {
+void Enermy::ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius, bool isPlayerWalking) {
 	POINT playerCenter;
 	playerCenter.x = playerXY.topLeft.x + (playerXY.bottomRight.x - playerXY.topLeft.x) / 2;
 	playerCenter.y = playerXY.topLeft.y + (playerXY.bottomRight.y - playerXY.topLeft.y) / 2;
@@ -103,7 +103,7 @@ void Enermy::ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius) {
 		enermyCenter.y = enermyXY.topLeft.y + (enermyXY.bottomRight.y - enermyXY.topLeft.y) / 2;
 		double distance = sqrt(pow(playerCenter.x - enermyCenter.x, 2.0) + pow(playerCenter.y - enermyCenter.y, 2.0));
 
-		if (distance <= scoutableRadius) {
+		if (distance <= scoutableRadius && !isPlayerWalking) {
 			this->enermiesInfo[i].hasFoundPlayer = true;
 			this->enermiesInfo[i].restTimeForCancelFinding = TIME_FOR_CANCELING_FINDING;
 

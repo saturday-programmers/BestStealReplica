@@ -196,6 +196,12 @@ static Controller::Key WINAPI ProcessKBInput() {
 		ret.keyType = Controller::Key::KeyType::Up;
 	} else if (KEYDOWN(buffer, DIK_DOWN)) {
 		ret.keyType = Controller::Key::KeyType::Down;
+	} else {
+		return ret;
+	}
+
+	if (KEYDOWN(buffer, DIK_LSHIFT) || KEYDOWN(buffer, DIK_RSHIFT)) {
+		ret.isWalking = true;
 	}
 
 	return ret;

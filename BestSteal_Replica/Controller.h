@@ -30,7 +30,7 @@ public:
 		};
 
 		KeyType keyType;
-		bool isKWalking;
+		bool isWalking = false;
 	};
 
 
@@ -41,11 +41,17 @@ public:
 	void Release();
 
 private:
+	static const int MOVING_PIXEL_ON_RUNNING = 5;
+	static const int MOVING_PIXEL_ON_WALKING = 2;
+
 	Drawer* pDrawer;
 	const IStage* pStage;
 	Map::Map* pMap;
 	Character::Player* pPlayer;
 	Character::Enermy* pEnermy;
+	Key lastTimeKey;
+
+	void MoveMap(int playerMovingPixel);
 };
 }
 

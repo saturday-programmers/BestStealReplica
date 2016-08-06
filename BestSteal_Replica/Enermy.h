@@ -36,7 +36,7 @@ public:
 	void Move(POINT xy);
 	Vertices<POINT> GetEnermyXY(int enermyNum);
 //			int GetEnermyCount();
-	void ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius);
+	void ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius, bool isPlayerWalking);
 
 private:
 	static const int CHIP_COUNT_PER_DIRECTION = 3;

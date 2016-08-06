@@ -36,80 +36,67 @@ void Controller::LoadStage(const IStage* pStage) {
 }
 
 void Controller::Control(Key key) {
-	POINT movePoint;
-	movePoint.x = 0;
-	movePoint.y = 0;
+	POINT movingPoint;
+	movingPoint.x = 0;
+	movingPoint.y = 0;
 
+	int movingPixel = key.isWalking ? Controller::MOVING_PIXEL_ON_WALKING : Controller::MOVING_PIXEL_ON_RUNNING;
 	switch (key.keyType) {
 		case Key::KeyType::Right:
-			movePoint.x = 5;
+			movingPoint.x = movingPixel;
 			break;
 		case Key::KeyType::Left:
-			movePoint.x = -5;
+			movingPoint.x = movingPixel * -1;
 			break;
 		case Key::KeyType::Up:
-			movePoint.y = -5;
+			movingPoint.y = movingPixel * -1;
 			break;
 		case Key::KeyType::Down:
-			movePoint.y = 5;
+			movingPoint.y = movingPixel;
 			break;
 		default:
+			movingPixel = 0;
 			break;
 	}
 
 	// プレイヤーアニメーション
-	if (movePoint.x != 0) {
-		this->pPlayer->WalkX(movePoint.x);
-	} else if (movePoint.y != 0) {
-		this->pPlayer->WalkY(movePoint.y);
+	if (movingPoint.x != 0) {
+		this->pPlayer->WalkX(movingPoint.x);
+	} else if (movingPoint.y != 0) {
+		this->pPlayer->WalkY(movingPoint.y);
 	} else {
 		this->pPlayer->Stay();
+	}
+
+	// 移動可能範囲確認
+	if (movingPixel > 0) {
+		Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
+		if (!this->pMap->IsOnRoad(playerXY)) {
+			// 移動不可能な場所に移動した場合は元の位置に戻す
+			POINT reversePoint;
+			reversePoint.x = movingPoint.x * -1;
+			reversePoint.y = movingPoint.y * -1;
+			this->pPlayer->Move(reversePoint);
+		}
 	}
 
 	// 敵アニメージョン
 	this->pEnermy->Stay();
 
-	// 移動可能範囲確認
-	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
-	if (!this->pMap->IsOnRoad(playerXY)) {
-		// 移動不可能な場所に移動した場合は元の位置に戻す
-		POINT reversePoint;
-		reversePoint.x = movePoint.x * -1;
-		reversePoint.y = movePoint.y * -1;
-		this->pPlayer->Move(reversePoint);
-	}
-
 	// 敵がプレイヤーを発見したか
-	playerXY = this->pPlayer->GetPlayerXY();
-	this->pEnermy->ScoutPlayer(playerXY, this->pStage->GetEnermySearchableRadius());
+	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
+	if (movingPixel == 0) {
+		// 移動していない場合は走る/歩くの状態は前回の状態を引き継ぐ
+		key.isWalking = lastTimeKey.isWalking;
+	}
+	this->pEnermy->ScoutPlayer(playerXY, this->pStage->GetEnermySearchableRadius(), key.isWalking);
 
 	// プレイヤーがウィンドウ外に出る手前の場合はマップを移動させる
-	POINT mapMovePoint;
-	mapMovePoint.x = 0;
-	mapMovePoint.y = 0;
-	if (this->pPlayer->IsStayingNearlyWindowTop()) {
-		mapMovePoint.y = 5;
-	} else if (this->pPlayer->IsStayingNearlyWindowBottom()) {
-		mapMovePoint.y = -5;
-	}
-	if (this->pPlayer->IsStayingNearlyWindowRight()) {
-		mapMovePoint.x = -5;
-	} else if (this->pPlayer->IsStayingNearlyWindowLeft()) {
-		mapMovePoint.x = 5;
-	}
-	// マップ外が表示されてしまう場合はマップ移動はしない
-	if (!this->pMap->IsMovableX(mapMovePoint.x)) {
-		mapMovePoint.x = 0;
-	}
-	if (!this->pMap->IsMovableY(mapMovePoint.y)) {
-		mapMovePoint.y = 0;
+	if (movingPixel > 0) {
+		MoveMap(movingPixel);
 	}
 
-	if (mapMovePoint.x != 0 || mapMovePoint.y != 0) {
-		this->pMap->Move(mapMovePoint);
-		this->pPlayer->Move(mapMovePoint);
-		this->pEnermy->Move(mapMovePoint);
-	}
+	this->lastTimeKey = key;
 }
 
 void Controller::Draw() {
@@ -125,6 +112,39 @@ void Controller::Release() {
 	delete this->pMap;
 	delete this->pPlayer;
 	delete this->pEnermy;
+}
+
+
+void Controller::MoveMap(int playerMovingPixel) {
+	POINT mapMovingPoint;
+	mapMovingPoint.x = 0;
+	mapMovingPoint.y = 0;
+
+	// 一旦移動させてみる
+	if (this->pPlayer->IsStayingNearlyWindowTop()) {
+		mapMovingPoint.y = playerMovingPixel;
+	} else if (this->pPlayer->IsStayingNearlyWindowBottom()) {
+		mapMovingPoint.y = playerMovingPixel * -1;
+	}
+	if (this->pPlayer->IsStayingNearlyWindowRight()) {
+		mapMovingPoint.x = playerMovingPixel * -1;
+	} else if (this->pPlayer->IsStayingNearlyWindowLeft()) {
+		mapMovingPoint.x = playerMovingPixel;
+	}
+
+	// マップ外が表示されてしまう場合は元に戻す
+	if (!this->pMap->IsMovableX(mapMovingPoint.x)) {
+		mapMovingPoint.x = 0;
+	}
+	if (!this->pMap->IsMovableY(mapMovingPoint.y)) {
+		mapMovingPoint.y = 0;
+	}
+
+	if (mapMovingPoint.x != 0 || mapMovingPoint.y != 0) {
+		this->pMap->Move(mapMovingPoint);
+		this->pPlayer->Move(mapMovingPoint);
+		this->pEnermy->Move(mapMovingPoint);
+	}
 }
 
 }
