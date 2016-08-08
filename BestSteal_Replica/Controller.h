@@ -21,15 +21,15 @@ class Controller {
 public:
 	struct Key {
 		enum KeyType {
-			None,
-			Up,
-			Down,
-			Right,
-			Left,
-			Steal
+			NONE,
+			UP,
+			DOWN,
+			RIGHT,
+			LEFT,
+			STEAL
 		};
 
-		KeyType keyType;
+		KeyType keyType = KeyType::NONE;
 		bool isWalking = false;
 	};
 
@@ -51,8 +51,10 @@ private:
 	Character::Enermy* pEnermy;
 	Key lastTimeKey;
 
+	int ControlPlayer(Key key);
 	void MoveMap(int playerMovingPixel);
 };
+
 }
 
 #endif

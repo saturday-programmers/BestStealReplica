@@ -5,7 +5,7 @@ namespace Character {
 
 void CharacterCommon::SetTuTvs(Vertices<FloatPoint> chips[], int chipCntPerDir, int rowNum, int colNum) {
 	for (int i = 0; i < chipCntPerDir; ++i) {
-		chips[i] = GetTuTv(rowNum + i, colNum + i);
+		chips[i] = GetTuTv(rowNum, colNum + i);
 	}
 }
 

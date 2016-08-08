@@ -184,18 +184,20 @@ static Controller::Key WINAPI ProcessKBInput() {
 		// If it failed, the device has probably been lost. 
 		// Check for (hr == DIERR_INPUTLOST) 
 		// and attempt to reacquire it here. 
-		ret.keyType = Controller::Key::KeyType::None;
+		ret.keyType = Controller::Key::KeyType::NONE;
 		return ret;
 	}
 
-	if (KEYDOWN(buffer, DIK_RIGHT)) {
-		ret.keyType = Controller::Key::KeyType::Right;
+	if (KEYDOWN(buffer, DIK_Z)) {
+		ret.keyType = Controller::Key::KeyType::STEAL;
+	} else if (KEYDOWN(buffer, DIK_RIGHT)) {
+		ret.keyType = Controller::Key::KeyType::RIGHT;
 	} else if (KEYDOWN(buffer, DIK_LEFT)) {
-		ret.keyType = Controller::Key::KeyType::Left;
+		ret.keyType = Controller::Key::KeyType::LEFT;
 	} else if (KEYDOWN(buffer, DIK_UP)) {
-		ret.keyType = Controller::Key::KeyType::Up;
+		ret.keyType = Controller::Key::KeyType::UP;
 	} else if (KEYDOWN(buffer, DIK_DOWN)) {
-		ret.keyType = Controller::Key::KeyType::Down;
+		ret.keyType = Controller::Key::KeyType::DOWN;
 	} else {
 		return ret;
 	}

@@ -13,14 +13,18 @@ namespace Character {
 
 class Player {
 public:
-	static const int MAX_COUNT_OF_AFTERIMAGE = 4;
+	static const int MOVING_PIXEL_ON_STEALING = 50;
+
+	bool isStealing;
+	CharacterCommon::Direction headingDirection;
 
 	Player(POINT topLeftXY, Drawer* pDrawer);
 	void Draw();
-	void WalkX(int x);
-	void WalkY(int y);
+	void SetDirection(CharacterCommon::Direction direction);
+	void Walk(POINT movingPoint);
 	void Stay();
-	void Steal(int afterImageCount);
+	void StartStealing();
+	void KeepStealing();
 	void Move(POINT xy);
 	bool IsStayingNearlyWindowTop();
 	bool IsStayingNearlyWindowRight();
@@ -32,6 +36,7 @@ private:
 	static const int CHIP_COUNT_PER_DIRECTION = 3;
 	static const int PLAYER_HEIGHT = 60;
 	static const int PLAYER_WIDTH = 50;
+	static const int COUNT_OF_KEEPING_STEALING = 5;
 
 	static const int ROW_NUM_OF_HEADING_BOTTOM = 0;
 	static const int COL_NUM_OF_HEADING_BOTTOM = 0;
@@ -54,11 +59,10 @@ private:
 	const char* FILE_PATH;
 
 	Drawer* pDrawer;
-	CharacterCommon::Direction headingDirection;
 	int currentAnimationCnt;
 	POINT topLeftXY;
-	bool isStealing;
-	int afterimageCount = 0;
+	int currentKeepingStealingNum;
+	bool isDirectionChanged;
 
 	Vertices<FloatPoint> headingBottomChips[Player::CHIP_COUNT_PER_DIRECTION];
 	Vertices<FloatPoint> headingTopChips[Player::CHIP_COUNT_PER_DIRECTION];
@@ -70,8 +74,7 @@ private:
 	Vertices<FloatPoint> StealingRightChip;
 	
 	Vertices<DrawingVertex> GetVertex();
-	Vertices<DrawingVertex>* GetVerticesOnStealing(int afterimageCount);
-	void Walk(CharacterCommon::Direction nextDir);
+	Vertices<DrawingVertex> GetVerticesOnStealing(int afterimageNum);
 };
 
 }

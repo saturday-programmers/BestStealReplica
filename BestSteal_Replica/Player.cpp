@@ -11,76 +11,91 @@ Player::Player(POINT topLeftXY, Drawer* pDrawer):
 	currentAnimationCnt(0),
 	headingDirection(CharacterCommon::Direction::BOTTOM),
 	topLeftXY(topLeftXY),
-	isStealing(false)
+	isStealing(false),
+	currentKeepingStealingNum(0),
+	isDirectionChanged(false)
 {
 	CharacterCommon::SetTuTvs(this->headingTopChips, Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_TOP, Player::COL_NUM_OF_HEADING_TOP);
 	CharacterCommon::SetTuTvs(this->headingRightChips, Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_RIGHT, Player::COL_NUM_OF_HEADING_RIGHT);
 	CharacterCommon::SetTuTvs(this->headingBottomChips, Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_BOTTOM, Player::COL_NUM_OF_HEADING_BOTTOM);
 	CharacterCommon::SetTuTvs(this->headingLeftChips, Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_LEFT, Player::COL_NUM_OF_HEADING_LEFT);
 
-	this->StealingTopChip = CharacterCommon::GetTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_HEADING_TOP);
-	this->StealingRightChip = CharacterCommon::GetTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_HEADING_RIGHT);
-	this->StealingBottomChip = CharacterCommon::GetTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_HEADING_BOTTOM);
-	this->StealingLeftChip = CharacterCommon::GetTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_HEADING_LEFT);
+	this->StealingTopChip = CharacterCommon::GetTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_TOP);
+	this->StealingRightChip = CharacterCommon::GetTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_RIGHT);
+	this->StealingBottomChip = CharacterCommon::GetTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_BOTTOM);
+	this->StealingLeftChip = CharacterCommon::GetTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_LEFT);
 
 	pDrawer->CreateTexture(this->FILE_PATH, Drawer::TextureType::CHARACTER);
 }
 
 void Player::Draw() {
 	if (isStealing) {
-		/*Vertices<DrawingVertex> vertices[Player::MAX_COUNT_OF_AFTERIMAGE] = GetVerticesOnStealing(this->afterimageCount);
-		for (int i = 0; i < this->afterimageCount; ++i) {
-			this->pDrawer->Draw(vertices[i], Drawer::TextureType::CHARACTER);
-		}*/
+		for (int i = this->currentKeepingStealingNum; i > 0; --i) {
+			Vertices<DrawingVertex> vertex = GetVerticesOnStealing(i - 1);
+			this->pDrawer->Draw(vertex, Drawer::TextureType::CHARACTER);
+		}
 	} else {
 		this->pDrawer->Draw(GetVertex(), Drawer::TextureType::CHARACTER);
 	}
 }
 
-void Player::WalkX(int x) {
-	this->isStealing = false;
-	if (x == 0) {
+void Player::SetDirection(CharacterCommon::Direction direction) {
+	this->isDirectionChanged = (this->headingDirection != direction);
+	this->headingDirection = direction;
+}
+
+void Player::Walk(POINT movingPoint) {
+	if (movingPoint.x == 0 && movingPoint.y == 0) {
 		return;
 	}
 
-	this->topLeftXY.x += x;
-
-	CharacterCommon::Direction dir;
-	if (x > 0) {
-		dir = CharacterCommon::Direction::RIGHT;
+	this->topLeftXY.x += movingPoint.x;
+	this->topLeftXY.y += movingPoint.y;
+	
+	if (this->isDirectionChanged) {
+		// 向きが変わったらアニメーション番号を最初に戻す
+		this->currentAnimationCnt = 0;
 	} else {
-		dir = CharacterCommon::Direction::LEFT;
+		CharacterCommon::CountUpAnimationCnt(&this->currentAnimationCnt, Player::CHIP_COUNT_PER_DIRECTION);
 	}
-
-	Walk(dir);
 }
 
-void Player::WalkY(int y) {
-	this->isStealing = false;
-	if (y == 0) {
-		return;
-	}
-
-	this->topLeftXY.y += y;
-
-	CharacterCommon::Direction dir;
-	if (y > 0) {
-		dir = CharacterCommon::Direction::BOTTOM;
-	} else {
-		dir = CharacterCommon::Direction::TOP;
-	}
-
-	Walk(dir);
-}
 
 void Player::Stay() {
 	this->isStealing = false;
 	CharacterCommon::CountUpAnimationCnt(&this->currentAnimationCnt, Player::CHIP_COUNT_PER_DIRECTION);
 }
 
-void Player::Steal(int afterimageCount) {
-	this->afterimageCount = afterimageCount;
+void Player::StartStealing() {
 	this->isStealing = true;
+	this->currentKeepingStealingNum = 1;
+}
+
+void Player::KeepStealing() {
+	++this->currentKeepingStealingNum;
+
+	if (this->currentKeepingStealingNum > Player::COUNT_OF_KEEPING_STEALING) {
+		// 盗み状態終了
+		this->isStealing = false;
+		this->currentKeepingStealingNum = 0;
+	} else {
+		switch (this->headingDirection) {
+			case CharacterCommon::Direction::TOP:
+				this->topLeftXY.y -= Player::MOVING_PIXEL_ON_STEALING;
+				break;
+			case CharacterCommon::Direction::RIGHT:
+				this->topLeftXY.x += Player::MOVING_PIXEL_ON_STEALING;
+				break;
+			case CharacterCommon::Direction::BOTTOM:
+				this->topLeftXY.y += Player::MOVING_PIXEL_ON_STEALING;
+				break;
+			case CharacterCommon::Direction::LEFT:
+				this->topLeftXY.x -= Player::MOVING_PIXEL_ON_STEALING;
+				break;
+			default:
+				break;
+		}
+	}
 }
 
 void Player::Move(POINT xy) {
@@ -141,46 +156,33 @@ Vertices<DrawingVertex> Player::GetVertex() {
 	return ret;
 }
 
-Vertices<DrawingVertex>* Player::GetVerticesOnStealing(int afterimageCount) {
-	Vertices<DrawingVertex> ret[Player::MAX_COUNT_OF_AFTERIMAGE];
-	for (int i = 0; i < afterimageCount; ++i) {
-		POINT topLeftXY;
-		Vertices<FloatPoint> chip;
-		switch (this->headingDirection) {
-			case CharacterCommon::TOP:
-				topLeftXY.x = this->topLeftXY.x;
-				topLeftXY.y = this->topLeftXY.y - 50 * i;
-				chip = this->StealingTopChip;
-				break;
-			case CharacterCommon::RIGHT:
-				topLeftXY.x = this->topLeftXY.x + 50 * i;
-				topLeftXY.y = this->topLeftXY.y;
-				chip = this->StealingRightChip;
-				break;
-			case CharacterCommon::BOTTOM:
-				topLeftXY.x = this->topLeftXY.x;
-				topLeftXY.y = this->topLeftXY.y + 50 * i;
-				chip = this->StealingBottomChip;
-				break;
-			case CharacterCommon::LEFT:
-				topLeftXY.x = this->topLeftXY.x - 50 * i;
-				topLeftXY.y = this->topLeftXY.y;
-				chip = this->StealingLeftChip;
-				break;
-		}
-		ret[i] = CharacterCommon::GetVertex(topLeftXY, &CharacterCommon::GetChipXY, chip);
+Vertices<DrawingVertex> Player::GetVerticesOnStealing(int afterimageNum) {
+	POINT topLeftXY;
+	Vertices<FloatPoint> chip;
+	switch (this->headingDirection) {
+		case CharacterCommon::TOP:
+			topLeftXY.x = this->topLeftXY.x;
+			topLeftXY.y = this->topLeftXY.y + Player::MOVING_PIXEL_ON_STEALING * afterimageNum;
+			chip = this->StealingTopChip;
+			break;
+		case CharacterCommon::RIGHT:
+			topLeftXY.x = this->topLeftXY.x - Player::MOVING_PIXEL_ON_STEALING * afterimageNum;
+			topLeftXY.y = this->topLeftXY.y;
+			chip = this->StealingRightChip;
+			break;
+		case CharacterCommon::BOTTOM:
+			topLeftXY.x = this->topLeftXY.x;
+			topLeftXY.y = this->topLeftXY.y - Player::MOVING_PIXEL_ON_STEALING * afterimageNum;
+			chip = this->StealingBottomChip;
+			break;
+		case CharacterCommon::LEFT:
+			topLeftXY.x = this->topLeftXY.x + Player::MOVING_PIXEL_ON_STEALING * afterimageNum;
+			topLeftXY.y = this->topLeftXY.y;
+			chip = this->StealingLeftChip;
+			break;
 	}
+	Vertices<DrawingVertex> ret = CharacterCommon::GetVertex(topLeftXY, &CharacterCommon::GetChipXY, chip);
 	return ret;
-}
-
-void Player::Walk(CharacterCommon::Direction nextDir) {
-	if (nextDir != this->headingDirection) {
-		// 向きが変わったらアニメーション番号を最初に戻す
-		this->currentAnimationCnt = 0;
-	} else {
-		CharacterCommon::CountUpAnimationCnt(&this->currentAnimationCnt, Player::CHIP_COUNT_PER_DIRECTION);
-	}
-	this->headingDirection = nextDir;
 }
 
 }

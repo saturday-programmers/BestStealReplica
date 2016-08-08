@@ -36,59 +36,21 @@ void Controller::LoadStage(const IStage* pStage) {
 }
 
 void Controller::Control(Key key) {
-	POINT movingPoint;
-	movingPoint.x = 0;
-	movingPoint.y = 0;
-
-	int movingPixel = key.isWalking ? Controller::MOVING_PIXEL_ON_WALKING : Controller::MOVING_PIXEL_ON_RUNNING;
-	switch (key.keyType) {
-		case Key::KeyType::Right:
-			movingPoint.x = movingPixel;
-			break;
-		case Key::KeyType::Left:
-			movingPoint.x = movingPixel * -1;
-			break;
-		case Key::KeyType::Up:
-			movingPoint.y = movingPixel * -1;
-			break;
-		case Key::KeyType::Down:
-			movingPoint.y = movingPixel;
-			break;
-		default:
-			movingPixel = 0;
-			break;
-	}
-
 	// プレイヤーアニメーション
-	if (movingPoint.x != 0) {
-		this->pPlayer->WalkX(movingPoint.x);
-	} else if (movingPoint.y != 0) {
-		this->pPlayer->WalkY(movingPoint.y);
-	} else {
-		this->pPlayer->Stay();
-	}
-
-	// 移動可能範囲確認
-	if (movingPixel > 0) {
-		Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
-		if (!this->pMap->IsOnRoad(playerXY)) {
-			// 移動不可能な場所に移動した場合は元の位置に戻す
-			POINT reversePoint;
-			reversePoint.x = movingPoint.x * -1;
-			reversePoint.y = movingPoint.y * -1;
-			this->pPlayer->Move(reversePoint);
-		}
-	}
+	int movingPixel = ControlPlayer(key);
 
 	// 敵アニメージョン
 	this->pEnermy->Stay();
 
 	// 敵がプレイヤーを発見したか
-	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
 	if (movingPixel == 0) {
 		// 移動していない場合は走る/歩くの状態は前回の状態を引き継ぐ
 		key.isWalking = lastTimeKey.isWalking;
 	}
+	if (this->pPlayer->isStealing) {
+		key.isWalking = true;
+	}
+	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
 	this->pEnermy->ScoutPlayer(playerXY, this->pStage->GetEnermySearchableRadius(), key.isWalking);
 
 	// プレイヤーがウィンドウ外に出る手前の場合はマップを移動させる
@@ -114,6 +76,83 @@ void Controller::Release() {
 	delete this->pEnermy;
 }
 
+
+int Controller::ControlPlayer(Key key) {
+	int movingPixel;
+
+	// 盗むアクション
+	if (key.keyType == Key::KeyType::STEAL && !pPlayer->isStealing) {
+		this->pPlayer->StartStealing();
+	} else if (pPlayer->isStealing) {
+		this->pPlayer->KeepStealing();
+	}
+
+	// プレイヤー移動方向
+	switch (key.keyType) {
+		case Key::KeyType::RIGHT:
+			pPlayer->SetDirection(CharacterCommon::Direction::RIGHT);
+			break;
+		case Key::KeyType::LEFT:
+			pPlayer->SetDirection(CharacterCommon::Direction::LEFT);
+			break;
+		case Key::KeyType::UP:
+			pPlayer->SetDirection(CharacterCommon::Direction::TOP);
+			break;
+		case Key::KeyType::DOWN:
+			pPlayer->SetDirection(CharacterCommon::Direction::BOTTOM);
+			break;
+		default:
+			break;
+	}
+
+	// プレイヤー移動距離
+	if (this->pPlayer->isStealing) {
+		movingPixel = Player::MOVING_PIXEL_ON_STEALING;
+	} else if (key.keyType == Key::KeyType::NONE) {
+		movingPixel = 0;
+	} else {
+		movingPixel = key.isWalking ? Controller::MOVING_PIXEL_ON_WALKING : Controller::MOVING_PIXEL_ON_RUNNING;
+	}
+	POINT movingPoint;
+	movingPoint.x = 0;
+	movingPoint.y = 0;
+	switch (pPlayer->headingDirection) {
+		case CharacterCommon::Direction::RIGHT:
+			movingPoint.x = movingPixel;
+			break;
+		case CharacterCommon::Direction::LEFT:
+			movingPoint.x = movingPixel * -1;
+			break;
+		case CharacterCommon::Direction::TOP:
+			movingPoint.y = movingPixel * -1;
+			break;
+		case CharacterCommon::Direction::BOTTOM:
+			movingPoint.y = movingPixel;
+			break;
+	}
+
+	// プレイヤーアニメーション
+	if (!this->pPlayer->isStealing) {
+		if (movingPixel > 0) {
+			this->pPlayer->Walk(movingPoint);
+		} else {
+			this->pPlayer->Stay();
+		}
+	}
+
+	// 移動可能範囲確認
+	if (movingPixel > 0) {
+		POINT reversePoint;
+		reversePoint.x = -1 * (movingPoint.x / movingPixel);
+		reversePoint.y = -1 * (movingPoint.y / movingPixel);
+		while (!this->pMap->IsOnRoad(this->pPlayer->GetPlayerXY())) {
+			// 移動不可能な場所に移動した場合は元の位置に戻す
+			this->pPlayer->Move(reversePoint);
+		}
+	}
+
+	return movingPixel;
+}
 
 void Controller::MoveMap(int playerMovingPixel) {
 	POINT mapMovingPoint;
