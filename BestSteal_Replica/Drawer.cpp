@@ -77,7 +77,11 @@ void Drawer::BeginDraw() {
 }
 
 void Drawer::Draw(Vertices<DrawingVertex> vertices, TextureType textureType) const {
-	Draw(vertices, this->pTexture[textureType]);
+	Draw(vertices, this->pTexture[textureType], 0xFF);
+}
+
+void Drawer::Draw(Vertices<DrawingVertex> vertices, TextureType textureType, UINT16 alpha) const {
+	Draw(vertices, this->pTexture[textureType], alpha);
 }
 
 void Drawer::EndDraw() {
@@ -95,13 +99,13 @@ void Drawer::Release() {
 }
 
 
-void Drawer::Draw(Vertices<DrawingVertex> vertices, LPDIRECT3DTEXTURE9 pTexture) const {
+void Drawer::Draw(Vertices<DrawingVertex> vertices, LPDIRECT3DTEXTURE9 pTexture, UINT16 alpha) const {
 	CUSTOMVERTEX customVertex[4];
 
 	for (int i = 0; i < 4; ++i) {
 		customVertex[i].z = 0.5f;
 		customVertex[i].rhw = 1.0f;
-		customVertex[i].color = D3DCOLOR_XRGB(255, 255, 255);
+		customVertex[i].color = D3DCOLOR_ARGB(alpha, 255, 255, 255);
 	}
 
 	customVertex[0].x = (float)vertices.topLeft.x;

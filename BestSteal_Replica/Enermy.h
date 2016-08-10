@@ -13,20 +13,28 @@ namespace Character {
 
 class Enermy {
 public:
+	enum State {
+		NORMAL,
+		FOUND_PLAYER,
+		LOST_PLAYER,
+		GOT_STOLEN
+	};
+
 	struct EnermyInfo {
 		POINT chipPos;
 		POINT topLeftXY;
 		CharacterCommon::Direction defaultDirection;
 		CharacterCommon::Direction headingDirection;
 		bool hasKey;
-		bool hasFoundPlayer = false;
-		int currentAnimationCnt = 0;
-		int restTimeForCancelFinding = 0;
-		int restTimeForBackingToNormal = 0;
+		State state;
+		int currentAnimationCnt;
+		int restTimeForCancelFinding;
+		int restTimeForBackingToNormal;
 
 		EnermyInfo();
 		EnermyInfo(int chipPosX, int chipPosY, CharacterCommon::Direction defaultDirection, bool hasKey);
 	};
+
 
 	static const int MAX_ENERMY_COUNT = 7;
 
@@ -35,15 +43,15 @@ public:
 	void Stay();
 	void Move(POINT xy);
 	Vertices<POINT> GetEnermyXY(int enermyNum);
-//			int GetEnermyCount();
 	void ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius, bool isPlayerWalking);
+	int GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing);
 
 private:
 	static const int CHIP_COUNT_PER_DIRECTION = 3;
 	static const int ENERMY_HEIGHT = 60;
 	static const int ENERMY_WIDTH = 50;
 	static const int TIME_FOR_CANCELING_FINDING = 120;
-	static const int TIME_FOR_BACKING_TO_NORMAL = 120;
+	static const int TIME_FOR_BACKING_TO_NORMAL = 80;
 
 	static const int ROW_NUM_OF_HEADING_BOTTOM = 4;
 	static const int COL_NUM_OF_HEADING_BOTTOM = 0;

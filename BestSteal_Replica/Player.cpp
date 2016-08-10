@@ -13,7 +13,8 @@ Player::Player(POINT topLeftXY, Drawer* pDrawer):
 	topLeftXY(topLeftXY),
 	isStealing(false),
 	currentKeepingStealingNum(0),
-	isDirectionChanged(false)
+	isDirectionChanged(false),
+	holdingKeyCount(0)
 {
 	CharacterCommon::SetTuTvs(this->headingTopChips, Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_TOP, Player::COL_NUM_OF_HEADING_TOP);
 	CharacterCommon::SetTuTvs(this->headingRightChips, Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_RIGHT, Player::COL_NUM_OF_HEADING_RIGHT);

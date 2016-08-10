@@ -20,13 +20,14 @@ public:
 	bool CreateTexture(const char* filePath, TextureType textureType);
 	void BeginDraw();
 	void Draw(Vertices<DrawingVertex> vertices, TextureType textureType) const;
+	void Draw(Vertices<DrawingVertex> vertices, TextureType textureType, UINT16 alpha) const;
 	void EndDraw();
 	void Release();
 
 private:
 	IDirect3DDevice9*	pD3Device;
 	LPDIRECT3DTEXTURE9	pTexture[2];
-	void Draw(Vertices<DrawingVertex> vertices, LPDIRECT3DTEXTURE9 pTexture) const;
+	void Draw(Vertices<DrawingVertex> vertices, LPDIRECT3DTEXTURE9 pTexture, UINT16 alpha) const;
 };
 
 }

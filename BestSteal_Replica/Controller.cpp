@@ -42,6 +42,10 @@ void Controller::Control(Key key) {
 	// 敵アニメージョン
 	this->pEnermy->Stay();
 
+	// 盗む処理
+	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
+	this->pPlayer->holdingKeyCount += this->pEnermy->GetStolen(playerXY, this->pPlayer->isStealing);
+
 	// 敵がプレイヤーを発見したか
 	if (movingPixel == 0) {
 		// 移動していない場合は走る/歩くの状態は前回の状態を引き継ぐ
@@ -50,7 +54,6 @@ void Controller::Control(Key key) {
 	if (this->pPlayer->isStealing) {
 		key.isWalking = true;
 	}
-	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
 	this->pEnermy->ScoutPlayer(playerXY, this->pStage->GetEnermySearchableRadius(), key.isWalking);
 
 	// プレイヤーがウィンドウ外に出る手前の場合はマップを移動させる

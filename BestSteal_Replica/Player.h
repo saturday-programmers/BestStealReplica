@@ -17,6 +17,7 @@ public:
 
 	bool isStealing;
 	CharacterCommon::Direction headingDirection;
+	int holdingKeyCount;
 
 	Player(POINT topLeftXY, Drawer* pDrawer);
 	void Draw();
