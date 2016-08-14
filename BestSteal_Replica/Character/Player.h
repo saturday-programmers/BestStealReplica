@@ -16,12 +16,12 @@ public:
 	static const int MOVING_PIXEL_ON_STEALING = 50;
 
 	bool isStealing;
-	CharacterCommon::Direction headingDirection;
+	AppCommon::Direction headingDirection;
 	int holdingKeyCount;
 
 	Player(POINT topLeftXY, Drawer* pDrawer);
 	void Draw();
-	void SetDirection(CharacterCommon::Direction direction);
+	void SetDirection(AppCommon::Direction direction);
 	void Walk(POINT movingPoint);
 	void Stay();
 	void StartStealing();

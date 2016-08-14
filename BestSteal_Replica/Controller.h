@@ -26,7 +26,7 @@ public:
 			DOWN,
 			RIGHT,
 			LEFT,
-			STEAL
+			STEAL_OR_OPEN
 		};
 
 		KeyType keyType = KeyType::NONE;

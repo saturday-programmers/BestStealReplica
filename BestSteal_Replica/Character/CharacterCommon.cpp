@@ -21,13 +21,13 @@ Vertices<FloatPoint> CharacterCommon::GetTuTv(int rowNum, int colNum) {
 
 void CharacterCommon::CountUpAnimationCnt(int* currentAnimationCnt, int chipCntPerDir) {
 	++(*currentAnimationCnt);
-	if (*currentAnimationCnt >= chipCntPerDir * CharacterCommon::FRAME_COUNT_PER_CUT) {
+	if (*currentAnimationCnt >= chipCntPerDir * AppCommon::FRAME_COUNT_PER_CUT) {
 		*currentAnimationCnt = 0;
 	}
 }
 
 int CharacterCommon::GetAnimationNumber(int currentAnimationCnt) {
-	return currentAnimationCnt / CharacterCommon::FRAME_COUNT_PER_CUT;
+	return currentAnimationCnt / AppCommon::FRAME_COUNT_PER_CUT;
 }
 
 Vertices<DrawingVertex> CharacterCommon::GetVertex(POINT topLeftXY, Vertices<POINT>(*getXY)(POINT), Vertices<FloatPoint> chip) {

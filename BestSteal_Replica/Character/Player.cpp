@@ -9,7 +9,7 @@ Player::Player(POINT topLeftXY, Drawer* pDrawer):
 	FILE_PATH("image\\character.png"),
 	pDrawer(pDrawer),
 	currentAnimationCnt(0),
-	headingDirection(CharacterCommon::Direction::BOTTOM),
+	headingDirection(AppCommon::Direction::BOTTOM),
 	topLeftXY(topLeftXY),
 	isStealing(false),
 	currentKeepingStealingNum(0),
@@ -40,7 +40,7 @@ void Player::Draw() {
 	}
 }
 
-void Player::SetDirection(CharacterCommon::Direction direction) {
+void Player::SetDirection(AppCommon::Direction direction) {
 	this->isDirectionChanged = (this->headingDirection != direction);
 	this->headingDirection = direction;
 }
@@ -81,16 +81,16 @@ void Player::KeepStealing() {
 		this->currentKeepingStealingNum = 0;
 	} else {
 		switch (this->headingDirection) {
-			case CharacterCommon::Direction::TOP:
+			case AppCommon::Direction::TOP:
 				this->topLeftXY.y -= Player::MOVING_PIXEL_ON_STEALING;
 				break;
-			case CharacterCommon::Direction::RIGHT:
+			case AppCommon::Direction::RIGHT:
 				this->topLeftXY.x += Player::MOVING_PIXEL_ON_STEALING;
 				break;
-			case CharacterCommon::Direction::BOTTOM:
+			case AppCommon::Direction::BOTTOM:
 				this->topLeftXY.y += Player::MOVING_PIXEL_ON_STEALING;
 				break;
-			case CharacterCommon::Direction::LEFT:
+			case AppCommon::Direction::LEFT:
 				this->topLeftXY.x -= Player::MOVING_PIXEL_ON_STEALING;
 				break;
 			default:
@@ -138,16 +138,16 @@ Vertices<DrawingVertex> Player::GetVertex() {
 	Vertices<FloatPoint> chip;
 	int animationNum = CharacterCommon::GetAnimationNumber(this->currentAnimationCnt);
 	switch (this->headingDirection) {
-		case CharacterCommon::Direction::TOP:
+		case AppCommon::Direction::TOP:
 			chip = this->headingTopChips[animationNum];
 			break;
-		case CharacterCommon::Direction::RIGHT:
+		case AppCommon::Direction::RIGHT:
 			chip = this->headingRightChips[animationNum];
 			break;
-		case CharacterCommon::Direction::BOTTOM:
+		case AppCommon::Direction::BOTTOM:
 			chip = this->headingBottomChips[animationNum];
 			break;
-		case CharacterCommon::Direction::LEFT:
+		case AppCommon::Direction::LEFT:
 			chip = this->headingLeftChips[animationNum];
 			break;
 	}
@@ -161,22 +161,22 @@ Vertices<DrawingVertex> Player::GetVerticesOnStealing(int afterimageNum) {
 	POINT topLeftXY;
 	Vertices<FloatPoint> chip;
 	switch (this->headingDirection) {
-		case CharacterCommon::TOP:
+		case AppCommon::Direction::TOP:
 			topLeftXY.x = this->topLeftXY.x;
 			topLeftXY.y = this->topLeftXY.y + Player::MOVING_PIXEL_ON_STEALING * afterimageNum;
 			chip = this->StealingTopChip;
 			break;
-		case CharacterCommon::RIGHT:
+		case AppCommon::Direction::RIGHT:
 			topLeftXY.x = this->topLeftXY.x - Player::MOVING_PIXEL_ON_STEALING * afterimageNum;
 			topLeftXY.y = this->topLeftXY.y;
 			chip = this->StealingRightChip;
 			break;
-		case CharacterCommon::BOTTOM:
+		case AppCommon::Direction::BOTTOM:
 			topLeftXY.x = this->topLeftXY.x;
 			topLeftXY.y = this->topLeftXY.y - Player::MOVING_PIXEL_ON_STEALING * afterimageNum;
 			chip = this->StealingBottomChip;
 			break;
-		case CharacterCommon::LEFT:
+		case AppCommon::Direction::LEFT:
 			topLeftXY.x = this->topLeftXY.x + Player::MOVING_PIXEL_ON_STEALING * afterimageNum;
 			topLeftXY.y = this->topLeftXY.y;
 			chip = this->StealingLeftChip;

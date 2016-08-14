@@ -56,6 +56,9 @@ void Controller::Control(Key key) {
 	}
 	this->pEnermy->ScoutPlayer(playerXY, this->pStage->GetEnermySearchableRadius(), key.isWalking);
 
+	// ドアを開けるアニメーション
+	this->pMap->KeepOpeningDoors();
+
 	// プレイヤーがウィンドウ外に出る手前の場合はマップを移動させる
 	if (movingPixel > 0) {
 		MoveMap(movingPixel);
@@ -83,26 +86,38 @@ void Controller::Release() {
 int Controller::ControlPlayer(Key key) {
 	int movingPixel;
 
-	// 盗むアクション
-	if (key.keyType == Key::KeyType::STEAL && !pPlayer->isStealing) {
-		this->pPlayer->StartStealing();
-	} else if (pPlayer->isStealing) {
+	if (key.keyType == Key::KeyType::STEAL_OR_OPEN) {
+		// ドアを開ける
+		bool isOpeningDoor = false;
+		if (!this->pPlayer->isStealing) {
+			Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
+			isOpeningDoor = this->pMap->OpenDoor(playerXY, this->pPlayer->headingDirection);
+		}
+
+		// 目の前にドアがない場合は盗むアクション
+		if (!isOpeningDoor) {
+			this->pPlayer->StartStealing();
+		}
+	}
+
+	// 盗むアクション継続
+	if (pPlayer->isStealing) {
 		this->pPlayer->KeepStealing();
 	}
 
 	// プレイヤー移動方向
 	switch (key.keyType) {
 		case Key::KeyType::RIGHT:
-			pPlayer->SetDirection(CharacterCommon::Direction::RIGHT);
+			pPlayer->SetDirection(AppCommon::Direction::RIGHT);
 			break;
 		case Key::KeyType::LEFT:
-			pPlayer->SetDirection(CharacterCommon::Direction::LEFT);
+			pPlayer->SetDirection(AppCommon::Direction::LEFT);
 			break;
 		case Key::KeyType::UP:
-			pPlayer->SetDirection(CharacterCommon::Direction::TOP);
+			pPlayer->SetDirection(AppCommon::Direction::TOP);
 			break;
 		case Key::KeyType::DOWN:
-			pPlayer->SetDirection(CharacterCommon::Direction::BOTTOM);
+			pPlayer->SetDirection(AppCommon::Direction::BOTTOM);
 			break;
 		default:
 			break;
@@ -111,7 +126,7 @@ int Controller::ControlPlayer(Key key) {
 	// プレイヤー移動距離
 	if (this->pPlayer->isStealing) {
 		movingPixel = Player::MOVING_PIXEL_ON_STEALING;
-	} else if (key.keyType == Key::KeyType::NONE) {
+	} else if (key.keyType == Key::KeyType::NONE || key.keyType == Key::KeyType::STEAL_OR_OPEN) {
 		movingPixel = 0;
 	} else {
 		movingPixel = key.isWalking ? Controller::MOVING_PIXEL_ON_WALKING : Controller::MOVING_PIXEL_ON_RUNNING;
@@ -120,16 +135,16 @@ int Controller::ControlPlayer(Key key) {
 	movingPoint.x = 0;
 	movingPoint.y = 0;
 	switch (pPlayer->headingDirection) {
-		case CharacterCommon::Direction::RIGHT:
+		case AppCommon::Direction::RIGHT:
 			movingPoint.x = movingPixel;
 			break;
-		case CharacterCommon::Direction::LEFT:
+		case AppCommon::Direction::LEFT:
 			movingPoint.x = movingPixel * -1;
 			break;
-		case CharacterCommon::Direction::TOP:
+		case AppCommon::Direction::TOP:
 			movingPoint.y = movingPixel * -1;
 			break;
-		case CharacterCommon::Direction::BOTTOM:
+		case AppCommon::Direction::BOTTOM:
 			movingPoint.y = movingPixel;
 			break;
 	}

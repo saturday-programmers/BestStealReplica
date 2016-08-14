@@ -23,8 +23,8 @@ public:
 	struct EnermyInfo {
 		POINT chipPos;
 		POINT topLeftXY;
-		CharacterCommon::Direction defaultDirection;
-		CharacterCommon::Direction headingDirection;
+		AppCommon::Direction defaultDirection;
+		AppCommon::Direction headingDirection;
 		bool hasKey;
 		State state;
 		int currentAnimationCnt;
@@ -32,7 +32,7 @@ public:
 		int restTimeForBackingToNormal;
 
 		EnermyInfo();
-		EnermyInfo(int chipPosX, int chipPosY, CharacterCommon::Direction defaultDirection, bool hasKey);
+		EnermyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, bool hasKey);
 	};
 
 

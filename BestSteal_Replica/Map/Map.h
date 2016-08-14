@@ -2,20 +2,23 @@
 #define MAP_H_
 
 #include <windows.h>
+#include <vector>
 
 #include "AppCommon.h"
-#include "MapChipSetting.h"
-
+#include "MapChip.h"
+#include "MapChipDoor.h"
 
 namespace BestStealReplica {
 class Drawer;
 class IStage;
 
 namespace Map {
+class MapChpDoor;
 
 class Map {
 public:
 	Map(int yChipCount, int xChipCount, Drawer* pDrawer);
+	~Map();
 	void Load(const IStage* pStage);
 	void Draw();
 	void Move(POINT xy);
@@ -23,6 +26,8 @@ public:
 	bool IsOnRoad(Vertices<POINT> xy);
 	bool IsMovableX(int x);
 	bool IsMovableY(int y);
+	void KeepOpeningDoors();
+	bool OpenDoor(Vertices<POINT> playerXY, AppCommon::Direction headingDirection);
 
 private:
 	static const int MAX_Y_CHIP_COUNT = 21;
@@ -34,7 +39,8 @@ private:
 	int xChipCount;
 	Drawer* pDrawer;
 	POINT topLeft;
-	MapChipSetting mapData[MAX_Y_CHIP_COUNT][MAX_X_CHIP_COUNT];
+	MapChip* mapData[MAX_Y_CHIP_COUNT][MAX_X_CHIP_COUNT];
+	std::vector<MapChipDoor*> doorMapChips;
 
 	void SetChipXY();
 	POINT GetMapChipPos(POINT xy);

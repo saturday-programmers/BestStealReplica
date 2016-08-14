@@ -38,8 +38,16 @@ template<typename T> struct Vertices {
 
 class AppCommon {
 public:
+	enum Direction {
+		TOP,
+		RIGHT,
+		BOTTOM,
+		LEFT
+	};
+
 	static const int WINDOW_DEFAULT_HEIGHT = 630;
 	static const int WINDOW_DEFAULT_WIDTH = 1120;
+	static const int FRAME_COUNT_PER_CUT = 10;
 
 	static void SetWindowHeight(int heidht);
 	static void SetWindowWidth(int width);

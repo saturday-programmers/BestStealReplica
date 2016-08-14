@@ -9,13 +9,6 @@ namespace Character {
 
 class CharacterCommon {
 public:
-	enum Direction {
-		TOP,
-		RIGHT,
-		BOTTOM,
-		LEFT
-	};
-
 	static const int HEIGHT = 80;
 	static const int WIDTH = 80;
 
@@ -29,7 +22,6 @@ public:
 private:
 	static const int CHIP_COUNT_PER_ROW = 6;
 	static const int CHIP_COUNT_PER_COL = 6;
-	static const int FRAME_COUNT_PER_CUT = 10;
 };
 
 }

@@ -3,7 +3,7 @@
 
 #include "Enermy.h"
 #include "Drawer.h"
-#include "MapChipSetting.h"
+#include "MapChip.h"
 
 
 namespace BestStealReplica {
@@ -11,7 +11,7 @@ namespace Character {
 
 Enermy::EnermyInfo::EnermyInfo() {}
 
-Enermy::EnermyInfo::EnermyInfo(int chipPosX, int chipPosY, CharacterCommon::Direction defaultDirection, bool hasKey) :
+Enermy::EnermyInfo::EnermyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, bool hasKey) :
 	defaultDirection(defaultDirection),
 	headingDirection(defaultDirection),
 	hasKey(hasKey),
@@ -38,7 +38,7 @@ Enermy::Enermy(const POINT topLeftXY[], EnermyInfo enermiesInfo[], int enermyCou
 	CharacterCommon::SetTuTvs(this->headingBottomChips, Enermy::CHIP_COUNT_PER_DIRECTION, Enermy::ROW_NUM_OF_HEADING_BOTTOM, Enermy::COL_NUM_OF_HEADING_BOTTOM);
 	CharacterCommon::SetTuTvs(this->headingLeftChips, Enermy::CHIP_COUNT_PER_DIRECTION, Enermy::ROW_NUM_OF_HEADING_LEFT, Enermy::COL_NUM_OF_HEADING_LEFT);
 
-	this->exclamationMarkChip = BestStealReplica::Map::MapChipSetting::GetTuTvs(MAP_CHIP_NUMBER_OF_EXCL);
+	this->exclamationMarkChip = BestStealReplica::Map::MapChip::GetTuTvs(MAP_CHIP_NUMBER_OF_EXCL);
 }
 
 void Enermy::Draw() {
@@ -55,20 +55,20 @@ void Enermy::Draw() {
 				// びっくりマーク表示
 				POINT enermyTopLeftXY = this->enermiesInfo[i].topLeftXY;
 				POINT exclXY;
-				if (enermyTopLeftXY.y >= Map::MapChipSetting::HEIGHT) {
+				if (enermyTopLeftXY.y >= Map::MapChip::HEIGHT) {
 					// 上が空いている場合は上に表示
 					exclXY.x = enermyTopLeftXY.x;
-					exclXY.y = enermyTopLeftXY.y - Map::MapChipSetting::HEIGHT;
-				} else if (enermyTopLeftXY.x >= Map::MapChipSetting::WIDTH) {
+					exclXY.y = enermyTopLeftXY.y - Map::MapChip::HEIGHT;
+				} else if (enermyTopLeftXY.x >= Map::MapChip::WIDTH) {
 					// 左が空いている場合は左に表示
-					exclXY.x = enermyTopLeftXY.x - Map::MapChipSetting::WIDTH;
+					exclXY.x = enermyTopLeftXY.x - Map::MapChip::WIDTH;
 					exclXY.y = enermyTopLeftXY.y;
 				} else {
 					// 敵が左上にいる場合は右に表示
-					exclXY.x = enermyTopLeftXY.x + Map::MapChipSetting::WIDTH;
+					exclXY.x = enermyTopLeftXY.x + Map::MapChip::WIDTH;
 					exclXY.y = enermyTopLeftXY.y;
 				}
-				Vertices<DrawingVertex> exclVertex = CharacterCommon::GetVertex(exclXY, &Map::MapChipSetting::GetXY, this->exclamationMarkChip);
+				Vertices<DrawingVertex> exclVertex = CharacterCommon::GetVertex(exclXY, &Map::MapChip::GetXY, this->exclamationMarkChip);
 				this->pDrawer->Draw(exclVertex, Drawer::TextureType::MAP);
 			}
 		}
@@ -121,15 +121,15 @@ void Enermy::ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius, bool isP
 			diff.y = enermyCenter.y - playerCenter.y;
 			if (fabs((double)diff.x) > fabs((double)diff.y)) {
 				if (diff.x > 0) {
-					this->enermiesInfo[i].headingDirection = CharacterCommon::Direction::LEFT;
+					this->enermiesInfo[i].headingDirection = AppCommon::Direction::LEFT;
 				} else {
-					this->enermiesInfo[i].headingDirection = CharacterCommon::Direction::RIGHT;
+					this->enermiesInfo[i].headingDirection = AppCommon::Direction::RIGHT;
 				}
 			} else {
 				if (diff.y > 0) {
-					this->enermiesInfo[i].headingDirection = CharacterCommon::Direction::TOP;
+					this->enermiesInfo[i].headingDirection = AppCommon::Direction::TOP;
 				} else {
-					this->enermiesInfo[i].headingDirection = CharacterCommon::Direction::BOTTOM;
+					this->enermiesInfo[i].headingDirection = AppCommon::Direction::BOTTOM;
 				}
 			}
 		} else {
@@ -197,16 +197,16 @@ Vertices<DrawingVertex> Enermy::GetVertex(int enermyNum) {
 	Vertices<FloatPoint> chip;
 	int animationNum = CharacterCommon::GetAnimationNumber(this->enermiesInfo[enermyNum].currentAnimationCnt);
 	switch (this->enermiesInfo[enermyNum].headingDirection) {
-		case CharacterCommon::Direction::TOP:
+		case AppCommon::Direction::TOP:
 			chip = this->headingTopChips[animationNum];
 			break;
-		case CharacterCommon::Direction::RIGHT:
+		case AppCommon::Direction::RIGHT:
 			chip = this->headingRightChips[animationNum];
 			break;
-		case CharacterCommon::Direction::BOTTOM:
+		case AppCommon::Direction::BOTTOM:
 			chip = this->headingBottomChips[animationNum];
 			break;
-		case CharacterCommon::Direction::LEFT:
+		case AppCommon::Direction::LEFT:
 			chip = this->headingLeftChips[animationNum];
 			break;
 	}

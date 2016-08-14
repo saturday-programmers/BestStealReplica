@@ -189,7 +189,7 @@ static Controller::Key WINAPI ProcessKBInput() {
 	}
 
 	if (KEYDOWN(buffer, DIK_Z)) {
-		ret.keyType = Controller::Key::KeyType::STEAL;
+		ret.keyType = Controller::Key::KeyType::STEAL_OR_OPEN;
 	} else if (KEYDOWN(buffer, DIK_RIGHT)) {
 		ret.keyType = Controller::Key::KeyType::RIGHT;
 	} else if (KEYDOWN(buffer, DIK_LEFT)) {

@@ -1,5 +1,5 @@
-#ifndef MAP_CHIP_SETTING_H_
-#define MAP_CHIP_SETTING_H_
+#ifndef MAP_CHIP_H_
+#define MAP_CHIP_H_
 
 #include <windows.h>
 
@@ -12,27 +12,22 @@ class Drawer;
 
 namespace Map {
 
-class MapChipSetting {
+class MapChip {
 public:
 	static const int HEIGHT = 80;
 	static const int WIDTH = 80;
 
+	static MapChip* Create(MapCommon::MapChipType chipType);
 	static Vertices<FloatPoint> GetTuTvs(int mapChipNumber);
 	static Vertices<POINT> GetXY(POINT topLeftXY);
 
-	MapChipSetting();
-	explicit MapChipSetting(MapCommon::MapChipType chipType);
 	MapCommon::MapChipType GetChipType();
-	void SetChipNumber();
+	virtual void SetChipNumber();
 	POINT GetTopLeftXY();
 	void SetXY(POINT topLeftXY);
-	void SetNeedsTopLine();
-	void SetNeedsRightLine();
-	void SetNeedsBottomLine();
-	void SetNeedsLeftLine();
 	Vertices<DrawingVertex> GetVertex();
 
-private:
+protected:
 	struct ChipNumber {
 		static const int WALL_WITH_TOP_LINE = 21;
 		static const int WALL_WITH_RIGHT_LINE = 23;
@@ -62,11 +57,10 @@ private:
 	int chipNumber;
 	Vertices<DrawingVertex> vertices;
 
-	bool needsTopLine = false;
-	bool needsRightLine = false;
-	bool needsBottomLine = false;
-	bool needsLeftLine = false;
+	explicit MapChip(MapCommon::MapChipType chipType);
+	void SetTuTv();
 };
+
 }
 }
 
