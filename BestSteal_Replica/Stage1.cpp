@@ -35,13 +35,13 @@ MapCommon::MapChipType mapChipTypes[Stage1::Y_CHIP_COUNT][Stage1::X_CHIP_COUNT] 
 };
 
 Enermy::EnermyInfo enermiesInfo[Stage1::ENERMY_COUNT] = {
-	Enermy::EnermyInfo(6, 4, AppCommon::Direction::RIGHT, false),
-	Enermy::EnermyInfo(24, 0, AppCommon::Direction::LEFT, true),
-	Enermy::EnermyInfo(1, 20, AppCommon::Direction::RIGHT, true),
-	Enermy::EnermyInfo(22, 7, AppCommon::Direction::LEFT, false),
-	Enermy::EnermyInfo(3, 16, AppCommon::Direction::BOTTOM, true),
-	Enermy::EnermyInfo(9, 20, AppCommon::Direction::RIGHT, true),
-	Enermy::EnermyInfo(21, 14, AppCommon::Direction::RIGHT, false)
+	Enermy::EnermyInfo(6, 4, AppCommon::Direction::RIGHT, Enermy::KeyType::None),
+	Enermy::EnermyInfo(24, 0, AppCommon::Direction::LEFT, Enermy::KeyType::Silver),
+	Enermy::EnermyInfo(1, 20, AppCommon::Direction::RIGHT, Enermy::KeyType::Silver),
+	Enermy::EnermyInfo(22, 7, AppCommon::Direction::LEFT, Enermy::KeyType::None),
+	Enermy::EnermyInfo(3, 16, AppCommon::Direction::BOTTOM, Enermy::KeyType::Silver),
+	Enermy::EnermyInfo(9, 20, AppCommon::Direction::RIGHT, Enermy::KeyType::Silver),
+	Enermy::EnermyInfo(21, 14, AppCommon::Direction::RIGHT, Enermy::KeyType::Gold)
 };
 
 }

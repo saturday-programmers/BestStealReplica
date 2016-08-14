@@ -44,7 +44,17 @@ void Controller::Control(Key key) {
 
 	// 盗む処理
 	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
-	this->pPlayer->holdingKeyCount += this->pEnermy->GetStolen(playerXY, this->pPlayer->isStealing);
+	Enermy::KeyType keyType = this->pEnermy->GetStolen(playerXY, this->pPlayer->isStealing);
+	switch (keyType) {
+		case Enermy::KeyType::Silver:
+			++this->pPlayer->holdingSilverKeyCount;
+			break;
+		case Enermy::KeyType::Gold:
+			++this->pPlayer->holdingGoldKeyCount;
+			break;
+		default:
+			break;
+	}
 
 	// 敵がプレイヤーを発見したか
 	if (movingPixel == 0) {
@@ -91,25 +101,28 @@ int Controller::ControlPlayer(Key key) {
 			// プレイヤーの目の前のマップチップ取得
 			Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
 			POINT frontMapChipPos = this->pMap->GetFrontMapChipPos(playerXY, this->pPlayer->headingDirection);
-			bool isStartStealing = true;
-			switch (this->pMap->GetMapChipType(frontMapChipPos)) {
+			bool canStartStealing = true;
+			MapCommon::MapChipType mapChipType = this->pMap->GetMapChipType(frontMapChipPos);
+			switch (mapChipType) {
 				case MapCommon::MapChipType::DOOR:
-				case MapCommon::MapChipType::GOLD_DOOR:
+				case MapCommon::MapChipType::GOLD_DOOR: {
+					int* pKeyCount = (mapChipType == MapCommon::MapChipType::DOOR) ? &this->pPlayer->holdingSilverKeyCount : &this->pPlayer->holdingGoldKeyCount;
 					if (!this->pMap->IsDoorOpened(frontMapChipPos)) {
-						if (pPlayer->holdingKeyCount > 0) {
+						if (*pKeyCount > 0) {
 							// ドアを開ける
 							if (this->pMap->StartOpeningDoor(frontMapChipPos)) {
-								--this->pPlayer->holdingKeyCount;
+								--(*pKeyCount);
 							}
 						}
-						isStartStealing = false;
+						canStartStealing = false;
 					}
 					break;
+				}
 				default:
 					break;
 			}
 
-			if (isStartStealing) {
+			if (canStartStealing) {
 				// 目の前が開いていないドアでない場合は盗むアクション
 				this->pPlayer->StartStealing();
 			}

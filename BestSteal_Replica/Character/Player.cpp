@@ -14,7 +14,8 @@ Player::Player(POINT topLeftXY, Drawer* pDrawer):
 	isStealing(false),
 	currentKeepingStealingNum(0),
 	isDirectionChanged(false),
-	holdingKeyCount(0)
+	holdingSilverKeyCount(0),
+	holdingGoldKeyCount(0)
 {
 	CharacterCommon::SetTuTvs(this->headingTopChips, Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_TOP, Player::COL_NUM_OF_HEADING_TOP);
 	CharacterCommon::SetTuTvs(this->headingRightChips, Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_RIGHT, Player::COL_NUM_OF_HEADING_RIGHT);

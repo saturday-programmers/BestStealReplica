@@ -17,7 +17,8 @@ public:
 
 	bool isStealing;
 	AppCommon::Direction headingDirection;
-	int holdingKeyCount;
+	int holdingSilverKeyCount;
+	int holdingGoldKeyCount;
 
 	Player(POINT topLeftXY, Drawer* pDrawer);
 	void Draw();

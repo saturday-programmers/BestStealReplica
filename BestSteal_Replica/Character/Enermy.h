@@ -20,19 +20,25 @@ public:
 		GOT_STOLEN
 	};
 
+	enum KeyType {
+		None,
+		Silver,
+		Gold
+	};
+
 	struct EnermyInfo {
 		POINT chipPos;
 		POINT topLeftXY;
 		AppCommon::Direction defaultDirection;
 		AppCommon::Direction headingDirection;
-		bool hasKey;
+		Enermy::KeyType holdingKey;
 		State state;
 		int currentAnimationCnt;
 		int restTimeForCancelFinding;
 		int restTimeForBackingToNormal;
 
 		EnermyInfo();
-		EnermyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, bool hasKey);
+		EnermyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, KeyType holdingKey);
 	};
 
 
@@ -44,7 +50,7 @@ public:
 	void Move(POINT xy);
 	Vertices<POINT> GetEnermyXY(int enermyNum);
 	void ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius, bool isPlayerWalking);
-	int GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing);
+	KeyType GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing);
 
 private:
 	static const int CHIP_COUNT_PER_DIRECTION = 3;
