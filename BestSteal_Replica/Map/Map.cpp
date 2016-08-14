@@ -198,9 +198,7 @@ void Map::KeepOpeningDoors() {
 	}
 }
 
-bool Map::OpenDoor(Vertices<POINT> playerXY, AppCommon::Direction headingDirection) {
-	bool ret = false;
-
+POINT Map::GetFrontMapChipPos(Vertices<POINT> playerXY, AppCommon::Direction headingDirection) {
 	// プレイヤーの目の前のマップチップ取得
 	POINT centerXY;
 	centerXY.x = (playerXY.bottomRight.x + playerXY.topLeft.x) / 2;
@@ -230,18 +228,19 @@ bool Map::OpenDoor(Vertices<POINT> playerXY, AppCommon::Direction headingDirecti
 			break;
 	}
 
-	// ドアを開ける
-	switch (this->mapData[chipPos.y][chipPos.x]->GetChipType()) {
+	return chipPos;
+}
+
+bool Map::StartOpeningDoor(POINT mapChipPos) {
+	bool ret = false;
+	switch (this->mapData[mapChipPos.y][mapChipPos.x]->GetChipType()) {
 		case MapCommon::MapChipType::DOOR:
 		case MapCommon::MapChipType::GOLD_DOOR:
 		{
-			MapChipDoor* pMapChipDoor = (MapChipDoor*)this->mapData[chipPos.y][chipPos.x];
+			MapChipDoor* pMapChipDoor = (MapChipDoor*)this->mapData[mapChipPos.y][mapChipPos.x];
 			switch (pMapChipDoor->state) {
 				case MapChipDoor::State::CLOSED:
 					pMapChipDoor->StartOpeningDoor();
-					ret = true;
-					break;
-				case MapChipDoor::State::OPENING:
 					ret = true;
 					break;
 				default:
@@ -255,6 +254,23 @@ bool Map::OpenDoor(Vertices<POINT> playerXY, AppCommon::Direction headingDirecti
 	return ret;
 }
 
+MapCommon::MapChipType Map::GetMapChipType(POINT mapChipPos) {
+	return this->mapData[mapChipPos.y][mapChipPos.x]->GetChipType();
+}
+
+bool Map::IsDoorOpened(POINT mapChipPos) {
+	bool ret = false;
+	MapChip* pChip = this->mapData[mapChipPos.y][mapChipPos.x];
+	switch (pChip->GetChipType()) {
+		case MapCommon::MapChipType::DOOR:
+		case MapCommon::MapChipType::GOLD_DOOR:
+			ret = ((MapChipDoor*)pChip)->state == MapChipDoor::State::OPENED;
+			break;
+		default:
+			break;
+	}
+	return ret;
+}
 
 
 void Map::SetChipXY() {

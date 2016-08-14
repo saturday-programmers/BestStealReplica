@@ -27,7 +27,10 @@ public:
 	bool IsMovableX(int x);
 	bool IsMovableY(int y);
 	void KeepOpeningDoors();
-	bool OpenDoor(Vertices<POINT> playerXY, AppCommon::Direction headingDirection);
+	POINT GetFrontMapChipPos(Vertices<POINT> playerXY, AppCommon::Direction headingDirection);
+	bool StartOpeningDoor(POINT mapChipPos);
+	MapCommon::MapChipType GetMapChipType(POINT mapChipPos);
+	bool IsDoorOpened(POINT mapChipPos);
 
 private:
 	static const int MAX_Y_CHIP_COUNT = 21;

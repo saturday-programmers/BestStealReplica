@@ -87,16 +87,33 @@ int Controller::ControlPlayer(Key key) {
 	int movingPixel;
 
 	if (key.keyType == Key::KeyType::STEAL_OR_OPEN) {
-		// ドアを開ける
-		bool isOpeningDoor = false;
 		if (!this->pPlayer->isStealing) {
+			// プレイヤーの目の前のマップチップ取得
 			Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
-			isOpeningDoor = this->pMap->OpenDoor(playerXY, this->pPlayer->headingDirection);
-		}
+			POINT frontMapChipPos = this->pMap->GetFrontMapChipPos(playerXY, this->pPlayer->headingDirection);
+			bool isStartStealing = true;
+			switch (this->pMap->GetMapChipType(frontMapChipPos)) {
+				case MapCommon::MapChipType::DOOR:
+				case MapCommon::MapChipType::GOLD_DOOR:
+					if (!this->pMap->IsDoorOpened(frontMapChipPos)) {
+						if (pPlayer->holdingKeyCount > 0) {
+							// ドアを開ける
+							if (this->pMap->StartOpeningDoor(frontMapChipPos)) {
+								--this->pPlayer->holdingKeyCount;
+							}
+						}
+						isStartStealing = false;
+					}
+					break;
+				default:
+					break;
+			}
 
-		// 目の前にドアがない場合は盗むアクション
-		if (!isOpeningDoor) {
-			this->pPlayer->StartStealing();
+			if (isStartStealing) {
+				// 目の前が開いていないドアでない場合は盗むアクション
+				this->pPlayer->StartStealing();
+			}
+
 		}
 	}
 
