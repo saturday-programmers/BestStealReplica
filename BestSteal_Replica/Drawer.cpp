@@ -15,7 +15,7 @@ struct CUSTOMVERTEX {
 };
 }
 
-
+/* Constructor / Destructor ------------------------------------------------------------------------- */
 Drawer::Drawer(HWND hWnd, IDirect3D9* pDirect3D, D3DPRESENT_PARAMETERS* d3dpp) {
 	pDirect3D->CreateDevice(
 		D3DADAPTER_DEFAULT,
@@ -26,6 +26,8 @@ Drawer::Drawer(HWND hWnd, IDirect3D9* pDirect3D, D3DPRESENT_PARAMETERS* d3dpp) {
 		&this->pD3Device);
 }
 
+
+/* Public Functions  -------------------------------------------------------------------------------- */
 bool Drawer::CreateTexture(const char* filePath, const TextureType textureType) {
 	if (FAILED(D3DXCreateTextureFromFileEx(
 		this->pD3Device,
@@ -71,7 +73,6 @@ void Drawer::BeginDraw() {
 	//描画の開始
 	this->pD3Device->BeginScene();
 
-
 	// 頂点フォーマットの設定
 	this->pD3Device->SetFVF(D3DFVF_CUSTOMVERTEX);
 }
@@ -82,6 +83,12 @@ void Drawer::Draw(Vertices<DrawingVertex> vertices, TextureType textureType) con
 
 void Drawer::Draw(Vertices<DrawingVertex> vertices, TextureType textureType, UINT16 alpha) const {
 	Draw(vertices, this->pTexture[textureType], alpha);
+}
+
+void Drawer::Blackout() {
+	this->pD3Device->BeginScene();
+	this->pD3Device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0x00, 0x00, 0x00), 1.0, 0);
+	EndDraw();
 }
 
 void Drawer::EndDraw() {
@@ -99,6 +106,7 @@ void Drawer::Release() {
 }
 
 
+/* Private Functions  ------------------------------------------------------------------------------- */
 void Drawer::Draw(Vertices<DrawingVertex> vertices, LPDIRECT3DTEXTURE9 pTexture, UINT16 alpha) const {
 	CUSTOMVERTEX customVertex[4];
 

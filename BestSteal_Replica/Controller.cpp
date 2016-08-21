@@ -12,10 +12,23 @@ using namespace BestStealReplica::Character;
 
 namespace BestStealReplica {
 
+/* Constructor / Destructor ------------------------------------------------------------------------- */
 Controller::Controller(Drawer* pDrawer) :
 	pDrawer(pDrawer)
 {}
 
+
+/* Getters / Setters -------------------------------------------------------------------------------- */
+Controller::State Controller::GetState() {
+	return this->state;
+}
+
+void Controller::SetState(Controller::State state) {
+	this->state = state;
+}
+
+
+/* Public Functions  -------------------------------------------------------------------------------- */
 void Controller::LoadStage(const IStage* pStage) {
 	// マップ情報
 	this->pStage = new Stage1();
@@ -33,38 +46,25 @@ void Controller::LoadStage(const IStage* pStage) {
 		enermiesXY[i] = this->pMap->GetTopLeftXYonChip(this->pStage->GetEnermyChipPos(i));
 	}
 	this->pEnermy = new Enermy(enermiesXY, this->pStage->GetEnermiesInfo(), this->pStage->GetEnermyCount(), this->pDrawer);
+
+	this->state = Controller::State::DrawingMap;
 }
 
 void Controller::Control(Key key) {
+
+	// プレイヤー死亡
+	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
+	if (this->pEnermy->CanKillPlayer(playerXY)) {
+		RevertStage();
+		this->state = Controller::State::Blackout;
+		return;
+	}
+
 	// プレイヤーアニメーション
 	int movingPixel = ControlPlayer(key);
 
 	// 敵アニメージョン
-	this->pEnermy->Stay();
-
-	// 盗む処理
-	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
-	Enermy::KeyType keyType = this->pEnermy->GetStolen(playerXY, this->pPlayer->isStealing);
-	switch (keyType) {
-		case Enermy::KeyType::Silver:
-			++this->pPlayer->holdingSilverKeyCount;
-			break;
-		case Enermy::KeyType::Gold:
-			++this->pPlayer->holdingGoldKeyCount;
-			break;
-		default:
-			break;
-	}
-
-	// 敵がプレイヤーを発見したか
-	if (movingPixel == 0) {
-		// 移動していない場合は走る/歩くの状態は前回の状態を引き継ぐ
-		key.isWalking = lastTimeKey.isWalking;
-	}
-	if (this->pPlayer->isStealing) {
-		key.isWalking = true;
-	}
-	this->pEnermy->ScoutPlayer(playerXY, this->pStage->GetEnermySearchableRadius(), key.isWalking);
+	ControlEnermy(movingPixel, &key);
 
 	// ドアを開けるアニメーション
 	this->pMap->KeepOpeningDoors();
@@ -93,14 +93,15 @@ void Controller::Release() {
 }
 
 
+/* Private Functions  ------------------------------------------------------------------------------- */
 int Controller::ControlPlayer(Key key) {
 	int movingPixel;
 
 	if (key.keyType == Key::KeyType::STEAL_OR_OPEN) {
-		if (!this->pPlayer->isStealing) {
+		if (!this->pPlayer->GetIsStealing()) {
 			// プレイヤーの目の前のマップチップ取得
 			Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
-			POINT frontMapChipPos = this->pMap->GetFrontMapChipPos(playerXY, this->pPlayer->headingDirection);
+			POINT frontMapChipPos = this->pMap->GetFrontMapChipPos(playerXY, this->pPlayer->GetHeadingDirection());
 			bool canStartStealing = true;
 			MapCommon::MapChipType mapChipType = this->pMap->GetMapChipType(frontMapChipPos);
 			switch (mapChipType) {
@@ -123,7 +124,7 @@ int Controller::ControlPlayer(Key key) {
 			}
 
 			if (canStartStealing) {
-				// 目の前が開いていないドアでない場合は盗むアクション
+				// 目の前が開いていないドア以外の場合は盗むアクション
 				this->pPlayer->StartStealing();
 			}
 
@@ -131,7 +132,7 @@ int Controller::ControlPlayer(Key key) {
 	}
 
 	// 盗むアクション継続
-	if (pPlayer->isStealing) {
+	if (pPlayer->GetIsStealing()) {
 		this->pPlayer->KeepStealing();
 	}
 
@@ -154,7 +155,7 @@ int Controller::ControlPlayer(Key key) {
 	}
 
 	// プレイヤー移動距離
-	if (this->pPlayer->isStealing) {
+	if (this->pPlayer->GetIsStealing()) {
 		movingPixel = Player::MOVING_PIXEL_ON_STEALING;
 	} else if (key.keyType == Key::KeyType::NONE || key.keyType == Key::KeyType::STEAL_OR_OPEN) {
 		movingPixel = 0;
@@ -164,7 +165,7 @@ int Controller::ControlPlayer(Key key) {
 	POINT movingPoint;
 	movingPoint.x = 0;
 	movingPoint.y = 0;
-	switch (pPlayer->headingDirection) {
+	switch (pPlayer->GetHeadingDirection()) {
 		case AppCommon::Direction::RIGHT:
 			movingPoint.x = movingPixel;
 			break;
@@ -180,7 +181,7 @@ int Controller::ControlPlayer(Key key) {
 	}
 
 	// プレイヤーアニメーション
-	if (!this->pPlayer->isStealing) {
+	if (!this->pPlayer->GetIsStealing()) {
 		if (movingPixel > 0) {
 			this->pPlayer->Walk(movingPoint);
 		} else {
@@ -200,6 +201,67 @@ int Controller::ControlPlayer(Key key) {
 	}
 
 	return movingPixel;
+}
+
+void Controller::ControlEnermy(int playerMovingPixel, Key* pKey) {
+	this->pEnermy->Stay();
+
+	// 盗む処理
+	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
+	Enermy::KeyType keyType = this->pEnermy->GetStolen(playerXY, this->pPlayer->GetIsStealing());
+	switch (keyType) {
+		case Enermy::KeyType::Silver:
+			++this->pPlayer->holdingSilverKeyCount;
+			break;
+		case Enermy::KeyType::Gold:
+			++this->pPlayer->holdingGoldKeyCount;
+			break;
+		default:
+			break;
+	}
+
+	// 敵がプレイヤーを発見したか
+	if (playerMovingPixel == 0) {
+		// 移動していない場合は走る/歩くの状態は前回の状態を引き継ぐ
+		pKey->isWalking = lastTimeKey.isWalking;
+	}
+	if (this->pPlayer->GetIsStealing()) {
+		pKey->isWalking = true;
+	}
+	this->pEnermy->ScoutPlayer(playerXY, this->pStage->GetEnermySearchableRadius(), pKey->isWalking);
+
+	// 突進可能か
+	for (int i = 0; i < this->pStage->GetEnermyCount(); ++i) {
+		// プレイヤーとの距離チェック
+		Vertices<POINT> enermyXY = this->pEnermy->GetEnermyXY(i);
+		int biggerPos;
+		int smallerPos;
+		switch (this->pEnermy->GetHeadingDirection(i)) {
+			case AppCommon::Direction::TOP:
+				biggerPos = enermyXY.topLeft.y;
+				smallerPos = playerXY.topLeft.y;
+				break;
+			case AppCommon::Direction::RIGHT:
+				smallerPos = enermyXY.bottomRight.x;
+				biggerPos = playerXY.bottomRight.x;
+				break;
+			case AppCommon::Direction::BOTTOM:
+				smallerPos = enermyXY.bottomRight.y;
+				biggerPos = playerXY.bottomRight.y;
+				break;
+			case AppCommon::Direction::LEFT:
+				biggerPos = enermyXY.topLeft.x;
+				smallerPos = playerXY.topLeft.x;
+				break;
+		}
+		bool canSeePlayer = ((biggerPos >= smallerPos) && (biggerPos - smallerPos <= this->pStage->GetEnermySearchableRadius()));
+
+		// プレイヤーとの間に壁があるか
+		canSeePlayer = canSeePlayer && !this->pMap->ExistsWallBetween(CharacterCommon::CalcCenter(enermyXY), CharacterCommon::CalcCenter(playerXY));
+
+		// 突進
+		this->pEnermy->Attack(i, canSeePlayer);
+	}
 }
 
 void Controller::MoveMap(int playerMovingPixel) {
@@ -233,5 +295,12 @@ void Controller::MoveMap(int playerMovingPixel) {
 		this->pEnermy->Move(mapMovingPoint);
 	}
 }
+
+void Controller::RevertStage() {
+	this->pMap->MoveToDefault();
+	this->pPlayer->GetKilled();
+	this->pEnermy->BackToDefaultPosition();
+}
+
 
 }

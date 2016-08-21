@@ -9,6 +9,7 @@
 namespace BestStealReplica {
 namespace Character {
 
+/* Structs ------------------------------------------------------------------------------------------ */
 Enermy::EnermyInfo::EnermyInfo() {}
 
 Enermy::EnermyInfo::EnermyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, Enermy::KeyType holdingKey) :
@@ -24,6 +25,7 @@ Enermy::EnermyInfo::EnermyInfo(int chipPosX, int chipPosY, AppCommon::Direction 
 	this->chipPos.y = chipPosY;
 }
 
+/* Constructor / Destructor ------------------------------------------------------------------------- */
 Enermy::Enermy(const POINT topLeftXY[], EnermyInfo enermiesInfo[], int enermyCount, Drawer* pDrawer) : 
 	enermyCount(enermyCount),
 	pDrawer(pDrawer)
@@ -31,6 +33,7 @@ Enermy::Enermy(const POINT topLeftXY[], EnermyInfo enermiesInfo[], int enermyCou
 	for (int i = 0; i < enermyCount; ++i) {
 		this->enermiesInfo[i] = enermiesInfo[i];
 		this->enermiesInfo[i].topLeftXY = topLeftXY[i];
+		this->enermiesInfo[i].defaultTopLeftXY = topLeftXY[i];
 	}
 
 	CharacterCommon::SetTuTvs(this->headingTopChips, Enermy::CHIP_COUNT_PER_DIRECTION, Enermy::ROW_NUM_OF_HEADING_TOP, Enermy::COL_NUM_OF_HEADING_TOP);
@@ -41,6 +44,25 @@ Enermy::Enermy(const POINT topLeftXY[], EnermyInfo enermiesInfo[], int enermyCou
 	this->exclamationMarkChip = BestStealReplica::Map::MapChip::GetTuTvs(MAP_CHIP_NUMBER_OF_EXCL);
 }
 
+
+/* Getters / Setters -------------------------------------------------------------------------------- */
+Vertices<POINT> Enermy::GetEnermyXY(int enermyNum) {
+	Vertices<POINT> ret = CharacterCommon::GetChipXY(this->enermiesInfo[enermyNum].topLeftXY);
+	int xDiff = (CharacterCommon::WIDTH - Enermy::ENERMY_WIDTH) / 2;
+	int yDiff = (CharacterCommon::HEIGHT - Enermy::ENERMY_HEIGHT) / 2;
+	ret.topLeft.x += xDiff;
+	ret.topLeft.y += yDiff;
+	ret.bottomRight.x -= xDiff;
+	ret.bottomRight.y -= yDiff;
+	return ret;
+}
+
+AppCommon::Direction Enermy::GetHeadingDirection(int enermyNum) {
+	return this->enermiesInfo[enermyNum].headingDirection;
+}
+
+
+/* Public Functions  -------------------------------------------------------------------------------- */
 void Enermy::Draw() {
 	for (int i = 0; i < this->enermyCount; ++i) {
 		if (this->enermiesInfo[i].state == State::GOT_STOLEN) {
@@ -51,7 +73,7 @@ void Enermy::Draw() {
 		} else {
 			this->pDrawer->Draw(GetVertex(i), Drawer::TextureType::CHARACTER);
 
-			if (this->enermiesInfo[i].state == State::FOUND_PLAYER) {
+			if (this->enermiesInfo[i].state == State::FOUND_PLAYER || this->enermiesInfo[i].state == State::ATTACKING) {
 				// びっくりマーク表示
 				POINT enermyTopLeftXY = this->enermiesInfo[i].topLeftXY;
 				POINT exclXY;
@@ -88,27 +110,11 @@ void Enermy::Move(POINT xy) {
 	}
 }
 
-Vertices<POINT> Enermy::GetEnermyXY(int enermyNum) {
-	Vertices<POINT> ret = CharacterCommon::GetChipXY(this->enermiesInfo[enermyNum].topLeftXY);
-	int xDiff = (CharacterCommon::WIDTH - Enermy::ENERMY_WIDTH) / 2;
-	int yDiff = (CharacterCommon::HEIGHT - Enermy::ENERMY_HEIGHT) / 2;
-	ret.topLeft.x += xDiff;
-	ret.topLeft.y += yDiff;
-	ret.bottomRight.x -= xDiff;
-	ret.bottomRight.y -= yDiff;
-	return ret;
-}
-
 void Enermy::ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius, bool isPlayerWalking) {
-	POINT playerCenter;
-	playerCenter.x = playerXY.topLeft.x + (playerXY.bottomRight.x - playerXY.topLeft.x) / 2;
-	playerCenter.y = playerXY.topLeft.y + (playerXY.bottomRight.y - playerXY.topLeft.y) / 2;
+	POINT playerCenter = CharacterCommon::CalcCenter(playerXY);
 
 	for (int i = 0; i < this->enermyCount; ++i) {
-		Vertices<POINT> enermyXY = GetEnermyXY(i);
-		POINT enermyCenter;
-		enermyCenter.x = enermyXY.topLeft.x + (enermyXY.bottomRight.x - enermyXY.topLeft.x) / 2;
-		enermyCenter.y = enermyXY.topLeft.y + (enermyXY.bottomRight.y - enermyXY.topLeft.y) / 2;
+		POINT enermyCenter = CharacterCommon::CalcCenter(GetEnermyXY(i));
 		double distance = sqrt(pow(playerCenter.x - enermyCenter.x, 2.0) + pow(playerCenter.y - enermyCenter.y, 2.0));
 
 		if (distance <= scoutableRadius && !isPlayerWalking) {
@@ -189,7 +195,66 @@ Enermy::KeyType Enermy::GetStolen(Vertices<POINT> playerXY, bool isPlayerStealin
 	return ret;
 }
 
+void Enermy::Attack(int enermyNum, bool canSeePlayer) {
+	EnermyInfo* pEnermyInfo = &(this->enermiesInfo[enermyNum]);
+	if (pEnermyInfo->state == Enermy::State::GOT_STOLEN) {
+		// 盗まれ中の場合は動かない
+		return;
+	}
 
+	// ステート変更
+	if (canSeePlayer) {
+		pEnermyInfo->state = Enermy::State::ATTACKING;
+	} else if (pEnermyInfo->state == Enermy::State::ATTACKING) {
+		pEnermyInfo->state = Enermy::State::NORMAL;
+	}
+
+	// 突進
+	if (pEnermyInfo->state == Enermy::State::ATTACKING) {
+		switch (pEnermyInfo->headingDirection) {
+			case AppCommon::Direction::TOP:
+				pEnermyInfo->topLeftXY.y -= Enermy::MOVING_PIXEL_ON_ATTACKING;
+				break;
+			case AppCommon::Direction::RIGHT:
+				pEnermyInfo->topLeftXY.x += Enermy::MOVING_PIXEL_ON_ATTACKING;
+				break;
+			case AppCommon::Direction::BOTTOM:
+				pEnermyInfo->topLeftXY.y += Enermy::MOVING_PIXEL_ON_ATTACKING;
+				break;
+			case AppCommon::Direction::LEFT:
+				pEnermyInfo->topLeftXY.x -= Enermy::MOVING_PIXEL_ON_ATTACKING;
+				break;
+		}
+	}
+}
+
+bool Enermy::CanKillPlayer(Vertices<POINT> playerXY) {
+	bool ret = false;
+	for (int i = 0; i < this->enermyCount; i++) {
+		if (this->enermiesInfo[i].state == Enermy::State::GOT_STOLEN) {
+			continue;
+		}
+
+		Vertices<POINT> enermyXY = GetEnermyXY(i);
+		if (enermyXY.topLeft.x <= playerXY.bottomRight.x && playerXY.topLeft.x <= enermyXY.bottomRight.x
+				&& enermyXY.topLeft.y <= playerXY.bottomRight.y && playerXY.topLeft.y <= enermyXY.bottomRight.y) {
+			ret = true;
+			break;
+		}
+	}
+	return ret;
+}
+
+void Enermy:: BackToDefaultPosition() {
+	for (int i = 0; i < this->enermyCount; i++) {
+		this->enermiesInfo[i].topLeftXY = this->enermiesInfo[i].defaultTopLeftXY;
+		this->enermiesInfo[i].headingDirection = this->enermiesInfo[i].defaultDirection;
+		this->enermiesInfo[i].state = Enermy::State::NORMAL;
+	}
+}
+
+
+/* Private Functions  ------------------------------------------------------------------------------- */
 Vertices<DrawingVertex> Enermy::GetVertex(int enermyNum) {
 	Vertices<DrawingVertex> ret;
 

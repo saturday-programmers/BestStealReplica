@@ -17,11 +17,15 @@ class MapChpDoor;
 
 class Map {
 public:
+	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	Map(int yChipCount, int xChipCount, Drawer* pDrawer);
 	~Map();
+
+	/* Functions ---------------------------------------------------------------------------------------- */
 	void Load(const IStage* pStage);
 	void Draw();
 	void Move(POINT xy);
+	void MoveToDefault();
 	POINT GetTopLeftXYonChip(POINT mapChipPos);
 	bool IsOnRoad(Vertices<POINT> xy);
 	bool IsMovableX(int x);
@@ -31,20 +35,25 @@ public:
 	bool StartOpeningDoor(POINT mapChipPos);
 	MapCommon::MapChipType GetMapChipType(POINT mapChipPos);
 	bool IsDoorOpened(POINT mapChipPos);
+	bool ExistsWallBetween(POINT xy1, POINT xy2);
 
 private:
+	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int MAX_Y_CHIP_COUNT = 21;
 	static const int MAX_X_CHIP_COUNT = 30;
 
 	const char* FILE_PATH;
 
+	/* Variables ---------------------------------------------------------------------------------------- */
 	int yChipCount;
 	int xChipCount;
 	Drawer* pDrawer;
+	POINT defaultTopLeft;
 	POINT topLeft;
 	MapChip* mapData[MAX_Y_CHIP_COUNT][MAX_X_CHIP_COUNT];
 	std::vector<MapChipDoor*> doorMapChips;
 
+	/* Functions ---------------------------------------------------------------------------------------- */
 	void SetChipXY();
 	POINT GetMapChipPos(POINT xy);
 	bool IsOnRoad(POINT mapChipPos);

@@ -9,6 +9,7 @@
 namespace BestStealReplica {
 namespace Map {
 
+/* Constructor / Destructor ------------------------------------------------------------------------- */
 Map::Map(int yChipCount, int xChipCount, Drawer* pDrawer) :
 	FILE_PATH("image\\mapchip.png"),
 	pDrawer(pDrawer),
@@ -28,6 +29,8 @@ Map::~Map() {
 	}
 }
 
+
+/* Public Functions  -------------------------------------------------------------------------------- */
 void Map::Load(const IStage* pStage) {
 	for (int i = 0; i < this->yChipCount; ++i) {
 		for (int j = 0; j < this->xChipCount; ++j) {
@@ -70,6 +73,7 @@ void Map::Load(const IStage* pStage) {
 	if (this->topLeft.y < minTopLeft.y) {
 		this->topLeft.y = minTopLeft.y;
 	}
+	this->defaultTopLeft = this->topLeft;
 
 	for (int i = 0; i < this->yChipCount; ++i) {
 		for (int j = 0; j < this->xChipCount; ++j) {
@@ -125,6 +129,11 @@ void Map::Draw() {
 void Map::Move(POINT xy) {
 	this->topLeft.x += xy.x;
 	this->topLeft.y += xy.y;
+	SetChipXY();
+}
+
+void Map::MoveToDefault() {
+	this->topLeft = this->defaultTopLeft;
 	SetChipXY();
 }
 
@@ -272,7 +281,55 @@ bool Map::IsDoorOpened(POINT mapChipPos) {
 	return ret;
 }
 
+bool Map::ExistsWallBetween(POINT xy1, POINT xy2) {
+	bool ret = false;
+	POINT p1 = GetMapChipPos(xy1);
+	POINT p2 = GetMapChipPos(xy2);
 
+	if (p1.x != p2.x && p1.y != p2.y) {
+		return true;
+	}
+
+	POINT checkPos = p1;
+	while (p1.x == p2.x ? checkPos.y != p2.y : checkPos.x != p2.x) {
+		switch (this->mapData[checkPos.y][checkPos.x]->GetChipType()) {
+			case MapCommon::MapChipType::WALL:
+			case MapCommon::MapChipType::WALL_SIDE:
+			case MapCommon::MapChipType::JEWELRY:
+				ret = true;
+				break;
+			case MapCommon::MapChipType::DOOR:
+			case MapCommon::MapChipType::GOLD_DOOR:
+				if (!IsDoorOpened(checkPos)) {
+					ret = true;
+				}
+				break;
+			default:
+				break;
+		}
+		if (ret) {
+			break;
+		}
+
+		if (p1.x == p2.x) {
+			if (p1.y < p2.y) {
+				++checkPos.y;
+			} else {
+				--checkPos.y;
+			}
+		} else {
+			if (p1.x < p2.x) {
+				++checkPos.x;
+			} else {
+				--checkPos.x;
+			}
+		}
+	}
+	return ret;
+}
+
+
+/* Private Functions  ------------------------------------------------------------------------------- */
 void Map::SetChipXY() {
 	POINT point;
 	for (int i = 0; i < this->yChipCount; ++i) {

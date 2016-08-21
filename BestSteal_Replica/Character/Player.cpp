@@ -5,15 +5,11 @@
 namespace BestStealReplica {
 namespace Character {
 
+/* Constructor / Destructor ------------------------------------------------------------------------- */
 Player::Player(POINT topLeftXY, Drawer* pDrawer):
 	FILE_PATH("image\\character.png"),
 	pDrawer(pDrawer),
-	currentAnimationCnt(0),
-	headingDirection(AppCommon::Direction::BOTTOM),
-	topLeftXY(topLeftXY),
-	isStealing(false),
-	currentKeepingStealingNum(0),
-	isDirectionChanged(false),
+	defaultTopLeftXY(topLeftXY),
 	holdingSilverKeyCount(0),
 	holdingGoldKeyCount(0)
 {
@@ -28,8 +24,21 @@ Player::Player(POINT topLeftXY, Drawer* pDrawer):
 	this->StealingLeftChip = CharacterCommon::GetTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_LEFT);
 
 	pDrawer->CreateTexture(this->FILE_PATH, Drawer::TextureType::CHARACTER);
+	SetDefaultProperty();
 }
 
+
+/* Getters / Setters -------------------------------------------------------------------------------- */
+bool Player::GetIsStealing() {
+	return this->isStealing;
+}
+
+AppCommon::Direction Player::GetHeadingDirection() {
+	return this->headingDirection;
+}
+
+
+/* Public Functions  -------------------------------------------------------------------------------- */
 void Player::Draw() {
 	if (isStealing) {
 		for (int i = this->currentKeepingStealingNum; i > 0; --i) {
@@ -61,7 +70,6 @@ void Player::Walk(POINT movingPoint) {
 		CharacterCommon::CountUpAnimationCnt(&this->currentAnimationCnt, Player::CHIP_COUNT_PER_DIRECTION);
 	}
 }
-
 
 void Player::Stay() {
 	this->isStealing = false;
@@ -132,6 +140,20 @@ Vertices<POINT> Player::GetPlayerXY() {
 	return ret;
 }
 
+void Player::GetKilled() {
+	SetDefaultProperty();
+}
+
+
+/* Private Functions  ------------------------------------------------------------------------------- */
+void Player::SetDefaultProperty() {
+	this->currentAnimationCnt = 0;
+	this->headingDirection = AppCommon::Direction::BOTTOM;
+	this->topLeftXY = defaultTopLeftXY;
+	this->isStealing = false;
+	this->currentKeepingStealingNum = 0;
+	this->isDirectionChanged = false;
+}
 
 Vertices<DrawingVertex> Player::GetVertex() {
 	Vertices<DrawingVertex> ret;

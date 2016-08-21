@@ -122,6 +122,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 	timeBeginPeriod(1);
 
 	ZeroMemory(&msg, sizeof(msg));
+	int blackoutFrameCount = 0;
 	while (msg.message != WM_QUIT) {
 		Sleep(1);
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -130,10 +131,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 		} else {
 			SyncNow = timeGetTime();
 			if (SyncNow - SyncOld >= 1000 / 60) {
-				Controller::Key key = ProcessKBInput();
-				controller.Control(key);
-				controller.Draw();
-
+				switch (controller.GetState()) {
+					case Controller::State::DrawingMap:
+					{
+						Controller::Key key = ProcessKBInput();
+						controller.Control(key);
+						if (controller.GetState() == Controller::State::DrawingMap) {
+							controller.Draw();
+						}
+						break;
+					}
+					case Controller::State::Blackout:
+						drawer.Blackout();
+						++blackoutFrameCount;
+						if (blackoutFrameCount > 15) {
+							controller.SetState(Controller::State::DrawingMap);
+							blackoutFrameCount = 0;
+						}
+						break;
+				}
+	
 				SyncOld = SyncNow;
 			}
 		}

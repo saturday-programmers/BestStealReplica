@@ -13,14 +13,21 @@ namespace Character {
 
 class Player {
 public:
+	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int MOVING_PIXEL_ON_STEALING = 50;
 
-	bool isStealing;
-	AppCommon::Direction headingDirection;
+	/* Constructor / Destructor ------------------------------------------------------------------------- */
+	Player(POINT topLeftXY, Drawer* pDrawer);
+
+	/* Getters / Setters -------------------------------------------------------------------------------- */
+	bool GetIsStealing();
+	AppCommon::Direction GetHeadingDirection();
+
+	/* Variables ---------------------------------------------------------------------------------------- */
 	int holdingSilverKeyCount;
 	int holdingGoldKeyCount;
 
-	Player(POINT topLeftXY, Drawer* pDrawer);
+	/* Functions ---------------------------------------------------------------------------------------- */
 	void Draw();
 	void SetDirection(AppCommon::Direction direction);
 	void Walk(POINT movingPoint);
@@ -33,8 +40,10 @@ public:
 	bool IsStayingNearlyWindowBottom();
 	bool IsStayingNearlyWindowLeft();
 	Vertices<POINT> GetPlayerXY();
+	void GetKilled();
 
 private:
+	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int CHIP_COUNT_PER_DIRECTION = 3;
 	static const int PLAYER_HEIGHT = 60;
 	static const int PLAYER_WIDTH = 50;
@@ -55,16 +64,19 @@ private:
 	static const int COL_NUM_OF_STEALING_TOP = 2;
 	static const int COL_NUM_OF_STEALING_RIGHT = 3;
 
-
 	static const int MAP_BUFFER = CharacterCommon::WIDTH;
 
 	const char* FILE_PATH;
 
+	/* Variables ---------------------------------------------------------------------------------------- */
 	Drawer* pDrawer;
 	int currentAnimationCnt;
 	POINT topLeftXY;
+	POINT defaultTopLeftXY;
 	int currentKeepingStealingNum;
 	bool isDirectionChanged;
+	bool isStealing;
+	AppCommon::Direction headingDirection;
 
 	Vertices<FloatPoint> headingBottomChips[Player::CHIP_COUNT_PER_DIRECTION];
 	Vertices<FloatPoint> headingTopChips[Player::CHIP_COUNT_PER_DIRECTION];
@@ -75,6 +87,8 @@ private:
 	Vertices<FloatPoint> StealingLeftChip;
 	Vertices<FloatPoint> StealingRightChip;
 	
+	/* Functions ---------------------------------------------------------------------------------------- */
+	void SetDefaultProperty();
 	Vertices<DrawingVertex> GetVertex();
 	Vertices<DrawingVertex> GetVerticesOnStealing(int afterimageNum);
 };

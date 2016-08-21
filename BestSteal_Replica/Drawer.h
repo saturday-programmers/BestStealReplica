@@ -11,22 +11,30 @@ namespace BestStealReplica {
 
 class Drawer {
 public:
+	/* Enums -------------------------------------------------------------------------------------------- */
 	enum TextureType {
 		MAP,
 		CHARACTER
 	};
 
+	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	Drawer(HWND hWnd, IDirect3D9* pDirect3D, D3DPRESENT_PARAMETERS* d3dpp);
+
+	/* Functions ---------------------------------------------------------------------------------------- */
 	bool CreateTexture(const char* filePath, TextureType textureType);
 	void BeginDraw();
 	void Draw(Vertices<DrawingVertex> vertices, TextureType textureType) const;
 	void Draw(Vertices<DrawingVertex> vertices, TextureType textureType, UINT16 alpha) const;
+	void Blackout();
 	void EndDraw();
 	void Release();
 
 private:
+	/* Variables ---------------------------------------------------------------------------------------- */
 	IDirect3DDevice9*	pD3Device;
 	LPDIRECT3DTEXTURE9	pTexture[2];
+
+	/* Functions ---------------------------------------------------------------------------------------- */
 	void Draw(Vertices<DrawingVertex> vertices, LPDIRECT3DTEXTURE9 pTexture, UINT16 alpha) const;
 };
 

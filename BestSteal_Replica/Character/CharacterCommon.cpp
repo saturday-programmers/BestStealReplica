@@ -3,6 +3,7 @@
 namespace BestStealReplica {
 namespace Character {
 
+/* Static Public Functions -------------------------------------------------------------------------- */
 void CharacterCommon::SetTuTvs(Vertices<FloatPoint> chips[], int chipCntPerDir, int rowNum, int colNum) {
 	for (int i = 0; i < chipCntPerDir; ++i) {
 		chips[i] = GetTuTv(rowNum, colNum + i);
@@ -17,7 +18,6 @@ Vertices<FloatPoint> CharacterCommon::GetTuTv(int rowNum, int colNum) {
 	ret.bottomRight.y = (rowNum + 1) / (float)CharacterCommon::CHIP_COUNT_PER_ROW;
 	return ret;
 }
-
 
 void CharacterCommon::CountUpAnimationCnt(int* currentAnimationCnt, int chipCntPerDir) {
 	++(*currentAnimationCnt);
@@ -47,13 +47,19 @@ Vertices<DrawingVertex> CharacterCommon::GetVertex(POINT topLeftXY, Vertices<POI
 	return ret;
 }
 
-
 Vertices<POINT> CharacterCommon::GetChipXY(POINT topLeftXY) {
 	Vertices<POINT> ret;
 	ret.topLeft.x = topLeftXY.x;
 	ret.topLeft.y = topLeftXY.y;
 	ret.bottomRight.x = topLeftXY.x + CharacterCommon::WIDTH - 1;
 	ret.bottomRight.y = topLeftXY.y + CharacterCommon::HEIGHT - 1;
+	return ret;
+}
+
+POINT CharacterCommon::CalcCenter(Vertices<POINT> xy) {
+	POINT ret;
+	ret.x = xy.topLeft.x + (xy.bottomRight.x - xy.topLeft.x) / 2;
+	ret.y = xy.topLeft.y + (xy.bottomRight.y - xy.topLeft.y) / 2;
 	return ret;
 }
 
