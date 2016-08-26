@@ -2,6 +2,7 @@
 #include "AppCommon.h"
 #include "MapChip.h"
 #include "MapChipWall.h"
+#include "MapChipJewelry.h"
 #include "Drawer.h"
 #include "IStage.h"
 
@@ -31,7 +32,7 @@ Map::~Map() {
 
 
 /* Public Functions  -------------------------------------------------------------------------------- */
-void Map::Load(const IStage* pStage) {
+void Map::Load(const Stage::IStage* pStage) {
 	for (int i = 0; i < this->yChipCount; ++i) {
 		for (int j = 0; j < this->xChipCount; ++j) {
 			this->mapData[i][j] = MapChip::Create(pStage->GetMapChipType(i, j));
@@ -40,6 +41,9 @@ void Map::Load(const IStage* pStage) {
 				case MapCommon::MapChipType::DOOR:
 				case MapCommon::MapChipType::GOLD_DOOR:
 					this->doorMapChips.push_back((MapChipDoor*)this->mapData[i][j]);
+					break;
+				case MapCommon::MapChipType::JEWELRY:
+					this->jewelryMapChip = (MapChipJewelry*)this->mapData[i][j];
 					break;
 				default:
 					break;
@@ -328,6 +332,26 @@ bool Map::ExistsWallBetween(POINT xy1, POINT xy2) {
 	return ret;
 }
 
+void Map::OpenJewelryBox() {
+	this->jewelryMapChip->OpenBox();
+}
+
+POINT Map::GetMapChipPos(POINT xy) {
+	POINT ret;
+	if (xy.x < this->topLeft.x) {
+		ret.x = -1;
+	} else {
+		ret.x = (xy.x - this->topLeft.x) / MapChip::WIDTH;
+	}
+
+	if (xy.y < this->topLeft.y) {
+		ret.y = -1;
+	} else {
+		ret.y = (xy.y - this->topLeft.y) / MapChip::HEIGHT;
+	}
+	return ret;
+}
+
 
 /* Private Functions  ------------------------------------------------------------------------------- */
 void Map::SetChipXY() {
@@ -339,21 +363,6 @@ void Map::SetChipXY() {
 			this->mapData[i][j]->SetXY(point);
 		}
 	}
-}
-
-POINT Map::GetMapChipPos(POINT xy) {
-	POINT ret;
-	if (xy.x < 0) {
-		ret.x = -1;
-	} else {
-		ret.x = (xy.x - this->topLeft.x) / MapChip::WIDTH;
-	}
-	if (xy.y < 0) {
-		ret.y = -1;
-	} else {
-		ret.y = (xy.y - this->topLeft.y) / MapChip::HEIGHT;
-	}
-	return ret;
 }
 
 bool Map::IsOnRoad(POINT mapChipPos) {

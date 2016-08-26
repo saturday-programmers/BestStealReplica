@@ -10,10 +10,14 @@
 
 namespace BestStealReplica {
 class Drawer;
+
+namespace Stage {
 class IStage;
+}
 
 namespace Map {
 class MapChpDoor;
+class MapChipJewelry;
 
 class Map {
 public:
@@ -22,7 +26,7 @@ public:
 	~Map();
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void Load(const IStage* pStage);
+	void Load(const Stage::IStage* pStage);
 	void Draw();
 	void Move(POINT xy);
 	void MoveToDefault();
@@ -36,6 +40,8 @@ public:
 	MapCommon::MapChipType GetMapChipType(POINT mapChipPos);
 	bool IsDoorOpened(POINT mapChipPos);
 	bool ExistsWallBetween(POINT xy1, POINT xy2);
+	void OpenJewelryBox();
+	POINT GetMapChipPos(POINT xy);
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */
@@ -52,10 +58,10 @@ private:
 	POINT topLeft;
 	MapChip* mapData[MAX_Y_CHIP_COUNT][MAX_X_CHIP_COUNT];
 	std::vector<MapChipDoor*> doorMapChips;
+	MapChipJewelry* jewelryMapChip;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void SetChipXY();
-	POINT GetMapChipPos(POINT xy);
 	bool IsOnRoad(POINT mapChipPos);
 };
 

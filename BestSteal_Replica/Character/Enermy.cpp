@@ -61,6 +61,9 @@ AppCommon::Direction Enermy::GetHeadingDirection(int enermyNum) {
 	return this->enermiesInfo[enermyNum].headingDirection;
 }
 
+Enermy::State Enermy::GetState(int enermyNum) {
+	return this->enermiesInfo[enermyNum].state;
+}
 
 /* Public Functions  -------------------------------------------------------------------------------- */
 void Enermy::Draw() {

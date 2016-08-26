@@ -54,6 +54,7 @@ public:
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	Vertices<POINT> GetEnermyXY(int enermyNum);
 	AppCommon::Direction GetHeadingDirection(int enermyNum);
+	Enermy::State GetState(int enermyNum);
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void Draw();
@@ -71,7 +72,7 @@ private:
 	static const int ENERMY_HEIGHT = 60;
 	static const int ENERMY_WIDTH = 50;
 	static const int TIME_FOR_CANCELING_FINDING = 120;
-	static const int TIME_FOR_BACKING_TO_NORMAL = 80;
+	static const int TIME_FOR_BACKING_TO_NORMAL = 60;
 	static const int MOVING_PIXEL_ON_ATTACKING = 20;
 
 	static const int ROW_NUM_OF_HEADING_BOTTOM = 4;

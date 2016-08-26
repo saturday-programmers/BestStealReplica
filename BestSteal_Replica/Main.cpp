@@ -112,7 +112,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 	}
 
 	Drawer drawer(hWnd, pDirect3D, &d3dpp);
-	IStage* pStage1 = new Stage1();
+	Stage::IStage* pStage1 = new Stage::Stage1();
 	Controller controller(&drawer);
 	controller.LoadStage(pStage1);
 

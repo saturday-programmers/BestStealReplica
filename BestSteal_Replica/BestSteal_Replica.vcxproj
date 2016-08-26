@@ -47,7 +47,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Source\BestStealReplica\BestSteal_Replica;C:\Source\BestStealReplica\BestSteal_Replica\Map;C:\Source\BestStealReplica\BestSteal_Replica\Character;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Source\BestStealReplica\BestSteal_Replica\Stage;C:\Source\BestStealReplica\BestSteal_Replica;C:\Source\BestStealReplica\BestSteal_Replica\Map;C:\Source\BestStealReplica\BestSteal_Replica\Character;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -74,14 +74,15 @@
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Drawer.cpp" />
     <ClCompile Include="Character\Enermy.cpp" />
-    <ClCompile Include="IStage.h" />
+    <ClCompile Include="Map\MapChipJewelry.cpp" />
+    <ClCompile Include="Stage\IStage.h" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Map\Map.cpp" />
     <ClCompile Include="Map\MapChip.cpp" />
     <ClCompile Include="Character\Player.cpp" />
     <ClCompile Include="Map\MapChipDoor.cpp" />
     <ClCompile Include="Map\MapChipWall.cpp" />
-    <ClCompile Include="Stage1.cpp" />
+    <ClCompile Include="Stage\Stage1.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppCommon.h" />
@@ -92,10 +93,11 @@
     <ClInclude Include="Map\Map.h" />
     <ClInclude Include="Map\MapChip.h" />
     <ClInclude Include="Map\MapChipDoor.h" />
+    <ClInclude Include="Map\MapChipJewelry.h" />
     <ClInclude Include="Map\MapChipWall.h" />
     <ClInclude Include="Map\MapCommon.h" />
     <ClInclude Include="Character\Player.h" />
-    <ClInclude Include="Stage1.h" />
+    <ClInclude Include="Stage\Stage1.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -8,9 +8,13 @@
 
 
 namespace BestStealReplica {
+namespace Stage {
 
 class IStage {
 public:
+	/* Getters / Setters -------------------------------------------------------------------------------- */
+	virtual int GetYChipCount() const = 0;
+	virtual int GetXChipCount() const = 0;
 	virtual Map::MapCommon::MapChipType GetMapChipType(int y, int x) const = 0;
 	virtual POINT GetPlayerFirstChipPos() const = 0;
 	virtual int GetEnermyCount() const = 0;
@@ -19,6 +23,7 @@ public:
 	virtual int GetEnermySearchableRadius() const = 0;
 };
 
+}
 }
 
 #endif

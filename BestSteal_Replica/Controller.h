@@ -9,13 +9,15 @@ class Map;
 }
 
 namespace Character{
-
 class Player;
 class Enermy;
 }
 
-class Drawer;
+namespace Stage {
 class IStage;
+}
+
+class Drawer;
 
 class Controller {
 public:
@@ -48,7 +50,7 @@ public:
 	void SetState(Controller::State state);
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void LoadStage(const IStage* pStage);
+	void LoadStage(const Stage::IStage* pStage);
 	void Control(Key key);
 	void Draw();
 	void Release();
@@ -60,7 +62,7 @@ private:
 
 	/* Variables ---------------------------------------------------------------------------------------- */
 	Drawer* pDrawer;
-	const IStage* pStage;
+	const Stage::IStage* pStage;
 	Map::Map* pMap;
 	Character::Player* pPlayer;
 	Character::Enermy* pEnermy;

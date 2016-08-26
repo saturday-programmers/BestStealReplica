@@ -108,8 +108,14 @@ void Drawer::Release() {
 
 /* Private Functions  ------------------------------------------------------------------------------- */
 void Drawer::Draw(Vertices<DrawingVertex> vertices, LPDIRECT3DTEXTURE9 pTexture, UINT16 alpha) const {
+	if ((vertices.topLeft.x < 0 && vertices.topLeft.y < 0 && vertices.bottomRight.x < 0 && vertices.bottomRight.y < 0)
+			|| (vertices.topLeft.x > AppCommon::GetWindowWidth() && vertices.topLeft.y > AppCommon::GetWindowHeight() 
+				&& vertices.bottomRight.x > AppCommon::GetWindowWidth() && vertices.bottomRight.y > AppCommon::GetWindowHeight())) {
+		// •`‰æ”ÍˆÍŠO
+		return;
+	}
+	
 	CUSTOMVERTEX customVertex[4];
-
 	for (int i = 0; i < 4; ++i) {
 		customVertex[i].z = 0.5f;
 		customVertex[i].rhw = 1.0f;

@@ -29,10 +29,10 @@ void Controller::SetState(Controller::State state) {
 
 
 /* Public Functions  -------------------------------------------------------------------------------- */
-void Controller::LoadStage(const IStage* pStage) {
+void Controller::LoadStage(const Stage::IStage* pStage) {
 	// マップ情報
-	this->pStage = new Stage1();
-	this->pMap = new Map::Map(Stage1::Y_CHIP_COUNT, Stage1::X_CHIP_COUNT, this->pDrawer);
+	this->pStage = pStage;
+	this->pMap = new Map::Map(this->pStage->GetYChipCount(), this->pStage->GetXChipCount(), this->pDrawer);
 	this->pMap->Load(this->pStage);
 
 	// プレイヤー情報
@@ -86,7 +86,6 @@ void Controller::Draw() {
 }
 
 void Controller::Release() {
-	delete this->pStage;
 	delete this->pMap;
 	delete this->pPlayer;
 	delete this->pEnermy;
@@ -119,6 +118,11 @@ int Controller::ControlPlayer(Key key) {
 					}
 					break;
 				}
+				case MapCommon::MapChipType::JEWELRY:
+					// 宝箱を開ける
+					this->pMap->OpenJewelryBox();
+					canStartStealing = false;
+					break;
 				default:
 					break;
 			}
@@ -232,32 +236,41 @@ void Controller::ControlEnermy(int playerMovingPixel, Key* pKey) {
 
 	// 突進可能か
 	for (int i = 0; i < this->pStage->GetEnermyCount(); ++i) {
+		if (this->pEnermy->GetState(i) == Enermy::State::GOT_STOLEN) {
+			continue;
+		}
+
 		// プレイヤーとの距離チェック
+		POINT centerPlayer = CharacterCommon::CalcCenter(playerXY);
+		POINT playerPos = this->pMap->GetMapChipPos(centerPlayer);
+
 		Vertices<POINT> enermyXY = this->pEnermy->GetEnermyXY(i);
-		int biggerPos;
-		int smallerPos;
+		POINT centerEnermy = CharacterCommon::CalcCenter(enermyXY);
+		POINT enermyPos = this->pMap->GetMapChipPos(centerEnermy);
+		bool canSeePlayer = false;
+		int distance;
 		switch (this->pEnermy->GetHeadingDirection(i)) {
 			case AppCommon::Direction::TOP:
-				biggerPos = enermyXY.topLeft.y;
-				smallerPos = playerXY.topLeft.y;
+				canSeePlayer = (enermyPos.x == playerPos.x && enermyPos.y >= playerPos.y);
+				distance = centerEnermy.y - centerPlayer.y;
 				break;
 			case AppCommon::Direction::RIGHT:
-				smallerPos = enermyXY.bottomRight.x;
-				biggerPos = playerXY.bottomRight.x;
+				canSeePlayer = (enermyPos.y== playerPos.y && enermyPos.x <= playerPos.x);
+				distance = centerPlayer.x - centerEnermy.x;
 				break;
 			case AppCommon::Direction::BOTTOM:
-				smallerPos = enermyXY.bottomRight.y;
-				biggerPos = playerXY.bottomRight.y;
+				canSeePlayer = (enermyPos.x == playerPos.x && enermyPos.y <= playerPos.y);
+				distance = centerPlayer.y - centerEnermy.y;
 				break;
 			case AppCommon::Direction::LEFT:
-				biggerPos = enermyXY.topLeft.x;
-				smallerPos = playerXY.topLeft.x;
+				canSeePlayer = (enermyPos.y == playerPos.y && enermyPos.x >= playerPos.x);
+				distance = centerEnermy.x - centerPlayer.x;
 				break;
 		}
-		bool canSeePlayer = ((biggerPos >= smallerPos) && (biggerPos - smallerPos <= this->pStage->GetEnermySearchableRadius()));
+		canSeePlayer = canSeePlayer && distance <= this->pStage->GetEnermySearchableRadius();
 
 		// プレイヤーとの間に壁があるか
-		canSeePlayer = canSeePlayer && !this->pMap->ExistsWallBetween(CharacterCommon::CalcCenter(enermyXY), CharacterCommon::CalcCenter(playerXY));
+		canSeePlayer = canSeePlayer && !this->pMap->ExistsWallBetween(centerEnermy, centerPlayer);
 
 		// 突進
 		this->pEnermy->Attack(i, canSeePlayer);

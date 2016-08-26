@@ -1,6 +1,7 @@
 #include "MapChip.h"
 #include "MapChipWall.h"
 #include "MapChipDoor.h"
+#include "MapChipJewelry.h"
 
 
 namespace BestStealReplica {
@@ -15,6 +16,8 @@ MapChip* MapChip::Create(MapCommon::MapChipType chipType) {
 		case MapCommon::MapChipType::GOLD_DOOR:
 			return new MapChipDoor(chipType);
 			break;
+		case MapCommon::MapChipType::JEWELRY:
+			return new MapChipJewelry();
 		default:
 			return new MapChip(chipType);
 			break;

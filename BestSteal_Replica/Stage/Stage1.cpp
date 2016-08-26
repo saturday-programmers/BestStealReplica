@@ -3,6 +3,7 @@
 
 
 namespace BestStealReplica {
+namespace Stage {
 namespace {
 
 using Map::MapCommon;
@@ -46,6 +47,15 @@ Enermy::EnermyInfo enermiesInfo[Stage1::ENERMY_COUNT] = {
 
 }
 
+/* Getters / Setters -------------------------------------------------------------------------------- */
+int Stage1::GetYChipCount() const {
+	return Stage1::Y_CHIP_COUNT;
+}
+
+int Stage1::GetXChipCount() const {
+	return Stage1::X_CHIP_COUNT;
+}
+
 MapCommon::MapChipType Stage1::GetMapChipType(int y, int x) const {
 	return mapChipTypes[y][x];
 }
@@ -70,7 +80,8 @@ Enermy::EnermyInfo* Stage1::GetEnermiesInfo() const {
 }
 
 int Stage1::GetEnermySearchableRadius() const {
-	return 250;
+	return 260;
 }
 
+}
 }
