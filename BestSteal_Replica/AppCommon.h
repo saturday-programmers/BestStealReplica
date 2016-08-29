@@ -38,6 +38,22 @@ template<typename T> struct Vertices {
 
 class AppCommon {
 public:
+	/* Enums -------------------------------------------------------------------------------------------- */
+	/* Structs ------------------------------------------------------------------------------------------ */
+	struct Key {
+		bool up = false;
+		bool down = false;
+		bool right = false;
+		bool left = false;
+		bool z = false;
+		bool shift = false;
+	};
+
+	enum GameState {
+		DRAWING_MAP,
+		BLACKOUT
+	};
+
 	enum Direction {
 		TOP,
 		RIGHT,
@@ -45,14 +61,18 @@ public:
 		LEFT
 	};
 
+	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int WINDOW_DEFAULT_HEIGHT = 630;
 	static const int WINDOW_DEFAULT_WIDTH = 1120;
 	static const int FRAME_COUNT_PER_CUT = 10;
 
-	static void SetWindowHeight(int heidht);
-	static void SetWindowWidth(int width);
+	/* Getters / Setters -------------------------------------------------------------------------------- */
 	static int GetWindowHeight();
+	static void SetWindowHeight(int heidht);
 	static int GetWindowWidth();
+	static void SetWindowWidth(int width);
+	static AppCommon::GameState GetGameState();
+	static void SetGameState(AppCommon::GameState state);
 };
 
 }

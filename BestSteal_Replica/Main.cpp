@@ -22,7 +22,6 @@ static LPDIRECTINPUT8        g_lpDI;
 static LPDIRECTINPUTDEVICE8  g_lpDIDevice;
 
 static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
-static Controller::Key WINAPI ProcessKBInput();
 static void WINAPI DI_Term();
 }
 
@@ -112,9 +111,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 	}
 
 	Drawer drawer(hWnd, pDirect3D, &d3dpp);
-	Stage::IStage* pStage1 = new Stage::Stage1();
 	Controller controller(&drawer);
-	controller.LoadStage(pStage1);
+	controller.StartStage();
 
 	DWORD SyncOld = timeGetTime();
 	DWORD SyncNow;
@@ -122,8 +120,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 	timeBeginPeriod(1);
 
 	ZeroMemory(&msg, sizeof(msg));
-	int blackoutFrameCount = 0;
-	while (msg.message != WM_QUIT) {
+		while (msg.message != WM_QUIT) {
 		Sleep(1);
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
@@ -131,26 +128,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 		} else {
 			SyncNow = timeGetTime();
 			if (SyncNow - SyncOld >= 1000 / 60) {
-				switch (controller.GetState()) {
-					case Controller::State::DrawingMap:
-					{
-						Controller::Key key = ProcessKBInput();
-						controller.Control(key);
-						if (controller.GetState() == Controller::State::DrawingMap) {
-							controller.Draw();
-						}
-						break;
-					}
-					case Controller::State::Blackout:
-						drawer.Blackout();
-						++blackoutFrameCount;
-						if (blackoutFrameCount > 15) {
-							controller.SetState(Controller::State::DrawingMap);
-							blackoutFrameCount = 0;
-						}
-						break;
+				if (g_lpDIDevice) {
+					g_lpDIDevice->Acquire();
 				}
-	
+				controller.Control(g_lpDIDevice);
 				SyncOld = SyncNow;
 			}
 		}
@@ -161,8 +142,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 	// 終了処理
 	DI_Term();
 	drawer.Release();
-	controller.Release();
-	delete pStage1;
+	controller.~Controller();
 
 	return (int)msg.wParam;
 }
@@ -183,49 +163,6 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 	}
 	return DefWindowProc(hWnd, msg, wp, lp);
 }
-
-static Controller::Key WINAPI ProcessKBInput() {
-	#define KEYDOWN(name, key) (name[key] & 0x80) 
-
-	Controller::Key ret;
-
-	// キーボードへのアクセスの獲得
-	if (g_lpDIDevice) {
-		g_lpDIDevice->Acquire();
-	}
-
-	char     buffer[256];
-	HRESULT  hr;
-	hr = g_lpDIDevice->GetDeviceState(sizeof(buffer), (LPVOID)&buffer);
-	if FAILED(hr) {
-		// If it failed, the device has probably been lost. 
-		// Check for (hr == DIERR_INPUTLOST) 
-		// and attempt to reacquire it here. 
-		ret.keyType = Controller::Key::KeyType::NONE;
-		return ret;
-	}
-
-	if (KEYDOWN(buffer, DIK_Z)) {
-		ret.keyType = Controller::Key::KeyType::STEAL_OR_OPEN;
-	} else if (KEYDOWN(buffer, DIK_RIGHT)) {
-		ret.keyType = Controller::Key::KeyType::RIGHT;
-	} else if (KEYDOWN(buffer, DIK_LEFT)) {
-		ret.keyType = Controller::Key::KeyType::LEFT;
-	} else if (KEYDOWN(buffer, DIK_UP)) {
-		ret.keyType = Controller::Key::KeyType::UP;
-	} else if (KEYDOWN(buffer, DIK_DOWN)) {
-		ret.keyType = Controller::Key::KeyType::DOWN;
-	} else {
-		return ret;
-	}
-
-	if (KEYDOWN(buffer, DIK_LSHIFT) || KEYDOWN(buffer, DIK_RSHIFT)) {
-		ret.isWalking = true;
-	}
-
-	return ret;
-}
-
 
 static void WINAPI DI_Term(void) {
 	if (g_lpDI) {

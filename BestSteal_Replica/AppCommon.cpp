@@ -5,8 +5,10 @@ namespace BestStealReplica {
 namespace {
 static int windowHeidht;
 static int windowWidth;
+static AppCommon::GameState gameState;
 }
 
+/* Constructor / Destructor ------------------------------------------------------------------------- */
 FloatPoint::FloatPoint() {}
 
 FloatPoint::FloatPoint(float x, float y) :
@@ -15,19 +17,29 @@ FloatPoint::FloatPoint(float x, float y) :
 {}
 
 
+/* Getters / Setters -------------------------------------------------------------------------------- */
+int AppCommon::GetWindowHeight() {
+	return windowHeidht;
+}
+
 void AppCommon::SetWindowHeight(int height) {
 	windowHeidht = height;
+}
+
+int AppCommon::GetWindowWidth() {
+	return windowWidth;
 }
 
 void AppCommon::SetWindowWidth(int width) {
 	windowWidth = width;
 }
 
-int AppCommon::GetWindowHeight() {
-	return windowHeidht;
+AppCommon::GameState AppCommon::GetGameState() {
+	return gameState;
 }
 
-int AppCommon::GetWindowWidth() {
-	return windowWidth;
+void AppCommon::SetGameState(AppCommon::GameState state) {
+	gameState = state;
 }
+
 }
