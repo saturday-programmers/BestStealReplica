@@ -7,7 +7,7 @@
 
 #include "AppCommon.h"
 #include "Drawer.h"
-#include "Controller.h"
+#include "SceneController.h"
 #include "Stage1.h"
 #include "Map.h"
 #include "Player.h"
@@ -111,8 +111,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 	}
 
 	Drawer drawer(hWnd, pDirect3D, &d3dpp);
-	Controller controller(&drawer);
-	controller.StartStage();
+	SceneController sceneController(&drawer);
+	sceneController.StartStage();
 
 	DWORD SyncOld = timeGetTime();
 	DWORD SyncNow;
@@ -131,7 +131,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 				if (g_lpDIDevice) {
 					g_lpDIDevice->Acquire();
 				}
-				controller.Control(g_lpDIDevice);
+				sceneController.Control(g_lpDIDevice);
 				SyncOld = SyncNow;
 			}
 		}
@@ -142,7 +142,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 	// èIóπèàóù
 	DI_Term();
 	drawer.Release();
-	controller.~Controller();
+	sceneController.Release();
 
 	return (int)msg.wParam;
 }

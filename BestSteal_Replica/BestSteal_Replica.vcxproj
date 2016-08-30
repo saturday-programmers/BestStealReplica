@@ -71,7 +71,7 @@
   <ItemGroup>
     <ClCompile Include="AppCommon.cpp" />
     <ClCompile Include="Character\CharacterCommon.cpp" />
-    <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="SceneController.cpp" />
     <ClCompile Include="Drawer.cpp" />
     <ClCompile Include="Character\Enermy.cpp" />
     <ClCompile Include="Map\MapChipJewelry.cpp" />
@@ -88,7 +88,7 @@
   <ItemGroup>
     <ClInclude Include="AppCommon.h" />
     <ClInclude Include="Character\CharacterCommon.h" />
-    <ClInclude Include="Controller.h" />
+    <ClInclude Include="SceneController.h" />
     <ClInclude Include="Drawer.h" />
     <ClInclude Include="Character\Enermy.h" />
     <ClInclude Include="Map\Map.h" />

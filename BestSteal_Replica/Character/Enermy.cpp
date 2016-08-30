@@ -184,7 +184,7 @@ Enermy::KeyType Enermy::GetStolen(Vertices<POINT> playerXY, bool isPlayerStealin
 			if (((playerXY.topLeft.x < enermyXY.bottomRight.x && playerXY.bottomRight.x > enermyXY.topLeft.x)
 				|| (enermyXY.topLeft.x < playerXY.bottomRight.x && enermyXY.bottomRight.x > playerXY.topLeft.x))
 				&& ((playerXY.topLeft.y < enermyXY.bottomRight.y && playerXY.bottomRight.y > enermyXY.topLeft.y)
-				|| (enermyXY.topLeft.y < playerXY.bottomRight.y && enermyXY.bottomRight.y > enermyXY.topLeft.y))) {
+				|| (enermyXY.topLeft.y < playerXY.bottomRight.y && enermyXY.bottomRight.y > playerXY.topLeft.y))) {
 
 				// “‚Ý¬Œ÷
 				this->enermiesInfo[i].state = State::GOT_STOLEN;

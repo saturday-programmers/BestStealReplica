@@ -51,7 +51,7 @@ void StageController::Control(AppCommon::Key key) {
 	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
 	if (this->pEnermy->CanKillPlayer(playerXY)) {
 		RevertStage();
-		AppCommon::SetGameState(AppCommon::GameState::BLACKOUT);
+		AppCommon::SetScene(AppCommon::SceneType::BLACKOUT);
 		return;
 	}
 
@@ -229,7 +229,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 void StageController::ControlEnermy(int playerMovingPixel, Handling* pHandling) {
 	this->pEnermy->Stay();
 
-	// “‚Şˆ—
+	// “‚Ü‚ê‚éˆ—
 	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
 	Enermy::KeyType keyType = this->pEnermy->GetStolen(playerXY, this->pPlayer->GetIsStealing());
 	switch (keyType) {

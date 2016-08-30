@@ -15,11 +15,11 @@ namespace Stage {
 class IStage;
 }
 
-class Controller {
+class SceneController {
 public:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Controller(Drawer* pDrawer);
-	~Controller();
+	SceneController(Drawer* pDrawer);
+	void Release();
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void StartStage();

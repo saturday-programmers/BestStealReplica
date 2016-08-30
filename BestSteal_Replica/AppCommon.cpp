@@ -5,7 +5,7 @@ namespace BestStealReplica {
 namespace {
 static int windowHeidht;
 static int windowWidth;
-static AppCommon::GameState gameState;
+static AppCommon::SceneType scene;
 }
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
@@ -34,12 +34,12 @@ void AppCommon::SetWindowWidth(int width) {
 	windowWidth = width;
 }
 
-AppCommon::GameState AppCommon::GetGameState() {
-	return gameState;
+AppCommon::SceneType AppCommon::GetScene() {
+	return scene;
 }
 
-void AppCommon::SetGameState(AppCommon::GameState state) {
-	gameState = state;
+void AppCommon::SetScene(AppCommon::SceneType argScene) {
+	scene = argScene;
 }
 
 }

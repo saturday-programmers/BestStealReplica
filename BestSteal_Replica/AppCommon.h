@@ -38,7 +38,6 @@ template<typename T> struct Vertices {
 
 class AppCommon {
 public:
-	/* Enums -------------------------------------------------------------------------------------------- */
 	/* Structs ------------------------------------------------------------------------------------------ */
 	struct Key {
 		bool up = false;
@@ -49,7 +48,8 @@ public:
 		bool shift = false;
 	};
 
-	enum GameState {
+	/* Enums -------------------------------------------------------------------------------------------- */
+	enum SceneType {
 		DRAWING_MAP,
 		BLACKOUT
 	};
@@ -71,8 +71,8 @@ public:
 	static void SetWindowHeight(int heidht);
 	static int GetWindowWidth();
 	static void SetWindowWidth(int width);
-	static AppCommon::GameState GetGameState();
-	static void SetGameState(AppCommon::GameState state);
+	static AppCommon::SceneType GetScene();
+	static void SetScene(AppCommon::SceneType argScene);
 };
 
 }
