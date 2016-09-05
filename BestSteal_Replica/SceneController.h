@@ -18,7 +18,7 @@ class IStage;
 class SceneController {
 public:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	SceneController(Drawer* pDrawer);
+	explicit SceneController(Drawer* pDrawer);
 	void Release();
 
 	/* Functions ---------------------------------------------------------------------------------------- */

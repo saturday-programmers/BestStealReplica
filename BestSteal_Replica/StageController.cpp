@@ -18,9 +18,9 @@ StageController::StageController(Drawer* pDrawer) :
 {}
 
 StageController::~StageController() {
-	delete this->pMap;
-	delete this->pPlayer;
 	delete this->pEnermy;
+	delete this->pPlayer;
+	delete this->pMap;
 }
 
 

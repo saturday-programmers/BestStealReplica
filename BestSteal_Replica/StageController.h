@@ -37,7 +37,7 @@ public:
 	};
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	StageController(Drawer* pDrawer);
+	explicit StageController(Drawer* pDrawer);
 	~StageController();
 
 	/* Functions ---------------------------------------------------------------------------------------- */
