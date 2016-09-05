@@ -45,6 +45,7 @@ public:
 		bool right = false;
 		bool left = false;
 		bool z = false;
+		bool x = false;
 		bool shift = false;
 	};
 

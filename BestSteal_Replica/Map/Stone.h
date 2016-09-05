@@ -1,0 +1,65 @@
+#ifndef STONE_H_
+#define STONE_H_
+
+#include <windows.h>
+
+#include "AppCommon.h"
+//#include "MapCommon.h"
+
+
+namespace BestStealReplica {
+class Drawer;
+
+namespace Map {
+
+class Stone {
+public:
+	/* Enums -------------------------------------------------------------------------------------------- */
+	enum State {
+		BEING_THROWN,
+		DROPPED,
+		DISAPPEARING,
+		DiSAPPEARED
+	};
+
+	/* Constructor / Destructor ------------------------------------------------------------------------- */
+	Stone(Drawer* pDrawer, POINT topLeftXY, AppCommon::Direction direction);
+
+	/* Functions ---------------------------------------------------------------------------------------- */
+	void KeepBeingThrown();
+	void Draw();
+	bool Exists();
+	void Move(POINT xy);
+
+private:
+	/* Constants ---------------------------------------------------------------------------------------- */
+	static const int MAP_CHIP_NUMBER = 54;
+	static const int HEIGHT = 40;
+	static const int WIDTH = 40;
+	static const int THROWN_RADIAN = 30;
+	static const int THROWN_DISTANCE = 24;
+	static const int THROWN_HIGHT = 50;
+	static const int STAYING_DURATION = 120;
+	static const int DISAPPEARING_DURATION = 60;
+	static const int INITIAL_VELOCITY = 25;
+	static const int GRAVITY = 6;
+
+	/* Variables ---------------------------------------------------------------------------------------- */
+	Drawer* pDrawer;
+	POINT defaultTopleftXY;
+	POINT topLeftXY;
+	AppCommon::Direction direction;
+	Vertices<FloatPoint> tutv;
+	int thrownElapsedCount;
+	Stone::State state;
+	int restTime;
+
+	/* Functions ---------------------------------------------------------------------------------------- */
+	Vertices<DrawingVertex> GetVertex();
+
+};
+
+}
+}
+
+#endif

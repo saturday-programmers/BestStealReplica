@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "Map.h"
 #include "AppCommon.h"
 #include "MapChip.h"
@@ -5,7 +7,7 @@
 #include "MapChipJewelry.h"
 #include "Drawer.h"
 #include "IStage.h"
-
+#include "Stone.h"
 
 namespace BestStealReplica {
 namespace Map {
@@ -27,6 +29,10 @@ Map::~Map() {
 		for (int j = 0; j < this->xChipCount; ++j) {
 			delete this->mapData[i][j];
 		}
+	}
+
+	for (int i = 0; i < (int)this->stones.size(); ++i) {
+		delete this->stones[i];
 	}
 }
 
@@ -128,12 +134,18 @@ void Map::Draw() {
 			this->pDrawer->Draw(mapData[i][j]->GetVertex(), Drawer::TextureType::MAP);
 		}
 	}
+
+	for (int i = 0; i < (int)this->stones.size(); ++i) {
+		this->stones[i]->Draw();
+	}
 }
 
 void Map::Move(POINT xy) {
 	this->topLeft.x += xy.x;
 	this->topLeft.y += xy.y;
 	SetChipXY();
+
+	std:for_each(this->stones.begin(), this->stones.end(), [xy](Stone* pStone) -> void { pStone->Move(xy); });
 }
 
 void Map::MoveToDefault() {
@@ -350,6 +362,23 @@ POINT Map::GetMapChipPos(POINT xy) {
 		ret.y = (xy.y - this->topLeft.y) / MapChip::HEIGHT;
 	}
 	return ret;
+}
+
+void Map::AddStone(POINT topLeftXY, AppCommon::Direction direction) {
+	this->stones.push_back(new Stone(this->pDrawer, topLeftXY, direction));
+}
+
+void Map::AnimateStones() {
+	for (int i = 0; i < (int)this->stones.size(); ++i) {
+		this->stones[i]->KeepBeingThrown();
+		
+		// •\Ž¦ŠúŠÔ‚ªI‚í‚Á‚½ê‡‚Ííœ
+		if (!this->stones[i]->Exists()) {
+			Stone* disappearedStone = stones[i];
+			this->stones.erase(this->stones.begin() + i);
+			delete disappearedStone;
+		}
+	}
 }
 
 

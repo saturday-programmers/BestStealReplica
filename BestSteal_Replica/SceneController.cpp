@@ -68,6 +68,9 @@ AppCommon::Key SceneController::ProcessKBInput(LPDIRECTINPUTDEVICE8 pDIDevice) {
 	if (KEYDOWN(buffer, DIK_Z)) {
 		ret.z = true;
 	} 
+	if (KEYDOWN(buffer, DIK_X)) {
+		ret.x = true;
+	}
 	if (KEYDOWN(buffer, DIK_RIGHT)) {
 		ret.right = true;
 	} 

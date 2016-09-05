@@ -64,6 +64,9 @@ void StageController::Control(AppCommon::Key key) {
 	// ドアを開けるアニメーション
 	this->pMap->KeepOpeningDoors();
 
+	// 石を投げるアニメーション
+	this->pMap->AnimateStones();
+
 	// プレイヤーがウィンドウ外に出る手前の場合はマップを移動させる
 	if (movingPixel > 0) {
 		MoveMap(movingPixel);
@@ -86,6 +89,8 @@ StageController::Handling StageController::ConvertKeyToHandling(AppCommon::Key k
 	StageController::Handling ret;
 	if (key.z) {
 		ret.handlingType = StageController::Handling::HandlingType::STEAL_OR_OPEN;
+	} else if (key.x) {
+		ret.handlingType = StageController::Handling::HandlingType::THROW;
 	} else {
 		if (key.up) {
 			ret.handlingType = StageController::Handling::HandlingType::UP;
@@ -146,25 +151,28 @@ int StageController::ControlPlayer(Handling* pHandling) {
 			// 目の前が開いていないドア以外の場合は盗むアクション
 			this->pPlayer->StartStealing();
 		}
+	} else if (pHandling->handlingType == Handling::HandlingType::THROW && pHandling->handlingType != this->lastTimeHandling.handlingType) {
+		Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
+		this->pMap->AddStone(playerXY.topLeft, this->pPlayer->GetHeadingDirection());
 	}
 
 	// 盗むアクション継続
-	if (pPlayer->GetIsStealing()) {
+	if (this->pPlayer->GetIsStealing()) {
 		this->pPlayer->KeepStealing();
 	} else {
 		// プレイヤー移動方向
 		switch (pHandling->handlingType) {
 			case Handling::HandlingType::RIGHT:
-				pPlayer->SetDirection(AppCommon::Direction::RIGHT);
+				this->pPlayer->SetDirection(AppCommon::Direction::RIGHT);
 				break;
 			case Handling::HandlingType::LEFT:
-				pPlayer->SetDirection(AppCommon::Direction::LEFT);
+				this->pPlayer->SetDirection(AppCommon::Direction::LEFT);
 				break;
 			case Handling::HandlingType::UP:
-				pPlayer->SetDirection(AppCommon::Direction::TOP);
+				this->pPlayer->SetDirection(AppCommon::Direction::TOP);
 				break;
 			case Handling::HandlingType::DOWN:
-				pPlayer->SetDirection(AppCommon::Direction::BOTTOM);
+				this->pPlayer->SetDirection(AppCommon::Direction::BOTTOM);
 				break;
 			default:
 				break;
@@ -174,10 +182,17 @@ int StageController::ControlPlayer(Handling* pHandling) {
 	// プレイヤー移動距離
 	if (this->pPlayer->GetIsStealing()) {
 		movingPixel = Player::MOVING_PIXEL_ON_STEALING;
-	} else if (pHandling->handlingType == Handling::HandlingType::NONE || pHandling->handlingType == Handling::HandlingType::STEAL_OR_OPEN) {
-		movingPixel = 0;
 	} else {
-		movingPixel = pHandling->isWalking ? StageController::MOVING_PIXEL_ON_WALKING : StageController::MOVING_PIXEL_ON_RUNNING;
+		switch (pHandling->handlingType) {
+			case Handling::HandlingType::NONE:
+			case Handling::HandlingType::STEAL_OR_OPEN:
+			case Handling::HandlingType::THROW:
+				movingPixel = 0;
+				break;
+			default:
+				movingPixel = pHandling->isWalking ? StageController::MOVING_PIXEL_ON_WALKING : StageController::MOVING_PIXEL_ON_RUNNING;
+				break;
+		}
 	}
 	POINT movingPoint;
 	movingPoint.x = 0;

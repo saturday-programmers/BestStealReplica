@@ -18,6 +18,7 @@ class IStage;
 namespace Map {
 class MapChpDoor;
 class MapChipJewelry;
+class Stone;
 
 class Map {
 public:
@@ -42,6 +43,8 @@ public:
 	bool ExistsWallBetween(POINT xy1, POINT xy2);
 	void OpenJewelryBox();
 	POINT GetMapChipPos(POINT xy);
+	void AddStone(POINT topLeftXY, AppCommon::Direction direction);
+	void AnimateStones();
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */
@@ -59,6 +62,7 @@ private:
 	MapChip* mapData[MAX_Y_CHIP_COUNT][MAX_X_CHIP_COUNT];
 	std::vector<MapChipDoor*> doorMapChips;
 	MapChipJewelry* jewelryMapChip;
+	std::vector<Stone*> stones;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void SetChipXY();

@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <d3dx9tex.h>
 
 #include "Drawer.h"
@@ -24,6 +26,14 @@ Drawer::Drawer(HWND hWnd, IDirect3D9* pDirect3D, D3DPRESENT_PARAMETERS* d3dpp) {
 		D3DCREATE_SOFTWARE_VERTEXPROCESSING,
 		d3dpp,
 		&this->pD3Device);
+}
+
+
+/* Static Public Functions -------------------------------------------------------------------------- */
+UINT16 Drawer::GetAlphaOnBlinking(int time) {
+	double rad = time * 18 * M_PI / 180;
+	double alpha = 0xFF * abs(sin(rad));
+	return (UINT16)alpha;
 }
 
 

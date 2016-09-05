@@ -29,7 +29,8 @@ public:
 			DOWN,
 			RIGHT,
 			LEFT,
-			STEAL_OR_OPEN
+			STEAL_OR_OPEN,
+			THROW
 		};
 
 		HandlingType handlingType = HandlingType::NONE;

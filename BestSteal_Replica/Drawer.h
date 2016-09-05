@@ -20,6 +20,9 @@ public:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	Drawer(HWND hWnd, IDirect3D9* pDirect3D, D3DPRESENT_PARAMETERS* d3dpp);
 
+	/* Static Functions --------------------------------------------------------------------------------- */
+	static UINT16 GetAlphaOnBlinking(int time);
+
 	/* Functions ---------------------------------------------------------------------------------------- */
 	bool CreateTexture(const char* filePath, TextureType textureType);
 	void BeginDraw();
