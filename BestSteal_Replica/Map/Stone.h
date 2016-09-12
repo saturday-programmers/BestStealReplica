@@ -25,11 +25,16 @@ public:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	Stone(Drawer* pDrawer, POINT topLeftXY, AppCommon::Direction direction);
 
+	/* Getters / Setters -------------------------------------------------------------------------------- */
+	void SetTopLeftXY(POINT xy);
+
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void KeepBeingThrown();
 	void Draw();
 	bool Exists();
 	void Move(POINT xy);
+	Vertices<POINT> GetXYsOnGround();
+	void SetDropped();
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */

@@ -61,16 +61,8 @@ void StageController::Control(AppCommon::Key key) {
 	// 敵アニメージョン
 	ControlEnermy(movingPixel, &handling);
 
-	// ドアを開けるアニメーション
-	this->pMap->KeepOpeningDoors();
-
-	// 石を投げるアニメーション
-	this->pMap->AnimateStones();
-
-	// プレイヤーがウィンドウ外に出る手前の場合はマップを移動させる
-	if (movingPixel > 0) {
-		MoveMap(movingPixel);
-	}
+	// マップアニメーション
+	ControlMap(movingPixel, &handling);
 
 	this->lastTimeHandling = handling;
 }
@@ -152,6 +144,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 			this->pPlayer->StartStealing();
 		}
 	} else if (pHandling->handlingType == Handling::HandlingType::THROW && pHandling->handlingType != this->lastTimeHandling.handlingType) {
+		// 石を投げる
 		Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
 		this->pMap->AddStone(playerXY.topLeft, this->pPlayer->GetHeadingDirection());
 	}
@@ -308,6 +301,19 @@ void StageController::ControlEnermy(int playerMovingPixel, Handling* pHandling) 
 
 		// 突進
 		this->pEnermy->Attack(i, canSeePlayer);
+	}
+}
+
+void StageController::ControlMap(int playerMovingPixel, StageController::Handling* pHandling) {
+	// ドアを開けるアニメーション
+	this->pMap->KeepOpeningDoors();
+
+	// 石を投げるアニメーション
+	this->pMap->AnimateStones();
+
+	// プレイヤーがウィンドウ外に出る手前の場合はマップを移動させる
+	if (playerMovingPixel > 0) {
+		MoveMap(playerMovingPixel);
 	}
 }
 

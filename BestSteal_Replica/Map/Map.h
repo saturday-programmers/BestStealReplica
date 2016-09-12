@@ -59,10 +59,10 @@ private:
 	Drawer* pDrawer;
 	POINT defaultTopLeft;
 	POINT topLeft;
-	MapChip* mapData[MAX_Y_CHIP_COUNT][MAX_X_CHIP_COUNT];
-	std::vector<MapChipDoor*> doorMapChips;
-	MapChipJewelry* jewelryMapChip;
-	std::vector<Stone*> stones;
+	MapChip* pMapData[MAX_Y_CHIP_COUNT][MAX_X_CHIP_COUNT];
+	std::vector<MapChipDoor*> pDoorMapChips;
+	MapChipJewelry* pJewelryMapChip;
+	std::vector<Stone*> pStones;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void SetChipXY();

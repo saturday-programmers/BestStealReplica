@@ -15,6 +15,12 @@ Stone::Stone(Drawer* pDrawer, POINT topLeftXY, AppCommon::Direction direction) :
 }
 
 
+/* Getters / Setters -------------------------------------------------------------------------------- */
+void Stone::SetTopLeftXY(POINT xy) {
+	this->topLeftXY = xy;
+}
+
+
 /* Public Functions  -------------------------------------------------------------------------------- */
 void Stone::KeepBeingThrown() {
 	/*
@@ -63,8 +69,7 @@ void Stone::KeepBeingThrown() {
 
 				// ’n–Ê‚É’B‚µ‚½ê‡
 				if (isDropped) {
-					this->state = Stone::State::DROPPED;
-					this->restTime = Stone::STAYING_DURATION;
+					SetDropped();
 				} 
 			}
 			++this->thrownElapsedCount;
@@ -114,6 +119,32 @@ void Stone::Move(POINT xy) {
 	this->topLeftXY.y += xy.y;
 }
 
+Vertices<POINT> Stone::GetXYsOnGround() {
+	Vertices<POINT> ret;
+	ret.topLeft = this->topLeftXY;
+
+	if (this->state == Stone::State::BEING_THROWN) {
+		switch (this->direction) {
+			case AppCommon::Direction::TOP:
+			case AppCommon::Direction::BOTTOM:
+				ret.topLeft.x = this->defaultTopleftXY.x;
+				break;
+			case AppCommon::Direction::RIGHT:
+			case AppCommon::Direction::LEFT:
+				ret.topLeft.y = this->defaultTopleftXY.y;
+				break;
+		}
+	}
+	ret.bottomRight.x = this->topLeftXY.x + Stone::WIDTH;
+	ret.bottomRight.y = this->topLeftXY.y + Stone::HEIGHT;
+
+	return ret;
+}
+
+void Stone::SetDropped() {
+	this->state = Stone::State::DROPPED;
+	this->restTime = Stone::STAYING_DURATION;
+}
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */
@@ -126,17 +157,16 @@ Vertices<DrawingVertex> Stone::GetVertex() {
 	POINT bottomRightXY;
 	bottomRightXY.x = this->topLeftXY.x + Stone::WIDTH;
 	bottomRightXY.y = this->topLeftXY.y + Stone::HEIGHT;
-	POINT xy[] = { this->topLeftXY, bottomRightXY };
+	POINT xyArr[] = { this->topLeftXY, bottomRightXY };
 
 	for (int i = 0; i < 2; ++i) {
-		pVerticesArr[i]->x = xy[i].x;
-		pVerticesArr[i]->y = xy[i].y;
+		pVerticesArr[i]->x = xyArr[i].x;
+		pVerticesArr[i]->y = xyArr[i].y;
 		pVerticesArr[i]->tu = tutv[i].x;
 		pVerticesArr[i]->tv = tutv[i].y;
 	}
 	return ret;
 }
-
 
 }
 }
