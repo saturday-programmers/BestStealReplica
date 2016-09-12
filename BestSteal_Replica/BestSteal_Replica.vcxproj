@@ -47,7 +47,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Source\BestStealReplica\BestSteal_Replica\Stage;C:\Source\BestStealReplica\BestSteal_Replica;C:\Source\BestStealReplica\BestSteal_Replica\Map;C:\Source\BestStealReplica\BestSteal_Replica\Character;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDIr);$(ProjectDIr)Character;$(ProjectDIr)Map;$(ProjectDIr)Stage;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -61,6 +61,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDIr);$(ProjectDIr)Character;$(ProjectDIr)Map;$(ProjectDIr)Stage;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
