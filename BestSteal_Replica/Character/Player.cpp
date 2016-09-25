@@ -140,6 +140,29 @@ Vertices<POINT> Player::GetPlayerXY() {
 	return ret;
 }
 
+bool Player::HasKey(AppCommon::KeyType key) {
+	bool ret = false;
+	int* pHoldingKeyCnt = GetHoldingKeyCnt(key);
+	if (pHoldingKeyCnt != NULL) {
+		ret = (&pHoldingKeyCnt > 0);
+	}
+	return ret;
+}
+
+void Player::AddKey(AppCommon::KeyType key) {
+	int* pHoldingKeyCnt = GetHoldingKeyCnt(key);
+	if (pHoldingKeyCnt != NULL) {
+		(*pHoldingKeyCnt)++;
+	}
+}	
+
+void Player::SubtractKey(AppCommon::KeyType key) {
+	int* pHoldingKeyCnt = GetHoldingKeyCnt(key);
+	if (pHoldingKeyCnt != NULL) {
+		(*pHoldingKeyCnt)--;
+	}
+}
+
 void Player::GetKilled() {
 	SetDefaultProperty();
 }
@@ -207,6 +230,19 @@ Vertices<DrawingVertex> Player::GetVerticesOnStealing(int afterimageNum) {
 	}
 	Vertices<DrawingVertex> ret = CharacterCommon::GetVertex(topLeftXY, &CharacterCommon::GetChipXY, chip);
 	return ret;
+}
+
+int* Player::GetHoldingKeyCnt(AppCommon::KeyType key) {
+	switch (key) {
+		case AppCommon::KeyType::Silver:
+			return &this->holdingSilverKeyCount;
+			break;
+		case AppCommon::KeyType::Gold:
+			return &this->holdingGoldKeyCount;
+			break;
+		default:
+			return NULL;
+	}
 }
 
 }

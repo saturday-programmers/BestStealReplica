@@ -12,7 +12,7 @@ namespace Character {
 /* Structs ------------------------------------------------------------------------------------------ */
 Enermy::EnermyInfo::EnermyInfo() {}
 
-Enermy::EnermyInfo::EnermyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, Enermy::KeyType holdingKey) :
+Enermy::EnermyInfo::EnermyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, AppCommon::KeyType holdingKey) :
 	defaultDirection(defaultDirection),
 	headingDirection(defaultDirection),
 	holdingKey(holdingKey),
@@ -166,8 +166,8 @@ void Enermy::ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius, bool isP
 	}
 }
 
-Enermy::KeyType Enermy::GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing) {
-	Enermy::KeyType ret = Enermy::KeyType::None;
+AppCommon::KeyType Enermy::GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing) {
+	AppCommon::KeyType ret = AppCommon::KeyType::None;
 	for (int i = 0; i < this->enermyCount; ++i) {
 		if (this->enermiesInfo[i].state == State::GOT_STOLEN) {
 			--this->enermiesInfo[i].restTimeForBackingToNormal;
@@ -190,7 +190,7 @@ Enermy::KeyType Enermy::GetStolen(Vertices<POINT> playerXY, bool isPlayerStealin
 				this->enermiesInfo[i].state = State::GOT_STOLEN;
 				this->enermiesInfo[i].restTimeForBackingToNormal = Enermy::TIME_FOR_BACKING_TO_NORMAL;
 				ret = this->enermiesInfo[i].holdingKey;
-				this->enermiesInfo[i].holdingKey = None;
+				this->enermiesInfo[i].holdingKey = AppCommon::KeyType::None;
 				break;
 			}
 		}

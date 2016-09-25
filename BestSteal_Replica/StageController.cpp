@@ -118,12 +118,12 @@ int StageController::ControlPlayer(Handling* pHandling) {
 		switch (mapChipType) {
 			case MapCommon::MapChipType::DOOR:
 			case MapCommon::MapChipType::GOLD_DOOR: {
-				int* pKeyCount = (mapChipType == MapCommon::MapChipType::DOOR) ? &this->pPlayer->holdingSilverKeyCount : &this->pPlayer->holdingGoldKeyCount;
 				if (!this->pMap->IsDoorOpened(frontMapChipPos)) {
-					if (*pKeyCount > 0) {
+					AppCommon::KeyType keyType = (mapChipType == MapCommon::MapChipType::DOOR) ? AppCommon::KeyType::Silver : AppCommon::KeyType::Gold;
+					if (this->pPlayer->HasKey(keyType)) {
 						// ドアを開ける
 						if (this->pMap->StartOpeningDoor(frontMapChipPos)) {
-							--(*pKeyCount);
+							this->pPlayer->SubtractKey(keyType);
 						}
 					}
 					canStartStealing = false;
@@ -239,17 +239,8 @@ void StageController::ControlEnermy(int playerMovingPixel, Handling* pHandling) 
 
 	// 盗まれる処理
 	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
-	Enermy::KeyType keyType = this->pEnermy->GetStolen(playerXY, this->pPlayer->GetIsStealing());
-	switch (keyType) {
-		case Enermy::KeyType::Silver:
-			++this->pPlayer->holdingSilverKeyCount;
-			break;
-		case Enermy::KeyType::Gold:
-			++this->pPlayer->holdingGoldKeyCount;
-			break;
-		default:
-			break;
-	}
+	AppCommon::KeyType keyType = this->pEnermy->GetStolen(playerXY, this->pPlayer->GetIsStealing());
+	this->pPlayer->AddKey(keyType);
 
 	// 敵がプレイヤーを発見したか
 	if (playerMovingPixel == 0) {

@@ -62,6 +62,12 @@ public:
 		LEFT
 	};
 
+	enum KeyType {
+		None,
+		Silver,
+		Gold
+	};
+
 	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int WINDOW_DEFAULT_HEIGHT = 630;
 	static const int WINDOW_DEFAULT_WIDTH = 1120;

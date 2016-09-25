@@ -22,12 +22,6 @@ public:
 		ATTACKING
 	};
 
-	enum KeyType {
-		None,
-		Silver,
-		Gold
-	};
-
 	/* Structs ------------------------------------------------------------------------------------------ */
 	struct EnermyInfo {
 		POINT chipPos;
@@ -35,14 +29,14 @@ public:
 		POINT defaultTopLeftXY;
 		AppCommon::Direction defaultDirection;
 		AppCommon::Direction headingDirection;
-		KeyType holdingKey;
+		AppCommon::KeyType holdingKey;
 		State state;
 		int currentAnimationCnt;
 		int restTimeForCancelFinding;
 		int restTimeForBackingToNormal;
 
 		EnermyInfo();
-		EnermyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, KeyType holdingKey);
+		EnermyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, AppCommon::KeyType holdingKey);
 	};
 
 	/* Constants ---------------------------------------------------------------------------------------- */
@@ -61,7 +55,7 @@ public:
 	void Stay();
 	void Move(POINT xy);
 	void ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius, bool isPlayerWalking);
-	KeyType GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing);
+	AppCommon::KeyType GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing);
 	void Attack(int enermyNum, bool canSeePlayer);
 	bool CanKillPlayer(Vertices<POINT> playerXY);
 	void BackToDefaultPosition();

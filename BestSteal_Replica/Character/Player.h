@@ -23,10 +23,6 @@ public:
 	bool GetIsStealing();
 	AppCommon::Direction GetHeadingDirection();
 
-	/* Variables ---------------------------------------------------------------------------------------- */
-	int holdingSilverKeyCount;
-	int holdingGoldKeyCount;
-
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void Draw();
 	void SetDirection(AppCommon::Direction direction);
@@ -40,6 +36,9 @@ public:
 	bool IsStayingNearlyWindowBottom();
 	bool IsStayingNearlyWindowLeft();
 	Vertices<POINT> GetPlayerXY();
+	bool HasKey(AppCommon::KeyType key);
+	void AddKey(AppCommon::KeyType key);
+	void SubtractKey(AppCommon::KeyType key);
 	void GetKilled();
 
 private:
@@ -77,6 +76,8 @@ private:
 	bool isDirectionChanged;
 	bool isStealing;
 	AppCommon::Direction headingDirection;
+	int holdingGoldKeyCount;
+	int holdingSilverKeyCount;
 
 	Vertices<FloatPoint> headingBottomChips[Player::CHIP_COUNT_PER_DIRECTION];
 	Vertices<FloatPoint> headingTopChips[Player::CHIP_COUNT_PER_DIRECTION];
@@ -91,6 +92,7 @@ private:
 	void SetDefaultProperty();
 	Vertices<DrawingVertex> GetVertex();
 	Vertices<DrawingVertex> GetVerticesOnStealing(int afterimageNum);
+	int* GetHoldingKeyCnt(AppCommon::KeyType key);
 };
 
 }
