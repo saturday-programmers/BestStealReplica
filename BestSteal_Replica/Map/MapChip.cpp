@@ -1,4 +1,4 @@
-#include "MapChip.h"
+﻿#include "MapChip.h"
 #include "MapChipWall.h"
 #include "MapChipDoor.h"
 #include "MapChipJewelry.h"
@@ -55,7 +55,7 @@ MapCommon::MapChipType MapChip::GetChipType() {
 void MapChip::SetChipNumber() {
 	this->chipNumber = (int)this->chipType;
 
-	// �e�N�X�`���[��̃}�b�v�`�b�v�̈ʒu
+	// テクスチャー上のマップチップの位置
 	SetTuTv();
 }
 

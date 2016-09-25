@@ -1,4 +1,4 @@
-#ifndef CONTROLLER_H_
+﻿#ifndef CONTROLLER_H_
 #define CONTROLLER_H_
 
 #include "AppCommon.h"

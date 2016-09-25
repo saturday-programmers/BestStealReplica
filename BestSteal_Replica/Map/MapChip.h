@@ -1,4 +1,4 @@
-#ifndef MAP_CHIP_H_
+﻿#ifndef MAP_CHIP_H_
 #define MAP_CHIP_H_
 
 #include <windows.h>

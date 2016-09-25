@@ -1,4 +1,4 @@
-#ifndef ISTAGE_H_
+﻿#ifndef ISTAGE_H_
 #define ISTAGE_H_
 
 #include <windows.h>

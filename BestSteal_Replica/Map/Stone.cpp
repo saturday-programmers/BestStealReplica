@@ -1,4 +1,4 @@
-#include <math.h>
+ï»¿#include <math.h>
 
 #include "Stone.h"
 #include "Drawer.h"
@@ -12,7 +12,7 @@ namespace Map {
 /* Constructor / Destructor ------------------------------------------------------------------------- */
 Stone::Stone(Drawer* pDrawer, POINT topLeftXY, AppCommon::Direction direction) : pDrawer(pDrawer), defaultTopleftXY(topLeftXY), direction(direction), thrownElapsedCount(0), state(Stone::State::BEING_THROWN) {
 	this->tutv = MapChip::GetTuTvs(Stone::MAP_CHIP_NUMBER);
-	// ˜gü‚ğ‚È‚­‚·‚½‚ß‚Éˆê‰ñ‚è¬‚³‚­‚·‚é
+	// æ ç·šã‚’ãªãã™ãŸã‚ã«ä¸€å›ã‚Šå°ã•ãã™ã‚‹
 	this->tutv.topLeft.x += 0.01f;
 	this->tutv.topLeft.y += 0.01f;
 	this->tutv.bottomRight.x -= 0.01f;
@@ -38,13 +38,13 @@ void Stone::SetTopLeftXY(POINT xy) {
 /* Public Functions  -------------------------------------------------------------------------------- */
 void Stone::KeepBeingThrown() {
 	/*
-	 *  •ú•¨ü‚ÌˆÊ’u‚Ì‹‚ß•û
+	 *  æ”¾ç‰©ç·šã®ä½ç½®ã®æ±‚ã‚æ–¹
 	 *
-	 *  *** XÀ•W ***
-	 *  Xt = V0 * T ... ‘¬“xV0‚Ì‚Æ‚«‚ÌT•bŒã‚ÌˆÚ“®‹——£i“™‘¬“x‰^“®j
+	 *  *** Xåº§æ¨™ ***
+	 *  Xt = V0 * T ... é€Ÿåº¦V0ã®ã¨ãã®Tç§’å¾Œã®ç§»å‹•è·é›¢ï¼ˆç­‰é€Ÿåº¦é‹å‹•ï¼‰
 	 *
-	 *  *** YÀ•W ***
-	 *  Yt = V0 * T - 1/2 * G * T^2 ... ‰‘¬V0‚Ì‚Æ‚«‚ÌT•bŒã‚ÌˆÚ“®‹——£
+	 *  *** Yåº§æ¨™ ***
+	 *  Yt = V0 * T - 1/2 * G * T^2 ... åˆé€ŸV0ã®ã¨ãã®Tç§’å¾Œã®ç§»å‹•è·é›¢
 	 */ 
 
 	switch (this->state) {
@@ -62,8 +62,8 @@ void Stone::KeepBeingThrown() {
 					case AppCommon::Direction::TOP:
 					{
 						this->topLeftXYOnGnd.y = this->defaultTopleftXY.y - distance;
-						float r = 100.0f / distance;	// 100:ƒJƒƒ‰‚©‚çƒXƒNƒŠ[ƒ“‚Ö‚Ì‹——£
-						// “§‹}‚ÌŒvZ yf = d / y * z‚ğƒAƒŒƒ“ƒW
+						float r = 100.0f / distance;	// 100:ã‚«ãƒ¡ãƒ©ã‹ã‚‰ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã¸ã®è·é›¢
+						// é€è¦–å›³ã®è¨ˆç®— yâ€™ = d / y * zã‚’ã‚¢ãƒ¬ãƒ³ã‚¸
 						this->topLeftXY.y = this->topLeftXYOnGnd.y - (int)(r * height);
 						break;
 					}
@@ -75,8 +75,8 @@ void Stone::KeepBeingThrown() {
 					case AppCommon::Direction::BOTTOM:
 					{
 						this->topLeftXYOnGnd.y = this->defaultTopleftXY.y + distance;
-						float r = 50.0f / distance;	// 50:ƒJƒƒ‰‚©‚çƒXƒNƒŠ[ƒ“‚Ö‚Ì‹——£
-						// “§‹}‚ÌŒvZ yf = d / y * z‚ğƒAƒŒƒ“ƒW
+						float r = 50.0f / distance;	// 50:ã‚«ãƒ¡ãƒ©ã‹ã‚‰ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã¸ã®è·é›¢
+						// é€è¦–å›³ã®è¨ˆç®— yâ€™ = d / y * zã‚’ã‚¢ãƒ¬ãƒ³ã‚¸
 						this->topLeftXY.y = this->topLeftXYOnGnd.y - (int)(r * height);
 						break;
 					}
@@ -87,7 +87,7 @@ void Stone::KeepBeingThrown() {
 						break;
 				}
 
-				// ’n–Ê‚É’B‚µ‚½ê‡
+				// åœ°é¢ã«é”ã—ãŸå ´åˆ
 				if (height <= 0) {
 					SetDropped();
 				} 

@@ -1,4 +1,4 @@
-#ifndef PLAYER_H_
+﻿#ifndef PLAYER_H_
 #define PLAYER_H_
 
 #include <windows.h>
@@ -65,7 +65,7 @@ private:
 
 	static const int MAP_BUFFER = CharacterCommon::WIDTH;
 
-	const char* FILE_PATH;
+	const TCHAR* FILE_PATH;
 
 	/* Variables ---------------------------------------------------------------------------------------- */
 	Drawer* pDrawer;

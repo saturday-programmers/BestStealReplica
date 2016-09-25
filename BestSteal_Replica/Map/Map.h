@@ -1,4 +1,4 @@
-#ifndef MAP_H_
+﻿#ifndef MAP_H_
 #define MAP_H_
 
 #include <windows.h>
@@ -51,7 +51,7 @@ private:
 	static const int MAX_Y_CHIP_COUNT = 21;
 	static const int MAX_X_CHIP_COUNT = 30;
 
-	const char* FILE_PATH;
+	const TCHAR* FILE_PATH;
 
 	/* Variables ---------------------------------------------------------------------------------------- */
 	int yChipCount;

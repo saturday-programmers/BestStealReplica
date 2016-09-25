@@ -1,4 +1,4 @@
-#ifndef MAP_CHIP_JEWELRY_H_
+﻿#ifndef MAP_CHIP_JEWELRY_H_
 #define MAP_CHIP_JEWELRY_H_
 
 #include <windows.h>

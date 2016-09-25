@@ -1,4 +1,4 @@
-#ifndef STONE_H_
+﻿#ifndef STONE_H_
 #define STONE_H_
 
 #include <windows.h>

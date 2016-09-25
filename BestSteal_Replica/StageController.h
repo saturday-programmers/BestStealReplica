@@ -1,4 +1,4 @@
-#ifndef STAGE_CONTROLLER_H_
+﻿#ifndef STAGE_CONTROLLER_H_
 #define STAGE_CONTROLLER_H_
 
 #include "AppCommon.h"

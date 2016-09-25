@@ -1,4 +1,4 @@
-#include "Player.h"
+ï»¿#include "Player.h"
 #include "Drawer.h"
 
 
@@ -7,7 +7,7 @@ namespace Character {
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
 Player::Player(POINT topLeftXY, Drawer* pDrawer):
-	FILE_PATH("image\\character.png"),
+	FILE_PATH(TEXT("image\\character.png")),
 	pDrawer(pDrawer),
 	defaultTopLeftXY(topLeftXY),
 	holdingSilverKeyCount(0),
@@ -64,7 +64,7 @@ void Player::Walk(POINT movingPoint) {
 	this->topLeftXY.y += movingPoint.y;
 	
 	if (this->isDirectionChanged) {
-		// Œü‚«‚ª•Ï‚í‚Á‚½‚çƒAƒjƒ[ƒVƒ‡ƒ“”Ô†‚ðÅ‰‚É–ß‚·
+		// å‘ããŒå¤‰ã‚ã£ãŸã‚‰ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ç•ªå·ã‚’æœ€åˆã«æˆ»ã™
 		this->currentAnimationCnt = 0;
 	} else {
 		CharacterCommon::CountUpAnimationCnt(&this->currentAnimationCnt, Player::CHIP_COUNT_PER_DIRECTION);
@@ -85,7 +85,7 @@ void Player::KeepStealing() {
 	++this->currentKeepingStealingNum;
 
 	if (this->currentKeepingStealingNum > Player::COUNT_OF_KEEPING_STEALING) {
-		// “‚Ýó‘ÔI—¹
+		// ç›—ã¿çŠ¶æ…‹çµ‚äº†
 		this->isStealing = false;
 		this->currentKeepingStealingNum = 0;
 	} else {

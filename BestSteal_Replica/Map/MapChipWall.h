@@ -1,4 +1,4 @@
-#ifndef MAP_CHIP_WALL_H_
+﻿#ifndef MAP_CHIP_WALL_H_
 #define MAP_CHIP_WALL_H_
 
 #include <windows.h>

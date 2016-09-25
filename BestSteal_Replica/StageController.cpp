@@ -1,4 +1,4 @@
-#include "StageController.h"
+ï»¿#include "StageController.h"
 
 #include "Stage1.h"
 #include "Drawer.h"
@@ -26,16 +26,16 @@ StageController::~StageController() {
 
 /* Public Functions  -------------------------------------------------------------------------------- */
 void StageController::LoadStage(const Stage::IStage* pStage) {
-	// ƒ}ƒbƒvî•ñ
+	// ãƒãƒƒãƒ—æƒ…å ±
 	this->pStage = pStage;
 	this->pMap = new Map::Map(this->pStage->GetYChipCount(), this->pStage->GetXChipCount(), this->pDrawer);
 	this->pMap->Load(this->pStage);
 
-	// ƒvƒŒƒCƒ„[î•ñ
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±
 	POINT playerChipPos = this->pStage->GetPlayerFirstChipPos();
 	this->pPlayer = new Player(this->pMap->GetTopLeftXYonChip(playerChipPos), this->pDrawer);
 
-	// “Gî•ñ
+	// æ•µæƒ…å ±
 	int enermyCount = this->pStage->GetEnermyCount();
 	POINT enermiesXY[Enermy::MAX_ENERMY_COUNT];
 	for (int i = 0; i < enermyCount; ++i) {
@@ -47,7 +47,7 @@ void StageController::LoadStage(const Stage::IStage* pStage) {
 void StageController::Control(AppCommon::Key key) {
 	StageController::Handling handling = ConvertKeyToHandling(key);
 
-	// ƒvƒŒƒCƒ„[€–S
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ­»äº¡
 	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
 	if (this->pEnermy->CanKillPlayer(playerXY)) {
 		RevertStage();
@@ -55,13 +55,13 @@ void StageController::Control(AppCommon::Key key) {
 		return;
 	}
 
-	// ƒvƒŒƒCƒ„[ƒAƒjƒ[ƒVƒ‡ƒ“
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
 	int movingPixel = ControlPlayer(&handling);
 
-	// “GƒAƒjƒ[ƒWƒ‡ƒ“
+	// æ•µã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚¸ãƒ§ãƒ³
 	ControlEnermy(movingPixel, &handling);
 
-	// ƒ}ƒbƒvƒAƒjƒ[ƒVƒ‡ƒ“
+	// ãƒãƒƒãƒ—ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
 	ControlMap(movingPixel, &handling);
 
 	this->lastTimeHandling = handling;
@@ -110,7 +110,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 	}
 
 	if (pHandling->handlingType == Handling::HandlingType::STEAL_OR_OPEN) {
-		// ƒvƒŒƒCƒ„[‚Ì–Ú‚Ì‘O‚Ìƒ}ƒbƒvƒ`ƒbƒvæ“¾
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ç›®ã®å‰ã®ãƒãƒƒãƒ—ãƒãƒƒãƒ—å–å¾—
 		Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
 		POINT frontMapChipPos = this->pMap->GetFrontMapChipPos(playerXY, this->pPlayer->GetHeadingDirection());
 		bool canStartStealing = true;
@@ -121,7 +121,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 				if (!this->pMap->IsDoorOpened(frontMapChipPos)) {
 					AppCommon::KeyType keyType = (mapChipType == MapCommon::MapChipType::DOOR) ? AppCommon::KeyType::Silver : AppCommon::KeyType::Gold;
 					if (this->pPlayer->HasKey(keyType)) {
-						// ƒhƒA‚ğŠJ‚¯‚é
+						// ãƒ‰ã‚¢ã‚’é–‹ã‘ã‚‹
 						if (this->pMap->StartOpeningDoor(frontMapChipPos)) {
 							this->pPlayer->SubtractKey(keyType);
 						}
@@ -131,7 +131,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 				break;
 			}
 			case MapCommon::MapChipType::JEWELRY:
-				// •ó” ‚ğŠJ‚¯‚é
+				// å®ç®±ã‚’é–‹ã‘ã‚‹
 				this->pMap->OpenJewelryBox();
 				canStartStealing = false;
 				break;
@@ -140,20 +140,20 @@ int StageController::ControlPlayer(Handling* pHandling) {
 		}
 
 		if (canStartStealing) {
-			// –Ú‚Ì‘O‚ªŠJ‚¢‚Ä‚¢‚È‚¢ƒhƒAˆÈŠO‚Ìê‡‚Í“‚ŞƒAƒNƒVƒ‡ƒ“
+			// ç›®ã®å‰ãŒé–‹ã„ã¦ã„ãªã„ãƒ‰ã‚¢ä»¥å¤–ã®å ´åˆã¯ç›—ã‚€ã‚¢ã‚¯ã‚·ãƒ§ãƒ³
 			this->pPlayer->StartStealing();
 		}
 	} else if (pHandling->handlingType == Handling::HandlingType::THROW && pHandling->handlingType != this->lastTimeHandling.handlingType) {
-		// Î‚ğ“Š‚°‚é
+		// çŸ³ã‚’æŠ•ã’ã‚‹
 		Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
 		this->pMap->AddStone(playerXY.topLeft, this->pPlayer->GetHeadingDirection());
 	}
 
-	// “‚ŞƒAƒNƒVƒ‡ƒ“Œp‘±
+	// ç›—ã‚€ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ç¶™ç¶š
 	if (this->pPlayer->GetIsStealing()) {
 		this->pPlayer->KeepStealing();
 	} else {
-		// ƒvƒŒƒCƒ„[ˆÚ“®•ûŒü
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç§»å‹•æ–¹å‘
 		switch (pHandling->handlingType) {
 			case Handling::HandlingType::RIGHT:
 				this->pPlayer->SetDirection(AppCommon::Direction::RIGHT);
@@ -172,7 +172,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 		}
 	}
 
-	// ƒvƒŒƒCƒ„[ˆÚ“®‹——£
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç§»å‹•è·é›¢
 	if (this->pPlayer->GetIsStealing()) {
 		movingPixel = Player::MOVING_PIXEL_ON_STEALING;
 	} else {
@@ -205,7 +205,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 			break;
 	}
 
-	// ƒvƒŒƒCƒ„[ƒAƒjƒ[ƒVƒ‡ƒ“
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
 	if (!this->pPlayer->GetIsStealing()) {
 		if (movingPixel > 0) {
 			this->pPlayer->Walk(movingPoint);
@@ -214,7 +214,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 		}
 	}
 
-	// ˆÚ“®‰Â”\”ÍˆÍŠm”F
+	// ç§»å‹•å¯èƒ½ç¯„å›²ç¢ºèª
 	if (movingPixel > 0) {
 		POINT reversePoint;
 		reversePoint.x = 0;
@@ -225,7 +225,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 			reversePoint.y = -1 * (movingPoint.y / movingPixel);
 		}
 		while (!this->pMap->IsOnRoad(this->pPlayer->GetPlayerXY()) && movingPixel > 0) {
-			// ˆÚ“®•s‰Â”\‚ÈêŠ‚ÉˆÚ“®‚µ‚½ê‡‚ÍŒ³‚ÌˆÊ’u‚É–ß‚·
+			// ç§»å‹•ä¸å¯èƒ½ãªå ´æ‰€ã«ç§»å‹•ã—ãŸå ´åˆã¯å…ƒã®ä½ç½®ã«æˆ»ã™
 			this->pPlayer->Move(reversePoint);
 			--movingPixel;
 		}
@@ -237,14 +237,14 @@ int StageController::ControlPlayer(Handling* pHandling) {
 void StageController::ControlEnermy(int playerMovingPixel, Handling* pHandling) {
 	this->pEnermy->Stay();
 
-	// “‚Ü‚ê‚éˆ—
+	// ç›—ã¾ã‚Œã‚‹å‡¦ç†
 	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
 	AppCommon::KeyType keyType = this->pEnermy->GetStolen(playerXY, this->pPlayer->GetIsStealing());
 	this->pPlayer->AddKey(keyType);
 
-	// “G‚ªƒvƒŒƒCƒ„[‚ğ”­Œ©‚µ‚½‚©
+	// æ•µãŒãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ç™ºè¦‹ã—ãŸã‹
 	if (playerMovingPixel == 0) {
-		// ˆÚ“®‚µ‚Ä‚¢‚È‚¢ê‡‚Í‘–‚é/•à‚­‚Ìó‘Ô‚Í‘O‰ñ‚Ìó‘Ô‚ğˆø‚«Œp‚®
+		// ç§»å‹•ã—ã¦ã„ãªã„å ´åˆã¯èµ°ã‚‹/æ­©ãã®çŠ¶æ…‹ã¯å‰å›ã®çŠ¶æ…‹ã‚’å¼•ãç¶™ã
 		pHandling->isWalking = lastTimeHandling.isWalking;
 	}
 	if (this->pPlayer->GetIsStealing()) {
@@ -252,13 +252,13 @@ void StageController::ControlEnermy(int playerMovingPixel, Handling* pHandling) 
 	}
 	this->pEnermy->ScoutPlayer(playerXY, this->pStage->GetEnermySearchableRadius(), pHandling->isWalking);
 
-	// “Ëi‰Â”\‚©
+	// çªé€²å¯èƒ½ã‹
 	for (int i = 0; i < this->pStage->GetEnermyCount(); ++i) {
 		if (this->pEnermy->GetState(i) == Enermy::State::GOT_STOLEN) {
 			continue;
 		}
 
-		// ƒvƒŒƒCƒ„[‚Æ‚Ì‹——£ƒ`ƒFƒbƒN
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¨ã®è·é›¢ãƒã‚§ãƒƒã‚¯
 		POINT centerPlayer = CharacterCommon::CalcCenter(playerXY);
 		POINT playerPos = this->pMap->GetMapChipPos(centerPlayer);
 
@@ -287,22 +287,22 @@ void StageController::ControlEnermy(int playerMovingPixel, Handling* pHandling) 
 		}
 		canSeePlayer = canSeePlayer && distance <= this->pStage->GetEnermySearchableRadius();
 
-		// ƒvƒŒƒCƒ„[‚Æ‚ÌŠÔ‚É•Ç‚ª‚ ‚é‚©
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¨ã®é–“ã«å£ãŒã‚ã‚‹ã‹
 		canSeePlayer = canSeePlayer && !this->pMap->ExistsWallBetween(centerEnermy, centerPlayer);
 
-		// “Ëi
+		// çªé€²
 		this->pEnermy->Attack(i, canSeePlayer);
 	}
 }
 
 void StageController::ControlMap(int playerMovingPixel, StageController::Handling* pHandling) {
-	// ƒhƒA‚ğŠJ‚¯‚éƒAƒjƒ[ƒVƒ‡ƒ“
+	// ãƒ‰ã‚¢ã‚’é–‹ã‘ã‚‹ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
 	this->pMap->KeepOpeningDoors();
 
-	// Î‚ğ“Š‚°‚éƒAƒjƒ[ƒVƒ‡ƒ“
+	// çŸ³ã‚’æŠ•ã’ã‚‹ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
 	this->pMap->AnimateStones();
 
-	// ƒvƒŒƒCƒ„[‚ªƒEƒBƒ“ƒhƒEŠO‚Éo‚éè‘O‚Ìê‡‚Íƒ}ƒbƒv‚ğˆÚ“®‚³‚¹‚é
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å¤–ã«å‡ºã‚‹æ‰‹å‰ã®å ´åˆã¯ãƒãƒƒãƒ—ã‚’ç§»å‹•ã•ã›ã‚‹
 	if (playerMovingPixel > 0) {
 		MoveMap(playerMovingPixel);
 	}
@@ -313,7 +313,7 @@ void StageController::MoveMap(int playerMovingPixel) {
 	mapMovingPoint.x = 0;
 	mapMovingPoint.y = 0;
 
-	// ˆê’UˆÚ“®‚³‚¹‚Ä‚İ‚é
+	// ä¸€æ—¦ç§»å‹•ã•ã›ã¦ã¿ã‚‹
 	if (this->pPlayer->IsStayingNearlyWindowTop()) {
 		mapMovingPoint.y = playerMovingPixel;
 	} else if (this->pPlayer->IsStayingNearlyWindowBottom()) {
@@ -325,7 +325,7 @@ void StageController::MoveMap(int playerMovingPixel) {
 		mapMovingPoint.x = playerMovingPixel;
 	}
 
-	// ƒ}ƒbƒvŠO‚ª•\¦‚³‚ê‚Ä‚µ‚Ü‚¤ê‡‚ÍŒ³‚É–ß‚·
+	// ãƒãƒƒãƒ—å¤–ãŒè¡¨ç¤ºã•ã‚Œã¦ã—ã¾ã†å ´åˆã¯å…ƒã«æˆ»ã™
 	if (!this->pMap->IsMovableX(mapMovingPoint.x)) {
 		mapMovingPoint.x = 0;
 	}

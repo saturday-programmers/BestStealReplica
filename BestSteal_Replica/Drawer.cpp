@@ -1,4 +1,4 @@
-#define _USE_MATH_DEFINES
+ï»¿#define _USE_MATH_DEFINES
 #include <math.h>
 #include <d3dx9tex.h>
 
@@ -10,10 +10,10 @@
 namespace BestStealReplica {
 namespace {
 struct CUSTOMVERTEX {
-	float           x, y, z;                //ˆÊ’uî•ñ
-	float           rhw;                    //’¸“_•ÏŠ·’l
-	DWORD           color;                  //’¸“_ƒJƒ‰[
-	float           tu, tv;                 //ƒeƒNƒXƒ`ƒƒÀ•W
+	float           x, y, z;                //ä½ç½®æƒ…å ±
+	float           rhw;                    //é ‚ç‚¹å¤‰æ›å€¤
+	DWORD           color;                  //é ‚ç‚¹ã‚«ãƒ©ãƒ¼
+	float           tu, tv;                 //ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 };
 }
 
@@ -38,10 +38,10 @@ UINT16 Drawer::GetAlphaOnBlinking(int time) {
 
 
 /* Public Functions  -------------------------------------------------------------------------------- */
-bool Drawer::CreateTexture(const char* filePath, const TextureType textureType) {
+bool Drawer::CreateTexture(const TCHAR* filePath, const TextureType textureType) {
 	if (FAILED(D3DXCreateTextureFromFileEx(
 		this->pD3Device,
-		TEXT(filePath),
+		filePath,
 		D3DX_DEFAULT_NONPOW2,
 		D3DX_DEFAULT_NONPOW2,
 		D3DX_DEFAULT,
@@ -62,9 +62,9 @@ bool Drawer::CreateTexture(const char* filePath, const TextureType textureType) 
 void Drawer::BeginDraw() {
 	if (!this->pD3Device) return;
 
-	//•`‰æ•û–@‚Ìİ’è
+	//æç”»æ–¹æ³•ã®è¨­å®š
 	this->pD3Device->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
-	this->pD3Device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);  //SRC‚Ìİ’è
+	this->pD3Device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);  //SRCã®è¨­å®š
 	this->pD3Device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	this->pD3Device->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_COLOR1);
 
@@ -78,12 +78,12 @@ void Drawer::BeginDraw() {
 
 	this->pD3Device->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
 
-	//‰æ–Ê‚ÌÁ‹
+	//ç”»é¢ã®æ¶ˆå»
 	this->pD3Device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0x00, 0x00, 0x00), 1.0, 0);
-	//•`‰æ‚ÌŠJn
+	//æç”»ã®é–‹å§‹
 	this->pD3Device->BeginScene();
 
-	// ’¸“_ƒtƒH[ƒ}ƒbƒg‚Ìİ’è
+	// é ‚ç‚¹ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã®è¨­å®š
 	this->pD3Device->SetFVF(D3DFVF_CUSTOMVERTEX);
 }
 
@@ -102,10 +102,10 @@ void Drawer::Blackout() {
 }
 
 void Drawer::EndDraw() {
-	//•`‰æ‚ÌI—¹
+	//æç”»ã®çµ‚äº†
 	this->pD3Device->EndScene();
 
-	//•\¦
+	//è¡¨ç¤º
 	this->pD3Device->Present(NULL, NULL, NULL, NULL);
 }
 
@@ -121,7 +121,7 @@ void Drawer::Draw(Vertices<DrawingVertex> vertices, LPDIRECT3DTEXTURE9 pTexture,
 	if ((vertices.topLeft.x < 0 && vertices.topLeft.y < 0 && vertices.bottomRight.x < 0 && vertices.bottomRight.y < 0)
 			|| (vertices.topLeft.x > AppCommon::GetWindowWidth() && vertices.topLeft.y > AppCommon::GetWindowHeight() 
 				&& vertices.bottomRight.x > AppCommon::GetWindowWidth() && vertices.bottomRight.y > AppCommon::GetWindowHeight())) {
-		// •`‰æ”ÍˆÍŠO
+		// æç”»ç¯„å›²å¤–
 		return;
 	}
 	

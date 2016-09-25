@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 
 #include "Map.h"
 #include "AppCommon.h"
@@ -14,7 +14,7 @@ namespace Map {
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
 Map::Map(int yChipCount, int xChipCount, Drawer* pDrawer) :
-	FILE_PATH("image\\mapchip.png"),
+	FILE_PATH(TEXT("image\\mapchip.png")),
 	pDrawer(pDrawer),
 	yChipCount(yChipCount),
 	xChipCount(xChipCount)
@@ -57,7 +57,7 @@ void Map::Load(const Stage::IStage* pStage) {
 		}
 	}
 
-	// ƒvƒŒƒCƒ„[‚ª‰æ–Ê’†‰›‚É‚È‚éê‡‚ÌÀ•W‚ğŒvZ
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒç”»é¢ä¸­å¤®ã«ãªã‚‹å ´åˆã®åº§æ¨™ã‚’è¨ˆç®—
 	POINT playerChipPos = pStage->GetPlayerFirstChipPos();
 	POINT centerXY;
 	centerXY.x = AppCommon::GetWindowWidth() / 2;
@@ -65,7 +65,7 @@ void Map::Load(const Stage::IStage* pStage) {
 	this->topLeft.x = centerXY.x - (playerChipPos.x * MapChip::WIDTH);
 	this->topLeft.y = centerXY.y - (playerChipPos.y * MapChip::HEIGHT);
 
-	// ¶ã‚ª—]”’‚É‚È‚éê‡‚Í—]”’‚ª0‚É‚È‚é‚æ‚¤‚É’²®
+	// å·¦ä¸ŠãŒä½™ç™½ã«ãªã‚‹å ´åˆã¯ä½™ç™½ãŒ0ã«ãªã‚‹ã‚ˆã†ã«èª¿æ•´
 	if (this->topLeft.x > 0) {
 		this->topLeft.x = 0;
 	}
@@ -73,7 +73,7 @@ void Map::Load(const Stage::IStage* pStage) {
 		this->topLeft.y = 0;
 	}
 
-	// ‰E‰º‚ª—]”’‚É‚È‚éê‡‚Í—]”’‚ª0‚É‚È‚é‚æ‚¤‚É’²®
+	// å³ä¸‹ãŒä½™ç™½ã«ãªã‚‹å ´åˆã¯ä½™ç™½ãŒ0ã«ãªã‚‹ã‚ˆã†ã«èª¿æ•´
 	POINT minTopLeft;
 	minTopLeft.x = AppCommon::GetWindowWidth() - (this->xChipCount * MapChip::WIDTH);
 	minTopLeft.y = AppCommon::GetWindowHeight() - (this->yChipCount * MapChip::HEIGHT);
@@ -89,7 +89,7 @@ void Map::Load(const Stage::IStage* pStage) {
 		for (int j = 0; j < this->xChipCount; ++j) {
 			if (this->pMapData[i][j]->GetChipType() == MapCommon::MapChipType::WALL) {
 				MapChipWall* chip = (MapChipWall*)this->pMapData[i][j];
-				// •Ç‚Æ‚»‚êˆÈŠO‚Ìƒ`ƒbƒv‚ÌŠÔ‚Éü‚ğˆø‚­
+				// å£ã¨ãã‚Œä»¥å¤–ã®ãƒãƒƒãƒ—ã®é–“ã«ç·šã‚’å¼•ã
 				if (i == 0) {
 					chip->SetNeedsTopLine();
 				} else {
@@ -158,7 +158,7 @@ POINT Map::GetTopLeftXYonChip(POINT mapChipPos) {
 }
 
 bool Map::IsOnRoad(Vertices<POINT> xy) {
-	// 4’¸“_‚Ìƒ`ƒbƒvˆÊ’u‚ğæ“¾
+	// 4é ‚ç‚¹ã®ãƒãƒƒãƒ—ä½ç½®ã‚’å–å¾—
 	POINT topLeftChipPos = GetMapChipPos(xy.topLeft);
 
 	POINT topRightXY;
@@ -210,7 +210,7 @@ bool Map::IsMovableY(int y) {
 }
 
 void Map::KeepOpeningDoors() {
-	// ŠJ‚«‚©‚¯‚ÌƒhƒA‚ª‚ ‚ê‚ÎƒAƒjƒ[ƒVƒ‡ƒ“
+	// é–‹ãã‹ã‘ã®ãƒ‰ã‚¢ãŒã‚ã‚Œã°ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
 	for (int i = 0; i < (int)this->pDoorMapChips.size(); ++i) {
 		switch (this->pDoorMapChips[i]->state) {
 			case MapChipDoor::State::START_OPENING:
@@ -224,7 +224,7 @@ void Map::KeepOpeningDoors() {
 }
 
 POINT Map::GetFrontMapChipPos(Vertices<POINT> playerXY, AppCommon::Direction headingDirection) {
-	// ƒvƒŒƒCƒ„[‚Ì–Ú‚Ì‘O‚Ìƒ}ƒbƒvƒ`ƒbƒvæ“¾
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ç›®ã®å‰ã®ãƒãƒƒãƒ—ãƒãƒƒãƒ—å–å¾—
 	POINT centerXY;
 	centerXY.x = (playerXY.bottomRight.x + playerXY.topLeft.x) / 2;
 	centerXY.y = (playerXY.bottomRight.y + playerXY.topLeft.y) / 2;
@@ -376,7 +376,7 @@ void Map::AnimateStones() {
 		if (this->pStones[i]->Exists()) {
 			Vertices<POINT> nextXYOnGround = this->pStones[i]->GetXYsOnGround();
 			if (!IsOnRoad(nextXYOnGround)) {
-				// ˆÚ“®æ‚Ì’n–Ê‚ª“¹‚Å‚È‚¢ê‡‚Í–ß‚·				
+				// ç§»å‹•å…ˆã®åœ°é¢ãŒé“ã§ãªã„å ´åˆã¯æˆ»ã™				
 				this->pStones[i]->SetDropped();
 				bool isOnRoad = false;
 				while (!isOnRoad) {
@@ -386,7 +386,7 @@ void Map::AnimateStones() {
 				}
 			}
 		} else {
-			// •\¦ŠúŠÔ‚ªI‚í‚Á‚½ê‡‚Ííœ
+			// è¡¨ç¤ºæœŸé–“ãŒçµ‚ã‚ã£ãŸå ´åˆã¯å‰Šé™¤
 			Stone* disappearedStone = pStones[i];
 			this->pStones.erase(this->pStones.begin() + i);
 			delete disappearedStone;

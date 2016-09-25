@@ -1,4 +1,4 @@
-#include <windows.h>
+Ôªø#include <windows.h>
 #include <mmsystem.h >
 #include <d3d9.h>
 
@@ -14,7 +14,7 @@
 
 
 namespace BestStealReplica {
-static const char* TITLE = "Best Steal Replica";
+static const TCHAR* TITLE = TEXT("Best Steal Replica");
 
 static IDirect3D9*			 pDirect3D;
 static D3DPRESENT_PARAMETERS d3dpp;
@@ -36,10 +36,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 	WNDCLASS winc;
 	D3DDISPLAYMODE d3ddm;
 
-	//DirectX ÉIÉuÉWÉFÉNÉgÇÃê∂ê¨
+	//DirectX „Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆÁîüÊàê
 	pDirect3D = Direct3DCreate9(D3D_SDK_VERSION);
 
-	//Display Mode ÇÃê›íË
+	//Display Mode „ÅÆË®≠ÂÆö
 	pDirect3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3ddm);
 	ZeroMemory(&d3dpp, sizeof(D3DPRESENT_PARAMETERS));
 	d3dpp.BackBufferFormat = d3ddm.Format;
@@ -47,7 +47,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	d3dpp.Windowed = TRUE;
 
-	//WindowsèÓïÒÇÃê›íË
+	//WindowsÊÉÖÂ†±„ÅÆË®≠ÂÆö
 	winc.style = CS_HREDRAW | CS_VREDRAW;
 	winc.lpfnWndProc = WndProc;
 	winc.cbClsExtra = winc.cbWndExtra = 0;
@@ -56,16 +56,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 	winc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	winc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
 	winc.lpszMenuName = NULL;
-	winc.lpszClassName = TEXT(TITLE);
-	//WindowsÇÃìoò^
+	winc.lpszClassName = TITLE;
+	//Windows„ÅÆÁôªÈå≤
 	if (!RegisterClass(&winc)) return 0;
 
-	//WindowsÇÃê∂ê¨
+	//Windows„ÅÆÁîüÊàê
 	int dh = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYFRAME) * 2;
 	int dw = GetSystemMetrics(SM_CXFRAME) * 2;
 
 	hWnd = CreateWindow(
-		TEXT(TITLE),
+		TITLE,
 		TITLE,
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		0,		// x
@@ -76,34 +76,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 		);
 	if (!hWnd) return 0;
 
-	// ÉNÉâÉCÉAÉìÉgóÃàÊÇÃÉTÉCÉYÇï€éù
+	// „ÇØ„É©„Ç§„Ç¢„É≥„ÉàÈ†òÂüü„ÅÆ„Çµ„Ç§„Ç∫„Çí‰øùÊåÅ
 	RECT rc;
 	GetClientRect(hWnd, &rc);
 	AppCommon::SetWindowHeight(rc.bottom - rc.top);
 	AppCommon::SetWindowWidth(rc.right - rc.left);
 
-	// DirectInputÉIÉuÉWÉFÉNÉgçÏê¨
+	// DirectInput„Ç™„Éñ„Ç∏„Çß„ÇØ„Éà‰ΩúÊàê
 	HRESULT hr = DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&g_lpDI, NULL);
 	if FAILED(hr) {
 		// DirectInput not available; take appropriate action 
 		return false;
 	}
 
-	// DirectInputÉLÅ[É{Å[ÉhÉfÉoÉCÉXÇÃçÏê¨
+	// DirectInput„Ç≠„Éº„Éú„Éº„Éâ„Éá„Éê„Ç§„Çπ„ÅÆ‰ΩúÊàê
 	hr = g_lpDI->CreateDevice(GUID_SysKeyboard, &g_lpDIDevice, NULL);
 	if FAILED(hr) {
 		DI_Term();
 		return FALSE;
 	}
 
-	// ÉLÅ[É{Å[ÉhÉfÅ[É^ÉtÉHÅ[É}ÉbÉgÇÃê›íË
+	// „Ç≠„Éº„Éú„Éº„Éâ„Éá„Éº„Çø„Éï„Ç©„Éº„Éû„ÉÉ„Éà„ÅÆË®≠ÂÆö
 	hr = g_lpDIDevice->SetDataFormat(&c_dfDIKeyboard);
 	if FAILED(hr) {
 		DI_Term();
 		return FALSE;
 	}
 
-	// ÉLÅ[É{Å[ÉhÇÃìÆçÏÇÃê›íË 
+	// „Ç≠„Éº„Éú„Éº„Éâ„ÅÆÂãï‰Ωú„ÅÆË®≠ÂÆö 
 	hr = g_lpDIDevice->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 	if FAILED(hr) {
 		DI_Term();
@@ -139,7 +139,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 
 	timeEndPeriod(1);
 
-	// èIóπèàóù
+	// ÁµÇ‰∫ÜÂá¶ÁêÜ
 	DI_Term();
 	drawer.Release();
 	sceneController.Release();
@@ -152,7 +152,7 @@ namespace BestStealReplica {
 
 //-------------------------------------------------------------
 //
-//	ÉÅÉbÉZÅ[ÉWèàóù
+//	„É°„ÉÉ„Çª„Éº„Ç∏Âá¶ÁêÜ
 //
 //-------------------------------------------------------------
 static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {

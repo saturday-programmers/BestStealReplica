@@ -1,4 +1,4 @@
-#include "MapChipWall.h"
+ï»¿#include "MapChipWall.h"
 
 
 namespace BestStealReplica {
@@ -7,9 +7,9 @@ namespace Map {
 MapChipWall::MapChipWall() : MapChip(MapCommon::MapChipType::WALL) {}
 
 void MapChipWall::SetChipNumber() {
-	// ü‚Ìƒpƒ^[ƒ“‚É‡‚í‚¹‚Äƒ`ƒbƒv”Ô†‚ğw’è
+	// ç·šã®ãƒ‘ã‚¿ãƒ¼ãƒ³ã«åˆã‚ã›ã¦ãƒãƒƒãƒ—ç•ªå·ã‚’æŒ‡å®š
 	if (!this->needsTopLine && !this->needsRightLine && !this->needsBottomLine && !this->needsLeftLine) {
-		// l•ûü‚ª‚È‚¢ƒ`ƒbƒv‚ÍƒfƒtƒHƒ‹ƒg‚Ì‚à‚Ì‚ğg—p
+		// å››æ–¹ç·šãŒãªã„ãƒãƒƒãƒ—ã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚‚ã®ã‚’ä½¿ç”¨
 		this->chipNumber = (int)this->chipType;
 	} else if (this->needsTopLine && this->needsRightLine && this->needsBottomLine && this->needsLeftLine) {
 		this->chipNumber = ChipNumber::WALL_WITH_SURROUNDED_LINE;
@@ -68,7 +68,7 @@ void MapChipWall::SetChipNumber() {
 			}
 		}
 	}
-	// ƒeƒNƒXƒ`ƒƒ[ã‚Ìƒ}ƒbƒvƒ`ƒbƒv‚ÌˆÊ’u
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ä¸Šã®ãƒãƒƒãƒ—ãƒãƒƒãƒ—ã®ä½ç½®
 	SetTuTv();
 }
 

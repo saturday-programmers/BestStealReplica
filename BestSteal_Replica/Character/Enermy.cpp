@@ -1,4 +1,4 @@
-#define _USE_MATH_DEFINES
+ï»¿#define _USE_MATH_DEFINES
 #include <math.h>
 
 #include "Enermy.h"
@@ -69,7 +69,7 @@ Enermy::State Enermy::GetState(int enermyNum) {
 void Enermy::Draw() {
 	for (int i = 0; i < this->enermyCount; ++i) {
 		if (this->enermiesInfo[i].state == State::GOT_STOLEN) {
-			// “_–Å
+			// ç‚¹æ»…
 			double rad = this->enermiesInfo[i].restTimeForBackingToNormal * 18 * M_PI / 180;
 			double alpha = 0xFF * abs(sin(rad));
 			this->pDrawer->Draw(GetVertex(i), Drawer::TextureType::CHARACTER, (UINT16)alpha);
@@ -77,19 +77,19 @@ void Enermy::Draw() {
 			this->pDrawer->Draw(GetVertex(i), Drawer::TextureType::CHARACTER);
 
 			if (this->enermiesInfo[i].state == State::FOUND_PLAYER || this->enermiesInfo[i].state == State::ATTACKING) {
-				// ‚Ñ‚Á‚­‚èƒ}[ƒN•\¦
+				// ã³ã£ãã‚Šãƒãƒ¼ã‚¯è¡¨ç¤º
 				POINT enermyTopLeftXY = this->enermiesInfo[i].topLeftXY;
 				POINT exclXY;
 				if (enermyTopLeftXY.y >= Map::MapChip::HEIGHT) {
-					// ã‚ª‹ó‚¢‚Ä‚¢‚éê‡‚Íã‚É•\¦
+					// ä¸ŠãŒç©ºã„ã¦ã„ã‚‹å ´åˆã¯ä¸Šã«è¡¨ç¤º
 					exclXY.x = enermyTopLeftXY.x;
 					exclXY.y = enermyTopLeftXY.y - Map::MapChip::HEIGHT;
 				} else if (enermyTopLeftXY.x >= Map::MapChip::WIDTH) {
-					// ¶‚ª‹ó‚¢‚Ä‚¢‚éê‡‚Í¶‚É•\¦
+					// å·¦ãŒç©ºã„ã¦ã„ã‚‹å ´åˆã¯å·¦ã«è¡¨ç¤º
 					exclXY.x = enermyTopLeftXY.x - Map::MapChip::WIDTH;
 					exclXY.y = enermyTopLeftXY.y;
 				} else {
-					// “G‚ª¶ã‚É‚¢‚éê‡‚Í‰E‚É•\¦
+					// æ•µãŒå·¦ä¸Šã«ã„ã‚‹å ´åˆã¯å³ã«è¡¨ç¤º
 					exclXY.x = enermyTopLeftXY.x + Map::MapChip::WIDTH;
 					exclXY.y = enermyTopLeftXY.y;
 				}
@@ -124,7 +124,7 @@ void Enermy::ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius, bool isP
 			this->enermiesInfo[i].state = State::FOUND_PLAYER;
 			this->enermiesInfo[i].restTimeForCancelFinding = TIME_FOR_CANCELING_FINDING;
 
-			// ƒvƒŒƒCƒ„[‚Ì•û‚ğŒü‚­
+			// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ–¹ã‚’å‘ã
 			POINT diff;
 			diff.x = enermyCenter.x - playerCenter.x;
 			diff.y = enermyCenter.y - playerCenter.y;
@@ -146,7 +146,7 @@ void Enermy::ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius, bool isP
 				case State::FOUND_PLAYER:
 					--this->enermiesInfo[i].restTimeForCancelFinding;
 					if (this->enermiesInfo[i].restTimeForCancelFinding == 0) {
-						// ƒvƒŒƒCƒ„[”­Œ©ó‘Ô‰ğœ
+						// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç™ºè¦‹çŠ¶æ…‹è§£é™¤
 						this->enermiesInfo[i].state = State::LOST_PLAYER;
 						this->enermiesInfo[i].restTimeForBackingToNormal = TIME_FOR_BACKING_TO_NORMAL;
 					}
@@ -155,7 +155,7 @@ void Enermy::ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius, bool isP
 					--this->enermiesInfo[i].restTimeForBackingToNormal;
 					if (this->enermiesInfo[i].restTimeForBackingToNormal == 0) {
 						this->enermiesInfo[i].state = State::NORMAL;
-						// Œ³‚ÌŒü‚«‚É–ß‚é
+						// å…ƒã®å‘ãã«æˆ»ã‚‹
 						this->enermiesInfo[i].headingDirection = this->enermiesInfo[i].defaultDirection;
 					}
 					break;
@@ -173,7 +173,7 @@ AppCommon::KeyType Enermy::GetStolen(Vertices<POINT> playerXY, bool isPlayerStea
 			--this->enermiesInfo[i].restTimeForBackingToNormal;
 			if (this->enermiesInfo[i].restTimeForBackingToNormal == 0) {
 				this->enermiesInfo[i].state = State::NORMAL;
-				// Œü‚«‚ª•Ï‚í‚Á‚Ä‚¢‚éŠÔ‚É“‚Ü‚ê‚½ê‡‚Í‚±‚Ìƒ^ƒCƒ~ƒ“ƒO‚ÅŒ³‚ÌŒü‚«‚É–ß‚é
+				// å‘ããŒå¤‰ã‚ã£ã¦ã„ã‚‹é–“ã«ç›—ã¾ã‚ŒãŸå ´åˆã¯ã“ã®ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§å…ƒã®å‘ãã«æˆ»ã‚‹
 				this->enermiesInfo[i].headingDirection = this->enermiesInfo[i].defaultDirection;
 			}
 			continue;
@@ -186,7 +186,7 @@ AppCommon::KeyType Enermy::GetStolen(Vertices<POINT> playerXY, bool isPlayerStea
 				&& ((playerXY.topLeft.y < enermyXY.bottomRight.y && playerXY.bottomRight.y > enermyXY.topLeft.y)
 				|| (enermyXY.topLeft.y < playerXY.bottomRight.y && enermyXY.bottomRight.y > playerXY.topLeft.y))) {
 
-				// “‚İ¬Œ÷
+				// ç›—ã¿æˆåŠŸ
 				this->enermiesInfo[i].state = State::GOT_STOLEN;
 				this->enermiesInfo[i].restTimeForBackingToNormal = Enermy::TIME_FOR_BACKING_TO_NORMAL;
 				ret = this->enermiesInfo[i].holdingKey;
@@ -201,18 +201,18 @@ AppCommon::KeyType Enermy::GetStolen(Vertices<POINT> playerXY, bool isPlayerStea
 void Enermy::Attack(int enermyNum, bool canSeePlayer) {
 	EnermyInfo* pEnermyInfo = &(this->enermiesInfo[enermyNum]);
 	if (pEnermyInfo->state == Enermy::State::GOT_STOLEN) {
-		// “‚Ü‚ê’†‚Ìê‡‚Í“®‚©‚È‚¢
+		// ç›—ã¾ã‚Œä¸­ã®å ´åˆã¯å‹•ã‹ãªã„
 		return;
 	}
 
-	// ƒXƒe[ƒg•ÏX
+	// ã‚¹ãƒ†ãƒ¼ãƒˆå¤‰æ›´
 	if (canSeePlayer) {
 		pEnermyInfo->state = Enermy::State::ATTACKING;
 	} else if (pEnermyInfo->state == Enermy::State::ATTACKING) {
 		pEnermyInfo->state = Enermy::State::NORMAL;
 	}
 
-	// “Ëi
+	// çªé€²
 	if (pEnermyInfo->state == Enermy::State::ATTACKING) {
 		switch (pEnermyInfo->headingDirection) {
 			case AppCommon::Direction::TOP:

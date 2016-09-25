@@ -1,4 +1,4 @@
-#include "AppCommon.h"
+﻿#include "AppCommon.h"
 
 
 namespace BestStealReplica {

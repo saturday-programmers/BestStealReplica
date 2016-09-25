@@ -1,4 +1,4 @@
-#include "CharacterCommon.h"
+﻿#include "CharacterCommon.h"
 
 namespace BestStealReplica {
 namespace Character {

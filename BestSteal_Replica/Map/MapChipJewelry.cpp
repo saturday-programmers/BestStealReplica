@@ -1,4 +1,4 @@
-#include "MapChipJewelry.h"
+﻿#include "MapChipJewelry.h"
 
 
 namespace BestStealReplica {

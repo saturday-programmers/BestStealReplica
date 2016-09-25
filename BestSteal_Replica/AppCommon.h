@@ -1,9 +1,9 @@
-#ifndef APP_COMMON_H_
+ï»¿#ifndef APP_COMMON_H_
 #define APP_COMMON_H_
 
 #include <windows.h>
 
-// new‰‰Zq‚ğƒI[ƒo[ƒ[ƒh‚µ‚Ä‚¢‚éƒNƒ‰ƒX‚Ícrtdbg.h‚æ‚è‘O‚Éinclude‚·‚é•K—v—L
+// newæ¼”ç®—å­ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ã—ã¦ã„ã‚‹ã‚¯ãƒ©ã‚¹ã¯crtdbg.hã‚ˆã‚Šå‰ã«includeã™ã‚‹å¿…è¦æœ‰
 #include <d3dx9math.h>
 
 #if _DEBUG

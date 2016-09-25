@@ -1,4 +1,4 @@
-#ifndef MAP_CHIP_DOOR_H_
+﻿#ifndef MAP_CHIP_DOOR_H_
 #define MAP_CHIP_DOOR_H_
 
 #include <windows.h>

@@ -1,4 +1,4 @@
-#ifndef CHARACTER_COMMON_H_
+﻿#ifndef CHARACTER_COMMON_H_
 #define CHARACTER_COMMON_H_
 
 #include "AppCommon.h"

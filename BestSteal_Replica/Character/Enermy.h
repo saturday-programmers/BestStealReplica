@@ -1,4 +1,4 @@
-#ifndef ENERMY_H_
+﻿#ifndef ENERMY_H_
 #define ENERMY_H_
 
 #include <windows.h>

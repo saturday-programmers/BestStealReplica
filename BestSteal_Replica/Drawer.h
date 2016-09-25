@@ -1,4 +1,4 @@
-#ifndef DRAWER_H_
+﻿#ifndef DRAWER_H_
 #define DRAWER_H_
 
 #include <d3d9.h>
@@ -24,7 +24,7 @@ public:
 	static UINT16 GetAlphaOnBlinking(int time);
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	bool CreateTexture(const char* filePath, TextureType textureType);
+	bool CreateTexture(const TCHAR* filePath, TextureType textureType);
 	void BeginDraw();
 	void Draw(Vertices<DrawingVertex> vertices, TextureType textureType) const;
 	void Draw(Vertices<DrawingVertex> vertices, TextureType textureType, UINT16 alpha) const;
