@@ -35,6 +35,7 @@ public:
 	void Move(POINT xy);
 	Vertices<POINT> GetXYsOnGround();
 	void SetDropped();
+	void BackOnePixcel();
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */
@@ -46,8 +47,8 @@ private:
 	static const int THROWN_HIGHT = 50;
 	static const int STAYING_DURATION = 120;
 	static const int DISAPPEARING_DURATION = 60;
-	static const int INITIAL_VELOCITY = 25;
-	static const int GRAVITY = 6;
+	static const int INITIAL_VELOCITY = 16;
+	static const int GRAVITY = 2;
 
 	/* Variables ---------------------------------------------------------------------------------------- */
 	Drawer* pDrawer;
@@ -58,6 +59,7 @@ private:
 	int thrownElapsedCount;
 	Stone::State state;
 	int restTime;
+	POINT topLeftXYOnGnd;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	Vertices<DrawingVertex> GetVertex();

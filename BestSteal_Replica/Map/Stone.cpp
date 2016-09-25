@@ -18,6 +18,15 @@ Stone::Stone(Drawer* pDrawer, POINT topLeftXY, AppCommon::Direction direction) :
 /* Getters / Setters -------------------------------------------------------------------------------- */
 void Stone::SetTopLeftXY(POINT xy) {
 	this->topLeftXY = xy;
+	switch (this->direction) {
+		case AppCommon::Direction::TOP:
+		case AppCommon::Direction::BOTTOM:
+			this->topLeftXYOnGnd.y = xy.y;
+			break;
+		case AppCommon::Direction::RIGHT:
+		case AppCommon::Direction::LEFT:
+			this->topLeftXYOnGnd.x = xy.x;
+	}
 }
 
 
@@ -37,38 +46,44 @@ void Stone::KeepBeingThrown() {
 		case Stone::State::BEING_THROWN:
 			if (thrownElapsedCount == 0) {
 				this->topLeftXY = this->defaultTopleftXY;
+				this->topLeftXYOnGnd = this->defaultTopleftXY;
 			} else {
 				int velocity = Stone::INITIAL_VELOCITY;
 				int g = Stone::GRAVITY;
 				int distance = Stone::INITIAL_VELOCITY * this->thrownElapsedCount;
 				int height = Stone::INITIAL_VELOCITY * this->thrownElapsedCount - (Stone::GRAVITY * (int)pow(double(this->thrownElapsedCount), 2) / 2);
-				bool isDropped = false;
 
 				switch (this->direction) {
 					case AppCommon::Direction::TOP:
-						this->topLeftXY.x = this->defaultTopleftXY.x - (height / 2);
-						this->topLeftXY.y = this->defaultTopleftXY.y - distance;
-						isDropped = (this->topLeftXY.x >= this->defaultTopleftXY.x);
+					{
+						this->topLeftXYOnGnd.y = this->defaultTopleftXY.y - distance;
+						float r = 100.0f / distance;	// 100:カメラからスクリーンへの距離
+						// 透視図の計算 y’ = d / y * zをアレンジ
+						this->topLeftXY.y = this->topLeftXYOnGnd.y - (int)(r * height);
 						break;
+					}
 					case AppCommon::Direction::RIGHT:
 						this->topLeftXY.x = this->defaultTopleftXY.x + distance;
 						this->topLeftXY.y = this->defaultTopleftXY.y - height;
-						isDropped = (this->topLeftXY.y >= this->defaultTopleftXY.y);
+						this->topLeftXYOnGnd.x = this->topLeftXY.x;
 						break;
 					case AppCommon::Direction::BOTTOM:
-						this->topLeftXY.x = this->defaultTopleftXY.x - (height / 2);
-						this->topLeftXY.y = this->defaultTopleftXY.y + distance;
-						isDropped = (this->topLeftXY.x >= this->defaultTopleftXY.x);
+					{
+						this->topLeftXYOnGnd.y = this->defaultTopleftXY.y + distance;
+						float r = 50.0f / distance;	// 50:カメラからスクリーンへの距離
+						// 透視図の計算 y’ = d / y * zをアレンジ
+						this->topLeftXY.y = this->topLeftXYOnGnd.y - (int)(r * height);
 						break;
+					}
 					case AppCommon::Direction::LEFT:
 						this->topLeftXY.x = this->defaultTopleftXY.x - distance;
 						this->topLeftXY.y = this->defaultTopleftXY.y - height;
-						isDropped = (this->topLeftXY.y >= this->defaultTopleftXY.y);
+						this->topLeftXYOnGnd.x = this->topLeftXY.x;
 						break;
 				}
 
 				// 地面に達した場合
-				if (isDropped) {
+				if (height <= 0) {
 					SetDropped();
 				} 
 			}
@@ -121,29 +136,34 @@ void Stone::Move(POINT xy) {
 
 Vertices<POINT> Stone::GetXYsOnGround() {
 	Vertices<POINT> ret;
-	ret.topLeft = this->topLeftXY;
-
-	if (this->state == Stone::State::BEING_THROWN) {
-		switch (this->direction) {
-			case AppCommon::Direction::TOP:
-			case AppCommon::Direction::BOTTOM:
-				ret.topLeft.x = this->defaultTopleftXY.x;
-				break;
-			case AppCommon::Direction::RIGHT:
-			case AppCommon::Direction::LEFT:
-				ret.topLeft.y = this->defaultTopleftXY.y;
-				break;
-		}
-	}
-	ret.bottomRight.x = this->topLeftXY.x + Stone::WIDTH;
-	ret.bottomRight.y = this->topLeftXY.y + Stone::HEIGHT;
-
+	ret.topLeft = this->topLeftXYOnGnd;
+	ret.bottomRight.x = ret.topLeft.x + Stone::WIDTH;
+	ret.bottomRight.y = ret.topLeft.y + Stone::HEIGHT;
 	return ret;
 }
 
 void Stone::SetDropped() {
+	this->topLeftXY = topLeftXYOnGnd;
 	this->state = Stone::State::DROPPED;
 	this->restTime = Stone::STAYING_DURATION;
+}
+
+void Stone::BackOnePixcel() {
+	switch (this->direction) {
+		case AppCommon::TOP:
+			this->topLeftXY.y += 1;
+			break;
+		case AppCommon::Direction::RIGHT:
+			this->topLeftXY.x -= 1;
+			break;
+		case AppCommon::Direction::BOTTOM:
+			this->topLeftXY.y -= 1;
+			break;
+		case AppCommon::Direction::LEFT:
+			this->topLeftXY.x += 1;
+			break;
+	}
+	this->topLeftXYOnGnd = this->topLeftXY;
 }
 
 

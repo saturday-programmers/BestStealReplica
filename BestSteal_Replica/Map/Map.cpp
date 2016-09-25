@@ -376,26 +376,14 @@ void Map::AnimateStones() {
 		if (this->pStones[i]->Exists()) {
 			Vertices<POINT> nextXYOnGround = this->pStones[i]->GetXYsOnGround();
 			if (!IsOnRoad(nextXYOnGround)) {
-				// 移動先の地面が道でない場合は戻す
-				POINT nextTopLeftXYOnGnd = nextXYOnGround.topLeft;
-				POINT diff;
-				diff.x = nextXYOnGround.topLeft.x - topLeftXYOnGndBeforeMoving.x;
-				diff.y = nextXYOnGround.topLeft.y - topLeftXYOnGndBeforeMoving.y;
-
-				POINT revertPoint;
-				revertPoint.x = (diff.x == 0) ? 0 : diff.x / fabs((double)diff.x) * -1;
-				revertPoint.y = (diff.y == 0) ? 0 : diff.y / fabs((double)diff.y) * -1;
-				
+				// 移動先の地面が道でない場合は戻す				
+				this->pStones[i]->SetDropped();
 				bool isOnRoad = false;
 				while (!isOnRoad) {
-					nextXYOnGround.topLeft.x += revertPoint.x;
-					nextXYOnGround.topLeft.y += revertPoint.y;
-					this->pStones[i]->SetTopLeftXY(nextXYOnGround.topLeft);
-
+					this->pStones[i]->BackOnePixcel();
 					nextXYOnGround = this->pStones[i]->GetXYsOnGround();
 					isOnRoad = IsOnRoad(nextXYOnGround);
 				}
-				this->pStones[i]->SetDropped();
 			}
 		} else {
 			// 表示期間が終わった場合は削除
