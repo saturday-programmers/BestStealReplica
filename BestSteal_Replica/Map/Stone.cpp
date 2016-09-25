@@ -12,6 +12,11 @@ namespace Map {
 /* Constructor / Destructor ------------------------------------------------------------------------- */
 Stone::Stone(Drawer* pDrawer, POINT topLeftXY, AppCommon::Direction direction) : pDrawer(pDrawer), defaultTopleftXY(topLeftXY), direction(direction), thrownElapsedCount(0), state(Stone::State::BEING_THROWN) {
 	this->tutv = MapChip::GetTuTvs(Stone::MAP_CHIP_NUMBER);
+	// ˜gü‚ð‚È‚­‚·‚½‚ß‚Éˆê‰ñ‚è¬‚³‚­‚·‚é
+	this->tutv.topLeft.x += 0.01f;
+	this->tutv.topLeft.y += 0.01f;
+	this->tutv.bottomRight.x -= 0.01f;
+	this->tutv.bottomRight.y -= 0.01f;
 }
 
 
