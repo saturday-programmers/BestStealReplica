@@ -62,7 +62,7 @@ private:
 	/* Functions ---------------------------------------------------------------------------------------- */
 	StageController::Handling ConvertKeyToHandling(AppCommon::Key key);
 	int ControlPlayer(StageController::Handling* pHandling);
-	void ControlEnermy(int playerMovingPixel, StageController::Handling* pHandling);
+	void ControlEnermy(int playerMovingPixel, const StageController::Handling* pHandling);
 	void ControlMap(int playerMovingPixel, StageController::Handling* pHandling);
 	void MoveMap(int playerMovingPixel);
 	void RevertStage(void);

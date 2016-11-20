@@ -21,6 +21,7 @@ public:
 	static Vertices<DrawingVertex> GetVertex(POINT topLeftXY, Vertices<POINT>(*getXY)(POINT), Vertices<FloatPoint> chip);
 	static Vertices<POINT> GetChipXY(POINT topLeftXY);
 	static POINT CalcCenter(Vertices<POINT> xy);
+	static double CalcDistance(POINT xy1, POINT xy2);
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */

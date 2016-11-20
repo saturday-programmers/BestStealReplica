@@ -21,6 +21,7 @@ public:
 	virtual POINT GetEnermyChipPos(int enermyNum) const = 0;
 	virtual Character::Enermy::EnermyInfo* GetEnermiesInfo() const = 0;
 	virtual int GetEnermySearchableRadius() const = 0;
+	virtual int GetMaxStoneCount() const = 0;
 };
 
 }

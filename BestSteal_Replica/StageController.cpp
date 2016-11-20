@@ -1,4 +1,6 @@
-﻿#include "StageController.h"
+﻿#include <vector>
+
+#include "StageController.h"
 
 #include "Stage1.h"
 #include "Drawer.h"
@@ -231,25 +233,29 @@ int StageController::ControlPlayer(Handling* pHandling) {
 		}
 	}
 
+	// 歩く/走るの状態設定
+	if (this->pPlayer->GetIsStealing()) {
+		// 盗み処理中は歩く状態と同じ扱い
+		pHandling->isWalking = true;
+	} else if (movingPixel == 0) {
+		// プレイヤーが移動していない場合は走る/歩くの状態は前回の状態を引き継ぐ
+		pHandling->isWalking = lastTimeHandling.isWalking;
+	}
+
 	return movingPixel;
 }
 
-void StageController::ControlEnermy(int playerMovingPixel, Handling* pHandling) {
+void StageController::ControlEnermy(int playerMovingPixel, const Handling* pHandling) {
 	this->pEnermy->Stay();
 
 	// 盗まれる処理
 	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
 	AppCommon::KeyType keyType = this->pEnermy->GetStolen(playerXY, this->pPlayer->GetIsStealing());
-	this->pPlayer->AddKey(keyType);
+	if (keyType != AppCommon::KeyType::None) {
+		this->pPlayer->AddKey(keyType);
+	}
 
-	// 敵がプレイヤーを発見したか
-	if (playerMovingPixel == 0) {
-		// 移動していない場合は走る/歩くの状態は前回の状態を引き継ぐ
-		pHandling->isWalking = lastTimeHandling.isWalking;
-	}
-	if (this->pPlayer->GetIsStealing()) {
-		pHandling->isWalking = true;
-	}
+	// プレイヤーを発見したか
 	this->pEnermy->ScoutPlayer(playerXY, this->pStage->GetEnermySearchableRadius(), pHandling->isWalking);
 
 	// 突進可能か
@@ -293,6 +299,11 @@ void StageController::ControlEnermy(int playerMovingPixel, Handling* pHandling) 
 		// 突進
 		this->pEnermy->Attack(i, canSeePlayer);
 	}
+
+	// 石を発見したか
+	std::vector<Vertices<POINT>> stoneXYs;
+	this->pMap->GetDroppedStoneXYs(&stoneXYs);
+	this->pEnermy->ScoutStone(stoneXYs, this->pStage->GetEnermySearchableRadius());
 }
 
 void StageController::ControlMap(int playerMovingPixel, StageController::Handling* pHandling) {

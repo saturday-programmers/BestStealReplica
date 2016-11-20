@@ -113,34 +113,50 @@ void Enermy::Move(POINT xy) {
 	}
 }
 
+void Enermy::ScoutStone(const std::vector<Vertices<POINT>>& rStoneXYs, int scoutableRadius) {
+	for (int i = 0; i < this->enermyCount; ++i) {
+		if (this->enermiesInfo[i].state == Enermy::State::ATTACKING || this->enermiesInfo[i].state == Enermy::State::GOT_STOLEN) {
+			return;
+		}
+
+		bool hasFound = false;
+		POINT enermyCenter = CharacterCommon::CalcCenter(GetEnermyXY(i));
+
+		for (int j = 0; j < (int)rStoneXYs.size(); ++j) {
+			POINT stoneCenter = CharacterCommon::CalcCenter(rStoneXYs.at(j));
+			double distance = CharacterCommon::CalcDistance(enermyCenter, stoneCenter);
+
+			if (distance <= scoutableRadius) {
+				hasFound = true;
+				this->enermiesInfo[i].state = State::FOUND_STONE;
+
+				// 石の方を向く
+				TurnTo(stoneCenter, i);
+				break;
+			}
+		}
+
+		if (!hasFound && this->enermiesInfo[i].state == State::FOUND_STONE) {
+			// 索敵範囲内の石がなくなった場合
+			this->enermiesInfo[i].state = State::NORMAL;
+			this->enermiesInfo[i].headingDirection = this->enermiesInfo[i].defaultDirection;
+		} 
+	}
+}
+
 void Enermy::ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius, bool isPlayerWalking) {
 	POINT playerCenter = CharacterCommon::CalcCenter(playerXY);
 
 	for (int i = 0; i < this->enermyCount; ++i) {
 		POINT enermyCenter = CharacterCommon::CalcCenter(GetEnermyXY(i));
-		double distance = sqrt(pow(playerCenter.x - enermyCenter.x, 2.0) + pow(playerCenter.y - enermyCenter.y, 2.0));
+		double distance = CharacterCommon::CalcDistance(playerCenter, enermyCenter);
 
 		if (distance <= scoutableRadius && !isPlayerWalking) {
 			this->enermiesInfo[i].state = State::FOUND_PLAYER;
 			this->enermiesInfo[i].restTimeForCancelFinding = TIME_FOR_CANCELING_FINDING;
 
 			// プレイヤーの方を向く
-			POINT diff;
-			diff.x = enermyCenter.x - playerCenter.x;
-			diff.y = enermyCenter.y - playerCenter.y;
-			if (fabs((double)diff.x) > fabs((double)diff.y)) {
-				if (diff.x > 0) {
-					this->enermiesInfo[i].headingDirection = AppCommon::Direction::LEFT;
-				} else {
-					this->enermiesInfo[i].headingDirection = AppCommon::Direction::RIGHT;
-				}
-			} else {
-				if (diff.y > 0) {
-					this->enermiesInfo[i].headingDirection = AppCommon::Direction::TOP;
-				} else {
-					this->enermiesInfo[i].headingDirection = AppCommon::Direction::BOTTOM;
-				}
-			}
+			TurnTo(playerCenter, i);
 		} else {
 			switch (this->enermiesInfo[i].state) {
 				case State::FOUND_PLAYER:
@@ -280,6 +296,26 @@ Vertices<DrawingVertex> Enermy::GetVertex(int enermyNum) {
 
 	ret = CharacterCommon::GetVertex(this->enermiesInfo[enermyNum].topLeftXY, &CharacterCommon::GetChipXY, chip);
 	return ret;
+}
+
+void Enermy::TurnTo(POINT targetXY, int enermyNumber) {
+	POINT enermyCenter = CharacterCommon::CalcCenter(GetEnermyXY(enermyNumber));
+	POINT diff;
+	diff.x = enermyCenter.x - targetXY.x;
+	diff.y = enermyCenter.y - targetXY.y;
+	if (fabs((double)diff.x) > fabs((double)diff.y)) {
+		if (diff.x > 0) {
+			this->enermiesInfo[enermyNumber].headingDirection = AppCommon::Direction::LEFT;
+		} else {
+			this->enermiesInfo[enermyNumber].headingDirection = AppCommon::Direction::RIGHT;
+		}
+	} else {
+		if (diff.y > 0) {
+			this->enermiesInfo[enermyNumber].headingDirection = AppCommon::Direction::TOP;
+		} else {
+			this->enermiesInfo[enermyNumber].headingDirection = AppCommon::Direction::BOTTOM;
+		}
+	}
 }
 
 }

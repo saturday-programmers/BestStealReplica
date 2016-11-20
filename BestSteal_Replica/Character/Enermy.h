@@ -1,6 +1,7 @@
 ﻿#ifndef ENERMY_H_
 #define ENERMY_H_
 
+#include <vector>
 #include <windows.h>
 
 #include "CharacterCommon.h"
@@ -16,6 +17,7 @@ public:
 	/* Enums -------------------------------------------------------------------------------------------- */
 	enum State {
 		NORMAL,
+		FOUND_STONE,
 		FOUND_PLAYER,
 		LOST_PLAYER,
 		GOT_STOLEN,
@@ -54,6 +56,7 @@ public:
 	void Draw();
 	void Stay();
 	void Move(POINT xy);
+	void ScoutStone(const std::vector<Vertices<POINT>>& rStonesXY, int scoutableRadius);
 	void ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius, bool isPlayerWalking);
 	AppCommon::KeyType GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing);
 	void Attack(int enermyNum, bool canSeePlayer);
@@ -94,6 +97,7 @@ private:
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	Vertices<DrawingVertex> GetVertex(int enermyNum);
+	void TurnTo(POINT targetXY, int enermyNumber);
 };
 
 }

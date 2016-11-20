@@ -63,5 +63,10 @@ POINT CharacterCommon::CalcCenter(Vertices<POINT> xy) {
 	return ret;
 }
 
+double CharacterCommon::CalcDistance(POINT xy1, POINT xy2) {
+	return sqrt(pow(xy1.x - xy2.x, 2.0) + pow(xy1.y - xy2.y, 2.0));
+}
+
+
 }
 }

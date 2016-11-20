@@ -13,6 +13,7 @@ public:
 	static const int Y_CHIP_COUNT = 21;
 	static const int X_CHIP_COUNT = 30;
 	static const int ENERMY_COUNT = 7;
+	static const int MAX_STONE_COUNT = 3;
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	int GetYChipCount() const;
@@ -23,6 +24,7 @@ public:
 	POINT GetEnermyChipPos(int enermyNum) const;
 	Character::Enermy::EnermyInfo* GetEnermiesInfo() const;
 	int GetEnermySearchableRadius() const;
+	int GetMaxStoneCount() const;
 };
 
 }

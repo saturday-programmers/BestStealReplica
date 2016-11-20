@@ -83,5 +83,9 @@ int Stage1::GetEnermySearchableRadius() const {
 	return 260;
 }
 
+int Stage1::GetMaxStoneCount() const {
+	return MAX_STONE_COUNT;
+}
+
 }
 }

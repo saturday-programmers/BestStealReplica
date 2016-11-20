@@ -45,6 +45,7 @@ public:
 	POINT GetMapChipPos(POINT xy);
 	void AddStone(POINT topLeftXY, AppCommon::Direction direction);
 	void AnimateStones();
+	void GetDroppedStoneXYs(std::vector<Vertices<POINT>>* pStoneXYs);
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */

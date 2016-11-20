@@ -34,6 +34,10 @@ void Stone::SetTopLeftXY(POINT xy) {
 	}
 }
 
+Stone::State Stone::GetState() {
+	return this->state;
+}
+
 
 /* Public Functions  -------------------------------------------------------------------------------- */
 void Stone::KeepBeingThrown() {

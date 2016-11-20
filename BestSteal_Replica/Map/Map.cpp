@@ -394,6 +394,19 @@ void Map::AnimateStones() {
 	}
 }
 
+void Map::GetDroppedStoneXYs(std::vector<Vertices<POINT>>* pStoneXYs) {
+	for (int i = 0; i < (int)this->pStones.size(); ++i) {
+		switch (this->pStones[i]->GetState()) {
+			case Stone::State::DROPPED:
+			case Stone::State::DISAPPEARING:
+				pStoneXYs->push_back(this->pStones[i]->GetXYsOnGround());
+				break;
+			default:
+				break;
+		}
+	}
+}
+
 
 /* Private Functions  ------------------------------------------------------------------------------- */
 void Map::SetChipXY() {
