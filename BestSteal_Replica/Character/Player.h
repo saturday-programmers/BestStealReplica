@@ -20,23 +20,23 @@ public:
 	Player(POINT topLeftXY, Drawer* pDrawer);
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
-	bool GetIsStealing();
-	AppCommon::Direction GetHeadingDirection();
+	bool IsStealing() const;
+	AppCommon::Direction GetHeadingDirection() const;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void Draw();
+	void Draw() const;
 	void SetDirection(AppCommon::Direction direction);
 	void Walk(POINT movingPoint);
 	void Stay();
 	void StartStealing();
 	void KeepStealing();
 	void Move(POINT xy);
-	bool IsStayingNearlyWindowTop();
-	bool IsStayingNearlyWindowRight();
-	bool IsStayingNearlyWindowBottom();
-	bool IsStayingNearlyWindowLeft();
-	Vertices<POINT> GetPlayerXY();
-	bool HasKey(AppCommon::KeyType key);
+	bool IsStayingNearlyWindowTop() const;
+	bool IsStayingNearlyWindowRight() const;
+	bool IsStayingNearlyWindowBottom() const;
+	bool IsStayingNearlyWindowLeft() const;
+	Vertices<POINT> GetPlayerXY() const;
+	bool HasKey(AppCommon::KeyType key) const;
 	void AddKey(AppCommon::KeyType key);
 	void SubtractKey(AppCommon::KeyType key);
 	void GetKilled();
@@ -65,7 +65,7 @@ private:
 
 	static const int MAP_BUFFER = CharacterCommon::WIDTH;
 
-	const TCHAR* FILE_PATH;
+	static const TCHAR* FILE_PATH;
 
 	/* Variables ---------------------------------------------------------------------------------------- */
 	Drawer* pDrawer;
@@ -90,9 +90,11 @@ private:
 	
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void SetDefaultProperty();
-	Vertices<DrawingVertex> GetVertex();
-	Vertices<DrawingVertex> GetVerticesOnStealing(int afterimageNum);
+	Vertices<DrawingVertex> GetVertex() const;
+	Vertices<DrawingVertex> GetVerticesOnStealing(int afterImageNum) const;
 	int* GetHoldingKeyCnt(AppCommon::KeyType key);
+	int GetHoldingKeyCnt(AppCommon::KeyType key) const;
+
 };
 
 }

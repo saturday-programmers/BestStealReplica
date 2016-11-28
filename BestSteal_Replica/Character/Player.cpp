@@ -5,9 +5,11 @@
 namespace BestStealReplica {
 namespace Character {
 
+const TCHAR* Player::FILE_PATH = TEXT("image\\character.png");
+
+
 /* Constructor / Destructor ------------------------------------------------------------------------- */
 Player::Player(POINT topLeftXY, Drawer* pDrawer):
-	FILE_PATH(TEXT("image\\character.png")),
 	pDrawer(pDrawer),
 	defaultTopLeftXY(topLeftXY),
 	holdingSilverKeyCount(0),
@@ -23,23 +25,23 @@ Player::Player(POINT topLeftXY, Drawer* pDrawer):
 	this->StealingBottomChip = CharacterCommon::GetTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_BOTTOM);
 	this->StealingLeftChip = CharacterCommon::GetTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_LEFT);
 
-	pDrawer->CreateTexture(this->FILE_PATH, Drawer::TextureType::CHARACTER);
 	SetDefaultProperty();
+	this->pDrawer->CreateTexture(this->FILE_PATH, Drawer::TextureType::CHARACTER);
 }
 
 
 /* Getters / Setters -------------------------------------------------------------------------------- */
-bool Player::GetIsStealing() {
+bool Player::IsStealing() const {
 	return this->isStealing;
 }
 
-AppCommon::Direction Player::GetHeadingDirection() {
+AppCommon::Direction Player::GetHeadingDirection() const {
 	return this->headingDirection;
 }
 
 
 /* Public Functions  -------------------------------------------------------------------------------- */
-void Player::Draw() {
+void Player::Draw() const {
 	if (isStealing) {
 		for (int i = this->currentKeepingStealingNum; i > 0; --i) {
 			Vertices<DrawingVertex> vertex = GetVerticesOnStealing(i - 1);
@@ -113,23 +115,23 @@ void Player::Move(POINT xy) {
 	this->topLeftXY.y += xy.y;
 }
 
-bool Player::IsStayingNearlyWindowTop() {
+bool Player::IsStayingNearlyWindowTop() const {
 	return (this->topLeftXY.y < Player::MAP_BUFFER);
 }
 
-bool Player::IsStayingNearlyWindowRight() {
+bool Player::IsStayingNearlyWindowRight() const {
 	return (this->topLeftXY.x + CharacterCommon::WIDTH + Player::MAP_BUFFER >= AppCommon::GetWindowWidth());
 }
 
-bool Player::IsStayingNearlyWindowBottom() {
+bool Player::IsStayingNearlyWindowBottom() const {
 	return (this->topLeftXY.y + CharacterCommon::HEIGHT + Player::MAP_BUFFER >= AppCommon::GetWindowHeight());
 }
 
-bool Player::IsStayingNearlyWindowLeft() {
+bool Player::IsStayingNearlyWindowLeft() const {
 	return (this->topLeftXY.x < Player::MAP_BUFFER);
 }
 
-Vertices<POINT> Player::GetPlayerXY() {
+Vertices<POINT> Player::GetPlayerXY() const {
 	Vertices<POINT> ret = CharacterCommon::GetChipXY(this->topLeftXY);
 	int xDiff = (CharacterCommon::WIDTH - Player::PLAYER_WIDTH) / 2;
 	int yDiff = (CharacterCommon::HEIGHT - Player::PLAYER_HEIGHT) / 2;
@@ -140,26 +142,22 @@ Vertices<POINT> Player::GetPlayerXY() {
 	return ret;
 }
 
-bool Player::HasKey(AppCommon::KeyType key) {
-	bool ret = false;
-	int* pHoldingKeyCnt = GetHoldingKeyCnt(key);
-	if (pHoldingKeyCnt != NULL) {
-		ret = (&pHoldingKeyCnt > 0);
-	}
-	return ret;
+bool Player::HasKey(AppCommon::KeyType key) const {
+	int holdingKeyCnt = GetHoldingKeyCnt(key);
+	return (holdingKeyCnt > 0);
 }
 
 void Player::AddKey(AppCommon::KeyType key) {
 	int* pHoldingKeyCnt = GetHoldingKeyCnt(key);
 	if (pHoldingKeyCnt != NULL) {
-		(*pHoldingKeyCnt)++;
+		++(*pHoldingKeyCnt);
 	}
 }	
 
 void Player::SubtractKey(AppCommon::KeyType key) {
 	int* pHoldingKeyCnt = GetHoldingKeyCnt(key);
 	if (pHoldingKeyCnt != NULL) {
-		(*pHoldingKeyCnt)--;
+		--(*pHoldingKeyCnt);
 	}
 }
 
@@ -178,7 +176,7 @@ void Player::SetDefaultProperty() {
 	this->isDirectionChanged = false;
 }
 
-Vertices<DrawingVertex> Player::GetVertex() {
+Vertices<DrawingVertex> Player::GetVertex() const {
 	Vertices<DrawingVertex> ret;
 
 	Vertices<FloatPoint> chip;
@@ -203,27 +201,32 @@ Vertices<DrawingVertex> Player::GetVertex() {
 	return ret;
 }
 
-Vertices<DrawingVertex> Player::GetVerticesOnStealing(int afterimageNum) {
+/**
+ * 盗み処理中の画像情報を取得する 
+ *
+ * @param afterImageNum 残像番号
+ */
+Vertices<DrawingVertex> Player::GetVerticesOnStealing(int afterImageNum) const {
 	POINT topLeftXY;
 	Vertices<FloatPoint> chip;
 	switch (this->headingDirection) {
 		case AppCommon::Direction::TOP:
 			topLeftXY.x = this->topLeftXY.x;
-			topLeftXY.y = this->topLeftXY.y + Player::MOVING_PIXEL_ON_STEALING * afterimageNum;
+			topLeftXY.y = this->topLeftXY.y + Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
 			chip = this->StealingTopChip;
 			break;
 		case AppCommon::Direction::RIGHT:
-			topLeftXY.x = this->topLeftXY.x - Player::MOVING_PIXEL_ON_STEALING * afterimageNum;
+			topLeftXY.x = this->topLeftXY.x - Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
 			topLeftXY.y = this->topLeftXY.y;
 			chip = this->StealingRightChip;
 			break;
 		case AppCommon::Direction::BOTTOM:
 			topLeftXY.x = this->topLeftXY.x;
-			topLeftXY.y = this->topLeftXY.y - Player::MOVING_PIXEL_ON_STEALING * afterimageNum;
+			topLeftXY.y = this->topLeftXY.y - Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
 			chip = this->StealingBottomChip;
 			break;
 		case AppCommon::Direction::LEFT:
-			topLeftXY.x = this->topLeftXY.x + Player::MOVING_PIXEL_ON_STEALING * afterimageNum;
+			topLeftXY.x = this->topLeftXY.x + Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
 			topLeftXY.y = this->topLeftXY.y;
 			chip = this->StealingLeftChip;
 			break;
@@ -243,6 +246,21 @@ int* Player::GetHoldingKeyCnt(AppCommon::KeyType key) {
 		default:
 			return NULL;
 	}
+}
+
+int Player::GetHoldingKeyCnt(AppCommon::KeyType key) const {
+	int ret = 0;
+	switch (key) {
+		case AppCommon::KeyType::Silver:
+			ret = this->holdingSilverKeyCount;
+			break;
+		case AppCommon::KeyType::Gold:
+			ret = this->holdingGoldKeyCount;
+			break;
+		default:
+			break;
+	}
+	return ret;
 }
 
 }

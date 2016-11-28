@@ -45,22 +45,22 @@ public:
 	static const int MAX_ENERMY_COUNT = 7;
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Enermy(const POINT topLeftXY[Enermy::MAX_ENERMY_COUNT], EnermyInfo enermiesInfo[Enermy::MAX_ENERMY_COUNT], int enermyCount, Drawer* pDrawer);
+	Enermy(const POINT topLeftXY[Enermy::MAX_ENERMY_COUNT], EnermyInfo enermiesInfo[Enermy::MAX_ENERMY_COUNT], int enermyCount, int scoutableRadius, const Drawer& rDrawer);
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
-	Vertices<POINT> GetEnermyXY(int enermyNum);
-	AppCommon::Direction GetHeadingDirection(int enermyNum);
-	Enermy::State GetState(int enermyNum);
+	Vertices<POINT> GetEnermyXY(int enermyNum) const;
+	AppCommon::Direction GetHeadingDirection(int enermyNum) const;
+	Enermy::State GetState(int enermyNum) const;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void Draw();
+	void Draw() const;
 	void Stay();
 	void Move(POINT xy);
-	void ScoutStone(const std::vector<Vertices<POINT>>& rStonesXY, int scoutableRadius);
-	void ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius, bool isPlayerWalking);
+	void ScoutStone(const std::vector<Vertices<POINT>>& rStonesXY);
+	void ScoutPlayer(Vertices<POINT> playerXY, bool isPlayerWalking);
 	AppCommon::KeyType GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing);
 	void Attack(int enermyNum, bool canSeePlayer);
-	bool CanKillPlayer(Vertices<POINT> playerXY);
+	bool CanKillPlayer(Vertices<POINT> playerXY) const;
 	void BackToDefaultPosition();
 
 private:
@@ -82,8 +82,6 @@ private:
 	static const int COL_NUM_OF_HEADING_RIGHT = 3;
 	static const int MAP_CHIP_NUMBER_OF_EXCL = 66;
 
-	const char* FILE_PATH;
-
 	/* Variables ---------------------------------------------------------------------------------------- */
 	Vertices<FloatPoint> headingBottomChips[Enermy::CHIP_COUNT_PER_DIRECTION];
 	Vertices<FloatPoint> headingTopChips[Enermy::CHIP_COUNT_PER_DIRECTION];
@@ -93,10 +91,11 @@ private:
 
 	int enermyCount;
 	EnermyInfo enermiesInfo[MAX_ENERMY_COUNT];
-	Drawer* pDrawer;
+	const Drawer& rDrawer;
+	int scoutableRadius;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	Vertices<DrawingVertex> GetVertex(int enermyNum);
+	Vertices<DrawingVertex> GetVertex(int enermyNum) const;
 	void TurnTo(POINT targetXY, int enermyNumber);
 };
 

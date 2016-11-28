@@ -33,7 +33,7 @@ private:
 	int blackoutFrameCount;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	AppCommon::Key ProcessKBInput(LPDIRECTINPUTDEVICE8 pDIDevice);
+	AppCommon::Key ProcessKBInput(LPDIRECTINPUTDEVICE8 pDIDevice) const;
 };
 
 }

@@ -23,7 +23,7 @@ public:
 	int GetEnermyCount() const;
 	POINT GetEnermyChipPos(int enermyNum) const;
 	Character::Enermy::EnermyInfo* GetEnermiesInfo() const;
-	int GetEnermySearchableRadius() const;
+	int GetEnermyScoutableRadius() const;
 	int GetMaxStoneCount() const;
 };
 

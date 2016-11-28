@@ -18,19 +18,19 @@ public:
 	};
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Drawer(HWND hWnd, IDirect3D9* pDirect3D, D3DPRESENT_PARAMETERS* d3dpp);
+	Drawer(HWND hWnd, IDirect3D9* pDirect3D, D3DPRESENT_PARAMETERS* pD3dpp);
 
 	/* Static Functions --------------------------------------------------------------------------------- */
 	static UINT16 GetAlphaOnBlinking(int time);
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	bool CreateTexture(const TCHAR* filePath, TextureType textureType);
-	void BeginDraw();
+	void BeginDraw() const;
 	void Draw(Vertices<DrawingVertex> vertices, TextureType textureType) const;
 	void Draw(Vertices<DrawingVertex> vertices, TextureType textureType, UINT16 alpha) const;
-	void Blackout();
-	void EndDraw();
-	void Release();
+	void Blackout() const;
+	void EndDraw() const;
+	void Release() const;
 
 private:
 	/* Variables ---------------------------------------------------------------------------------------- */

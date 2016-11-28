@@ -26,33 +26,35 @@ public:
 	Map(int yChipCount, int xChipCount, Drawer* pDrawer);
 	~Map();
 
+	/* Getters / Setters -------------------------------------------------------------------------------- */
+	POINT GetTopLeftXYonChip(POINT mapChipPos) const;
+	MapCommon::MapChipType GetMapChipType(POINT mapChipPos) const;
+
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void Load(const Stage::IStage* pStage);
-	void Draw();
+	void Load(const Stage::IStage& rStage);
+	void Draw() const;
 	void Move(POINT xy);
 	void MoveToDefault();
-	POINT GetTopLeftXYonChip(POINT mapChipPos);
-	bool IsOnRoad(Vertices<POINT> xy);
-	bool IsMovableX(int x);
-	bool IsMovableY(int y);
+	bool IsOnRoad(Vertices<POINT> xy) const;
+	bool IsMovableX(int x) const;
+	bool IsMovableY(int y) const;
 	void KeepOpeningDoors();
-	POINT GetFrontMapChipPos(Vertices<POINT> playerXY, AppCommon::Direction headingDirection);
+	POINT GetFrontMapChipPos(Vertices<POINT> playerXY, AppCommon::Direction headingDirection) const;
 	bool StartOpeningDoor(POINT mapChipPos);
-	MapCommon::MapChipType GetMapChipType(POINT mapChipPos);
-	bool IsDoorOpened(POINT mapChipPos);
-	bool ExistsWallBetween(POINT xy1, POINT xy2);
+	bool IsDoorOpened(POINT mapChipPos) const;
+	bool ExistsWallBetween(POINT xy1, POINT xy2) const;
 	void OpenJewelryBox();
-	POINT GetMapChipPos(POINT xy);
+	POINT ConvertToMapChipPos(POINT xy) const;
 	void AddStone(POINT topLeftXY, AppCommon::Direction direction);
 	void AnimateStones();
-	void GetDroppedStoneXYs(std::vector<Vertices<POINT>>* pStoneXYs);
+	std::vector<Vertices<POINT>> GetDroppedStoneXYs() const;
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int MAX_Y_CHIP_COUNT = 21;
 	static const int MAX_X_CHIP_COUNT = 30;
 
-	const TCHAR* FILE_PATH;
+	static const TCHAR* FILE_PATH;
 
 	/* Variables ---------------------------------------------------------------------------------------- */
 	int yChipCount;
@@ -67,7 +69,7 @@ private:
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void SetChipXY();
-	bool IsOnRoad(POINT mapChipPos);
+	bool IsOnRoad(POINT mapChipPos) const;
 };
 
 }

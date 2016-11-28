@@ -18,13 +18,13 @@ struct CUSTOMVERTEX {
 }
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-Drawer::Drawer(HWND hWnd, IDirect3D9* pDirect3D, D3DPRESENT_PARAMETERS* d3dpp) {
+Drawer::Drawer(HWND hWnd, IDirect3D9* pDirect3D, D3DPRESENT_PARAMETERS* pD3dpp) {
 	pDirect3D->CreateDevice(
 		D3DADAPTER_DEFAULT,
 		D3DDEVTYPE_HAL,
 		hWnd,
 		D3DCREATE_SOFTWARE_VERTEXPROCESSING,
-		d3dpp,
+		pD3dpp,
 		&this->pD3Device);
 }
 
@@ -38,7 +38,7 @@ UINT16 Drawer::GetAlphaOnBlinking(int time) {
 
 
 /* Public Functions  -------------------------------------------------------------------------------- */
-bool Drawer::CreateTexture(const TCHAR* filePath, const TextureType textureType) {
+bool Drawer::CreateTexture(const TCHAR* filePath, TextureType textureType) {
 	if (FAILED(D3DXCreateTextureFromFileEx(
 		this->pD3Device,
 		filePath,
@@ -59,7 +59,7 @@ bool Drawer::CreateTexture(const TCHAR* filePath, const TextureType textureType)
 	return true;
 }
 
-void Drawer::BeginDraw() {
+void Drawer::BeginDraw() const {
 	if (!this->pD3Device) return;
 
 	//描画方法の設定
@@ -95,13 +95,13 @@ void Drawer::Draw(Vertices<DrawingVertex> vertices, TextureType textureType, UIN
 	Draw(vertices, this->pTexture[textureType], alpha);
 }
 
-void Drawer::Blackout() {
+void Drawer::Blackout() const {
 	this->pD3Device->BeginScene();
 	this->pD3Device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0x00, 0x00, 0x00), 1.0, 0);
 	EndDraw();
 }
 
-void Drawer::EndDraw() {
+void Drawer::EndDraw() const {
 	//描画の終了
 	this->pD3Device->EndScene();
 
@@ -109,7 +109,7 @@ void Drawer::EndDraw() {
 	this->pD3Device->Present(NULL, NULL, NULL, NULL);
 }
 
-void Drawer::Release() {
+void Drawer::Release() const {
 	this->pD3Device->Release();
 	this->pTexture[0]->Release();
 	this->pTexture[1]->Release();

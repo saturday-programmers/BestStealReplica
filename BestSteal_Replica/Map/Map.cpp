@@ -12,15 +12,17 @@
 namespace BestStealReplica {
 namespace Map {
 
+const TCHAR* Map::FILE_PATH = TEXT("image\\mapchip.png");
+
+
 /* Constructor / Destructor ------------------------------------------------------------------------- */
 Map::Map(int yChipCount, int xChipCount, Drawer* pDrawer) :
-	FILE_PATH(TEXT("image\\mapchip.png")),
 	pDrawer(pDrawer),
 	yChipCount(yChipCount),
 	xChipCount(xChipCount)
 {
-	topLeft.x = 0;
-	topLeft.y = 0;
+	this->topLeft.x = 0;
+	this->topLeft.y = 0;
 	pDrawer->CreateTexture(this->FILE_PATH, Drawer::TextureType::MAP);
 }
 
@@ -37,11 +39,21 @@ Map::~Map() {
 }
 
 
+/* Getters / Setters -------------------------------------------------------------------------------- */
+POINT Map::GetTopLeftXYonChip(POINT mapChipPos) const {
+	return this->pMapData[mapChipPos.y][mapChipPos.x]->GetTopLeftXY();
+}
+
+MapCommon::MapChipType Map::GetMapChipType(POINT mapChipPos) const {
+	return this->pMapData[mapChipPos.y][mapChipPos.x]->GetChipType();
+}
+
+
 /* Public Functions  -------------------------------------------------------------------------------- */
-void Map::Load(const Stage::IStage* pStage) {
+void Map::Load(const Stage::IStage& rStage) {
 	for (int i = 0; i < this->yChipCount; ++i) {
 		for (int j = 0; j < this->xChipCount; ++j) {
-			this->pMapData[i][j] = MapChip::Create(pStage->GetMapChipType(i, j));
+			this->pMapData[i][j] = MapChip::Create(rStage.GetMapChipType(i, j));
 
 			switch (this->pMapData[i][j]->GetChipType()) {
 				case MapCommon::MapChipType::DOOR:
@@ -58,7 +70,7 @@ void Map::Load(const Stage::IStage* pStage) {
 	}
 
 	// プレイヤーが画面中央になる場合の座標を計算
-	POINT playerChipPos = pStage->GetPlayerFirstChipPos();
+	POINT playerChipPos = rStage.GetPlayerFirstChipPos();
 	POINT centerXY;
 	centerXY.x = AppCommon::GetWindowWidth() / 2;
 	centerXY.y = AppCommon::GetWindowHeight() / 2;
@@ -128,7 +140,7 @@ void Map::Load(const Stage::IStage* pStage) {
 	SetChipXY();
 }
 
-void Map::Draw() {
+void Map::Draw() const {
 	for (int i = 0; i < this->yChipCount; ++i) {
 		for (int j = 0; j < this->xChipCount; ++j) {
 			this->pDrawer->Draw(pMapData[i][j]->GetVertex(), Drawer::TextureType::MAP);
@@ -153,30 +165,26 @@ void Map::MoveToDefault() {
 	SetChipXY();
 }
 
-POINT Map::GetTopLeftXYonChip(POINT mapChipPos) {
-	return this->pMapData[mapChipPos.y][mapChipPos.x]->GetTopLeftXY();
-}
-
-bool Map::IsOnRoad(Vertices<POINT> xy) {
+bool Map::IsOnRoad(Vertices<POINT> xy) const {
 	// 4頂点のチップ位置を取得
-	POINT topLeftChipPos = GetMapChipPos(xy.topLeft);
+	POINT topLeftChipPos = ConvertToMapChipPos(xy.topLeft);
 
 	POINT topRightXY;
 	topRightXY.x = xy.bottomRight.x;
 	topRightXY.y = xy.topLeft.y;
-	POINT topRightChipPos = GetMapChipPos(topRightXY);
+	POINT topRightChipPos = ConvertToMapChipPos(topRightXY);
 
-	POINT bottomRightChipPos = GetMapChipPos(xy.bottomRight);
+	POINT bottomRightChipPos = ConvertToMapChipPos(xy.bottomRight);
 
 	POINT bottomLeftXY;
 	bottomLeftXY.x = xy.topLeft.x;
 	bottomLeftXY.y = xy.bottomRight.y;
-	POINT bottomLeftChipPos = GetMapChipPos(bottomLeftXY);
+	POINT bottomLeftChipPos = ConvertToMapChipPos(bottomLeftXY);
 
 	return IsOnRoad(topLeftChipPos) && IsOnRoad(topRightChipPos) && IsOnRoad(bottomRightChipPos) && IsOnRoad(bottomLeftChipPos);
 }
 
-bool Map::IsMovableX(int x) {
+bool Map::IsMovableX(int x) const {
 	if (x == 0) {
 		return true;
 	}
@@ -193,7 +201,7 @@ bool Map::IsMovableX(int x) {
 	return true;
 }
 
-bool Map::IsMovableY(int y) {
+bool Map::IsMovableY(int y) const {
 	if (y == 0) {
 		return true;
 	}
@@ -212,7 +220,7 @@ bool Map::IsMovableY(int y) {
 void Map::KeepOpeningDoors() {
 	// 開きかけのドアがあればアニメーション
 	for (int i = 0; i < (int)this->pDoorMapChips.size(); ++i) {
-		switch (this->pDoorMapChips[i]->state) {
+		switch (this->pDoorMapChips[i]->GetState()) {
 			case MapChipDoor::State::START_OPENING:
 			case MapChipDoor::State::OPENING:
 				this->pDoorMapChips[i]->OpenDoor();
@@ -223,12 +231,12 @@ void Map::KeepOpeningDoors() {
 	}
 }
 
-POINT Map::GetFrontMapChipPos(Vertices<POINT> playerXY, AppCommon::Direction headingDirection) {
+POINT Map::GetFrontMapChipPos(Vertices<POINT> playerXY, AppCommon::Direction headingDirection) const {
 	// プレイヤーの目の前のマップチップ取得
 	POINT centerXY;
 	centerXY.x = (playerXY.bottomRight.x + playerXY.topLeft.x) / 2;
 	centerXY.y = (playerXY.bottomRight.y + playerXY.topLeft.y) / 2;
-	POINT chipPos = GetMapChipPos(centerXY);
+	POINT chipPos = ConvertToMapChipPos(centerXY);
 
 	switch (headingDirection) {
 		case AppCommon::Direction::TOP:
@@ -263,7 +271,7 @@ bool Map::StartOpeningDoor(POINT mapChipPos) {
 		case MapCommon::MapChipType::GOLD_DOOR:
 		{
 			MapChipDoor* pMapChipDoor = (MapChipDoor*)this->pMapData[mapChipPos.y][mapChipPos.x];
-			switch (pMapChipDoor->state) {
+			switch (pMapChipDoor->GetState()) {
 				case MapChipDoor::State::CLOSED:
 					pMapChipDoor->StartOpeningDoor();
 					ret = true;
@@ -279,17 +287,13 @@ bool Map::StartOpeningDoor(POINT mapChipPos) {
 	return ret;
 }
 
-MapCommon::MapChipType Map::GetMapChipType(POINT mapChipPos) {
-	return this->pMapData[mapChipPos.y][mapChipPos.x]->GetChipType();
-}
-
-bool Map::IsDoorOpened(POINT mapChipPos) {
+bool Map::IsDoorOpened(POINT mapChipPos) const {
 	bool ret = false;
-	MapChip* pChip = this->pMapData[mapChipPos.y][mapChipPos.x];
-	switch (pChip->GetChipType()) {
+	MapChip& rChip = *(this->pMapData[mapChipPos.y][mapChipPos.x]);
+	switch (rChip.GetChipType()) {
 		case MapCommon::MapChipType::DOOR:
 		case MapCommon::MapChipType::GOLD_DOOR:
-			ret = ((MapChipDoor*)pChip)->state == MapChipDoor::State::OPENED;
+			ret = ((MapChipDoor&)rChip).GetState() == MapChipDoor::State::OPENED;
 			break;
 		default:
 			break;
@@ -297,10 +301,10 @@ bool Map::IsDoorOpened(POINT mapChipPos) {
 	return ret;
 }
 
-bool Map::ExistsWallBetween(POINT xy1, POINT xy2) {
+bool Map::ExistsWallBetween(POINT xy1, POINT xy2) const {
 	bool ret = false;
-	POINT p1 = GetMapChipPos(xy1);
-	POINT p2 = GetMapChipPos(xy2);
+	POINT p1 = ConvertToMapChipPos(xy1);
+	POINT p2 = ConvertToMapChipPos(xy2);
 
 	if (p1.x != p2.x && p1.y != p2.y) {
 		return true;
@@ -348,7 +352,7 @@ void Map::OpenJewelryBox() {
 	this->pJewelryMapChip->OpenBox();
 }
 
-POINT Map::GetMapChipPos(POINT xy) {
+POINT Map::ConvertToMapChipPos(POINT xy) const {
 	POINT ret;
 	if (xy.x < this->topLeft.x) {
 		ret.x = -1;
@@ -365,7 +369,7 @@ POINT Map::GetMapChipPos(POINT xy) {
 }
 
 void Map::AddStone(POINT topLeftXY, AppCommon::Direction direction) {
-	this->pStones.push_back(new Stone(this->pDrawer, topLeftXY, direction));
+	this->pStones.push_back(new Stone(*this->pDrawer, topLeftXY, direction));
 }
 
 void Map::AnimateStones() {
@@ -394,17 +398,19 @@ void Map::AnimateStones() {
 	}
 }
 
-void Map::GetDroppedStoneXYs(std::vector<Vertices<POINT>>* pStoneXYs) {
+std::vector<Vertices<POINT>> Map::GetDroppedStoneXYs() const {
+	std::vector<Vertices<POINT>> stoneXYs;
 	for (int i = 0; i < (int)this->pStones.size(); ++i) {
 		switch (this->pStones[i]->GetState()) {
 			case Stone::State::DROPPED:
 			case Stone::State::DISAPPEARING:
-				pStoneXYs->push_back(this->pStones[i]->GetXYsOnGround());
+				stoneXYs.push_back(this->pStones[i]->GetXYsOnGround());
 				break;
 			default:
 				break;
 		}
 	}
+	return stoneXYs;
 }
 
 
@@ -420,7 +426,7 @@ void Map::SetChipXY() {
 	}
 }
 
-bool Map::IsOnRoad(POINT mapChipPos) {
+bool Map::IsOnRoad(POINT mapChipPos) const {
 	if (mapChipPos.x < 0 || mapChipPos.x >= xChipCount || mapChipPos.y < 0 || mapChipPos.y >= yChipCount) {
 		return false;
 	}
@@ -431,7 +437,7 @@ bool Map::IsOnRoad(POINT mapChipPos) {
 			return false;
 		case MapCommon::MapChipType::DOOR:
 		case MapCommon::MapChipType::GOLD_DOOR:
-			if (((MapChipDoor*)this->pMapData[mapChipPos.y][mapChipPos.x])->state != MapChipDoor::OPENED) {
+			if (((MapChipDoor*)this->pMapData[mapChipPos.y][mapChipPos.x])->GetState() != MapChipDoor::OPENED) {
 				return false;
 			}
 			break;

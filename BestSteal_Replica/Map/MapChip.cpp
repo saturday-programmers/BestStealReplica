@@ -7,6 +7,7 @@
 namespace BestStealReplica {
 namespace Map {
 
+/* Static Public Functions -------------------------------------------------------------------------- */
 MapChip* MapChip::Create(MapCommon::MapChipType chipType) {
 	switch (chipType) {
 		case MapCommon::MapChipType::WALL:
@@ -48,7 +49,8 @@ Vertices<POINT> MapChip::GetXY(POINT topLeftXY) {
 }
 
 
-MapCommon::MapChipType MapChip::GetChipType() {
+/* Getters / Setters -------------------------------------------------------------------------------- */
+MapCommon::MapChipType MapChip::GetChipType() const {
 	return this->chipType;
 }
 
@@ -59,7 +61,7 @@ void MapChip::SetChipNumber() {
 	SetTuTv();
 }
 
-POINT MapChip::GetTopLeftXY() {
+POINT MapChip::GetTopLeftXY() const {
 	POINT ret;
 	ret.x = this->vertices.topLeft.x;
 	ret.y = this->vertices.topLeft.y;
@@ -74,15 +76,18 @@ void MapChip::SetXY(POINT topLeftXY) {
 	this->vertices.bottomRight.y = xy.bottomRight.y;
 }
 
-Vertices<DrawingVertex> MapChip::GetVertex() {
+Vertices<DrawingVertex> MapChip::GetVertex() const {
 	return this->vertices;
 }
 
 
+/* Private Constructor / Destructor ----------------------------------------------------------------- */
 MapChip::MapChip(MapCommon::MapChipType chipType) {
 	this->chipType = chipType;
 }
 
+
+/* Private Functions  ------------------------------------------------------------------------------- */
 void MapChip::SetTuTv() {
 	Vertices<FloatPoint> tutv = GetTuTvs(this->chipNumber);
 	this->vertices.topLeft.tu = tutv.topLeft.x;

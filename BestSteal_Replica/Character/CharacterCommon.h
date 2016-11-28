@@ -16,7 +16,7 @@ public:
 	/* Static Functions --------------------------------------------------------------------------------- */
 	static void SetTuTvs(Vertices<FloatPoint> chips[], int chipCount, int rowNum, int colNum);
 	static Vertices<FloatPoint> GetTuTv(int rowNum, int colNum);
-	static void CountUpAnimationCnt(int* currentAnimationCnt, int chipCntPerDir);
+	static void CountUpAnimationCnt(int* pAnimationCnt, int chipCntPerDir);
 	static int GetAnimationNumber(int currentAnimationCnt);
 	static Vertices<DrawingVertex> GetVertex(POINT topLeftXY, Vertices<POINT>(*getXY)(POINT), Vertices<FloatPoint> chip);
 	static Vertices<POINT> GetChipXY(POINT topLeftXY);
@@ -27,6 +27,9 @@ private:
 	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int CHIP_COUNT_PER_ROW = 6;
 	static const int CHIP_COUNT_PER_COL = 6;
+
+	/* Constructor / Destructor ------------------------------------------------------------------------- */
+	CharacterCommon();
 };
 
 }

@@ -16,7 +16,11 @@ namespace BestStealReplica {
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
 StageController::StageController(Drawer* pDrawer) :
-	pDrawer(pDrawer)
+	pDrawer(pDrawer),
+	pStage(nullptr),
+	pMap(nullptr),
+	pPlayer(nullptr),
+	pEnermy(nullptr)
 {}
 
 StageController::~StageController() {
@@ -27,11 +31,11 @@ StageController::~StageController() {
 
 
 /* Public Functions  -------------------------------------------------------------------------------- */
-void StageController::LoadStage(const Stage::IStage* pStage) {
+void StageController::LoadStage(const Stage::IStage& rStage) {
 	// マップ情報
-	this->pStage = pStage;
+	this->pStage = &rStage;
 	this->pMap = new Map::Map(this->pStage->GetYChipCount(), this->pStage->GetXChipCount(), this->pDrawer);
-	this->pMap->Load(this->pStage);
+	this->pMap->Load(*this->pStage);
 
 	// プレイヤー情報
 	POINT playerChipPos = this->pStage->GetPlayerFirstChipPos();
@@ -43,7 +47,7 @@ void StageController::LoadStage(const Stage::IStage* pStage) {
 	for (int i = 0; i < enermyCount; ++i) {
 		enermiesXY[i] = this->pMap->GetTopLeftXYonChip(this->pStage->GetEnermyChipPos(i));
 	}
-	this->pEnermy = new Enermy(enermiesXY, this->pStage->GetEnermiesInfo(), this->pStage->GetEnermyCount(), this->pDrawer);
+	this->pEnermy = new Enermy(enermiesXY, this->pStage->GetEnermiesInfo(), this->pStage->GetEnermyCount(), this->pStage->GetEnermyScoutableRadius(), *this->pDrawer);
 }
 
 void StageController::Control(AppCommon::Key key) {
@@ -61,15 +65,15 @@ void StageController::Control(AppCommon::Key key) {
 	int movingPixel = ControlPlayer(&handling);
 
 	// 敵アニメージョン
-	ControlEnermy(movingPixel, &handling);
+	ControlEnermy(movingPixel, handling);
 
 	// マップアニメーション
-	ControlMap(movingPixel, &handling);
+	ControlMap(movingPixel);
 
 	this->lastTimeHandling = handling;
 }
 
-void StageController::Draw() {
+void StageController::Draw() const {
 	this->pDrawer->BeginDraw();
 	this->pMap->Draw();
 	this->pPlayer->Draw();
@@ -79,7 +83,7 @@ void StageController::Draw() {
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */
-StageController::Handling StageController::ConvertKeyToHandling(AppCommon::Key key) {
+StageController::Handling StageController::ConvertKeyToHandling(AppCommon::Key key) const {
 	StageController::Handling ret;
 	if (key.z) {
 		ret.handlingType = StageController::Handling::HandlingType::STEAL_OR_OPEN;
@@ -107,7 +111,7 @@ StageController::Handling StageController::ConvertKeyToHandling(AppCommon::Key k
 int StageController::ControlPlayer(Handling* pHandling) {
 	int movingPixel;
 
-	if (this->pPlayer->GetIsStealing()) {
+	if (this->pPlayer->IsStealing()) {
 		pHandling->handlingType = Handling::HandlingType::NONE;
 	}
 
@@ -152,7 +156,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 	}
 
 	// 盗むアクション継続
-	if (this->pPlayer->GetIsStealing()) {
+	if (this->pPlayer->IsStealing()) {
 		this->pPlayer->KeepStealing();
 	} else {
 		// プレイヤー移動方向
@@ -175,7 +179,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 	}
 
 	// プレイヤー移動距離
-	if (this->pPlayer->GetIsStealing()) {
+	if (this->pPlayer->IsStealing()) {
 		movingPixel = Player::MOVING_PIXEL_ON_STEALING;
 	} else {
 		switch (pHandling->handlingType) {
@@ -208,7 +212,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 	}
 
 	// プレイヤーアニメーション
-	if (!this->pPlayer->GetIsStealing()) {
+	if (!this->pPlayer->IsStealing()) {
 		if (movingPixel > 0) {
 			this->pPlayer->Walk(movingPoint);
 		} else {
@@ -234,7 +238,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 	}
 
 	// 歩く/走るの状態設定
-	if (this->pPlayer->GetIsStealing()) {
+	if (this->pPlayer->IsStealing()) {
 		// 盗み処理中は歩く状態と同じ扱い
 		pHandling->isWalking = true;
 	} else if (movingPixel == 0) {
@@ -245,18 +249,18 @@ int StageController::ControlPlayer(Handling* pHandling) {
 	return movingPixel;
 }
 
-void StageController::ControlEnermy(int playerMovingPixel, const Handling* pHandling) {
+void StageController::ControlEnermy(int playerMovingPixel, const Handling& rHandling) {
 	this->pEnermy->Stay();
 
 	// 盗まれる処理
 	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
-	AppCommon::KeyType keyType = this->pEnermy->GetStolen(playerXY, this->pPlayer->GetIsStealing());
+	AppCommon::KeyType keyType = this->pEnermy->GetStolen(playerXY, this->pPlayer->IsStealing());
 	if (keyType != AppCommon::KeyType::None) {
 		this->pPlayer->AddKey(keyType);
 	}
 
 	// プレイヤーを発見したか
-	this->pEnermy->ScoutPlayer(playerXY, this->pStage->GetEnermySearchableRadius(), pHandling->isWalking);
+	this->pEnermy->ScoutPlayer(playerXY, rHandling.isWalking);
 
 	// 突進可能か
 	for (int i = 0; i < this->pStage->GetEnermyCount(); ++i) {
@@ -266,11 +270,11 @@ void StageController::ControlEnermy(int playerMovingPixel, const Handling* pHand
 
 		// プレイヤーとの距離チェック
 		POINT centerPlayer = CharacterCommon::CalcCenter(playerXY);
-		POINT playerPos = this->pMap->GetMapChipPos(centerPlayer);
+		POINT playerPos = this->pMap->ConvertToMapChipPos(centerPlayer);
 
 		Vertices<POINT> enermyXY = this->pEnermy->GetEnermyXY(i);
 		POINT centerEnermy = CharacterCommon::CalcCenter(enermyXY);
-		POINT enermyPos = this->pMap->GetMapChipPos(centerEnermy);
+		POINT enermyPos = this->pMap->ConvertToMapChipPos(centerEnermy);
 		bool canSeePlayer = false;
 		int distance;
 		switch (this->pEnermy->GetHeadingDirection(i)) {
@@ -291,7 +295,7 @@ void StageController::ControlEnermy(int playerMovingPixel, const Handling* pHand
 				distance = centerEnermy.x - centerPlayer.x;
 				break;
 		}
-		canSeePlayer = canSeePlayer && distance <= this->pStage->GetEnermySearchableRadius();
+		canSeePlayer = canSeePlayer && distance <= this->pStage->GetEnermyScoutableRadius();
 
 		// プレイヤーとの間に壁があるか
 		canSeePlayer = canSeePlayer && !this->pMap->ExistsWallBetween(centerEnermy, centerPlayer);
@@ -301,12 +305,11 @@ void StageController::ControlEnermy(int playerMovingPixel, const Handling* pHand
 	}
 
 	// 石を発見したか
-	std::vector<Vertices<POINT>> stoneXYs;
-	this->pMap->GetDroppedStoneXYs(&stoneXYs);
-	this->pEnermy->ScoutStone(stoneXYs, this->pStage->GetEnermySearchableRadius());
+	std::vector<Vertices<POINT>> stoneXYs = this->pMap->GetDroppedStoneXYs();
+	this->pEnermy->ScoutStone(stoneXYs);
 }
 
-void StageController::ControlMap(int playerMovingPixel, StageController::Handling* pHandling) {
+void StageController::ControlMap(int playerMovingPixel) {
 	// ドアを開けるアニメーション
 	this->pMap->KeepOpeningDoors();
 

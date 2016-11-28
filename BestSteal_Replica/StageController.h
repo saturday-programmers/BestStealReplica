@@ -42,9 +42,9 @@ public:
 	~StageController();
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void LoadStage(const Stage::IStage* pStage);
+	void LoadStage(const Stage::IStage& rStage);
 	void Control(AppCommon::Key key);
-	void Draw();
+	void Draw() const;
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */
@@ -60,12 +60,12 @@ private:
 	StageController::Handling lastTimeHandling;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	StageController::Handling ConvertKeyToHandling(AppCommon::Key key);
+	StageController::Handling ConvertKeyToHandling(AppCommon::Key key) const;
 	int ControlPlayer(StageController::Handling* pHandling);
-	void ControlEnermy(int playerMovingPixel, const StageController::Handling* pHandling);
-	void ControlMap(int playerMovingPixel, StageController::Handling* pHandling);
+	void ControlEnermy(int playerMovingPixel, const StageController::Handling& rHandling);
+	void ControlMap(int playerMovingPixel);
 	void MoveMap(int playerMovingPixel);
-	void RevertStage(void);
+	void RevertStage();
 };
 
 }

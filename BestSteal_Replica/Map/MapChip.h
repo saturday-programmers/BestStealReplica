@@ -14,20 +14,24 @@ namespace Map {
 
 class MapChip {
 public:
+	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int HEIGHT = 80;
 	static const int WIDTH = 80;
 
+	/* Static Functions --------------------------------------------------------------------------------- */
 	static MapChip* Create(MapCommon::MapChipType chipType);
 	static Vertices<FloatPoint> GetTuTvs(int mapChipNumber);
 	static Vertices<POINT> GetXY(POINT topLeftXY);
 
-	MapCommon::MapChipType GetChipType();
+	/* Getters / Setters -------------------------------------------------------------------------------- */
+	MapCommon::MapChipType GetChipType() const;
 	virtual void SetChipNumber();
-	POINT GetTopLeftXY();
+	POINT GetTopLeftXY() const;
 	void SetXY(POINT topLeftXY);
-	Vertices<DrawingVertex> GetVertex();
+	Vertices<DrawingVertex> GetVertex() const;
 
 protected:
+	/* Structs ------------------------------------------------------------------------------------------ */
 	struct ChipNumber {
 		static const int WALL_WITH_TOP_LINE = 21;
 		static const int WALL_WITH_RIGHT_LINE = 23;
@@ -50,14 +54,19 @@ protected:
 		static const int WALL_WITH_SURROUNDED_LINE = 35;
 	};
 
+	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int CHIP_COUNT_PER_ROW = 12;
 	static const int CHIP_COUNT_PER_COL = 8;
 
+	/* Variables ---------------------------------------------------------------------------------------- */
 	MapCommon::MapChipType chipType;
 	int chipNumber;
 	Vertices<DrawingVertex> vertices;
 
+	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	explicit MapChip(MapCommon::MapChipType chipType);
+
+	/* Functions ---------------------------------------------------------------------------------------- */
 	void SetTuTv();
 };
 

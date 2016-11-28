@@ -11,7 +11,10 @@ namespace Map {
 
 class MapChipWall : public MapChip {
 public:
+	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	MapChipWall();
+
+	/* Functions ---------------------------------------------------------------------------------------- */
 	void SetChipNumber();
 	void SetNeedsTopLine();
 	void SetNeedsRightLine();
@@ -19,10 +22,11 @@ public:
 	void SetNeedsLeftLine();
 
 private:
-	bool needsTopLine = false;
-	bool needsRightLine = false;
-	bool needsBottomLine = false;
-	bool needsLeftLine = false;
+	/* Variables ---------------------------------------------------------------------------------------- */
+	bool needsTopLine;
+	bool needsRightLine;
+	bool needsBottomLine;
+	bool needsLeftLine;
 };
 
 }

@@ -79,7 +79,7 @@ Enermy::EnermyInfo* Stage1::GetEnermiesInfo() const {
 	return enermiesInfo;
 }
 
-int Stage1::GetEnermySearchableRadius() const {
+int Stage1::GetEnermyScoutableRadius() const {
 	return 260;
 }
 

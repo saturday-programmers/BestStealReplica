@@ -21,7 +21,7 @@ public:
 	MapChipJewelry();
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
-	MapChipJewelry::State GetState();
+	MapChipJewelry::State GetState() const;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void OpenBox();

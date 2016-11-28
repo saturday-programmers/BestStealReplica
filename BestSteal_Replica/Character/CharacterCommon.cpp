@@ -19,10 +19,10 @@ Vertices<FloatPoint> CharacterCommon::GetTuTv(int rowNum, int colNum) {
 	return ret;
 }
 
-void CharacterCommon::CountUpAnimationCnt(int* currentAnimationCnt, int chipCntPerDir) {
-	++(*currentAnimationCnt);
-	if (*currentAnimationCnt >= chipCntPerDir * AppCommon::FRAME_COUNT_PER_CUT) {
-		*currentAnimationCnt = 0;
+void CharacterCommon::CountUpAnimationCnt(int* pAnimationCnt, int chipCntPerDir) {
+	++(*pAnimationCnt);
+	if (*pAnimationCnt >= chipCntPerDir * AppCommon::FRAME_COUNT_PER_CUT) {
+		*pAnimationCnt = 0;
 	}
 }
 

@@ -80,6 +80,10 @@ public:
 	static void SetWindowWidth(int width);
 	static AppCommon::SceneType GetScene();
 	static void SetScene(AppCommon::SceneType argScene);
+
+private:
+	/* Constructor / Destructor ------------------------------------------------------------------------- */
+	AppCommon();
 };
 
 }

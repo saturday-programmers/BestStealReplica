@@ -9,10 +9,12 @@ MapChipJewelry::MapChipJewelry() : MapChip(MapCommon::MapChipType::JEWELRY),
 	state(State::CLOSED)
 {}
 
+
 /* Getters / Setters -------------------------------------------------------------------------------- */
-MapChipJewelry::State MapChipJewelry::GetState() {
+MapChipJewelry::State MapChipJewelry::GetState() const {
 	return this->state;
 }
+
 
 /* Public Functions  -------------------------------------------------------------------------------- */
 void MapChipJewelry::OpenBox() {

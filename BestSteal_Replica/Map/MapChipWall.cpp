@@ -4,8 +4,17 @@
 namespace BestStealReplica {
 namespace Map {
 
-MapChipWall::MapChipWall() : MapChip(MapCommon::MapChipType::WALL) {}
+/* Constructor / Destructor ------------------------------------------------------------------------- */
+MapChipWall::MapChipWall() : 
+	MapChip(MapCommon::MapChipType::WALL), 
+	needsTopLine(false), 
+	needsRightLine(false),
+	needsBottomLine(false), 
+	needsLeftLine(false) 
+{}
 
+
+/* Public Functions  -------------------------------------------------------------------------------- */
 void MapChipWall::SetChipNumber() {
 	// 線のパターンに合わせてチップ番号を指定
 	if (!this->needsTopLine && !this->needsRightLine && !this->needsBottomLine && !this->needsLeftLine) {

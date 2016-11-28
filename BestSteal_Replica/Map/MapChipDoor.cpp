@@ -4,11 +4,20 @@
 namespace BestStealReplica {
 namespace Map {
 
+/* Constructor / Destructor ------------------------------------------------------------------------- */
 MapChipDoor::MapChipDoor(MapCommon::MapChipType chipType) : MapChip(chipType),
 	state(State::CLOSED),
 	openingCount(0)
 {}
 
+
+/* Getters / Setters -------------------------------------------------------------------------------- */
+MapChipDoor::State MapChipDoor::GetState() const {
+	return this->state;
+}
+
+
+/* Public Functions  -------------------------------------------------------------------------------- */
 void MapChipDoor::StartOpeningDoor() {
 	this->state = State::START_OPENING;
 }

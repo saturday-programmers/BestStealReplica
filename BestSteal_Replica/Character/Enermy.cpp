@@ -26,9 +26,10 @@ Enermy::EnermyInfo::EnermyInfo(int chipPosX, int chipPosY, AppCommon::Direction 
 }
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-Enermy::Enermy(const POINT topLeftXY[], EnermyInfo enermiesInfo[], int enermyCount, Drawer* pDrawer) : 
+Enermy::Enermy(const POINT topLeftXY[], EnermyInfo enermiesInfo[], int enermyCount, int scoutableRadius, const Drawer& rDrawer) :
 	enermyCount(enermyCount),
-	pDrawer(pDrawer)
+	scoutableRadius(scoutableRadius),
+	rDrawer(rDrawer)
 {	
 	for (int i = 0; i < enermyCount; ++i) {
 		this->enermiesInfo[i] = enermiesInfo[i];
@@ -46,7 +47,7 @@ Enermy::Enermy(const POINT topLeftXY[], EnermyInfo enermiesInfo[], int enermyCou
 
 
 /* Getters / Setters -------------------------------------------------------------------------------- */
-Vertices<POINT> Enermy::GetEnermyXY(int enermyNum) {
+Vertices<POINT> Enermy::GetEnermyXY(int enermyNum) const {
 	Vertices<POINT> ret = CharacterCommon::GetChipXY(this->enermiesInfo[enermyNum].topLeftXY);
 	int xDiff = (CharacterCommon::WIDTH - Enermy::ENERMY_WIDTH) / 2;
 	int yDiff = (CharacterCommon::HEIGHT - Enermy::ENERMY_HEIGHT) / 2;
@@ -57,24 +58,24 @@ Vertices<POINT> Enermy::GetEnermyXY(int enermyNum) {
 	return ret;
 }
 
-AppCommon::Direction Enermy::GetHeadingDirection(int enermyNum) {
+AppCommon::Direction Enermy::GetHeadingDirection(int enermyNum) const {
 	return this->enermiesInfo[enermyNum].headingDirection;
 }
 
-Enermy::State Enermy::GetState(int enermyNum) {
+Enermy::State Enermy::GetState(int enermyNum) const {
 	return this->enermiesInfo[enermyNum].state;
 }
 
 /* Public Functions  -------------------------------------------------------------------------------- */
-void Enermy::Draw() {
+void Enermy::Draw() const {
 	for (int i = 0; i < this->enermyCount; ++i) {
 		if (this->enermiesInfo[i].state == State::GOT_STOLEN) {
 			// 点滅
 			double rad = this->enermiesInfo[i].restTimeForBackingToNormal * 18 * M_PI / 180;
 			double alpha = 0xFF * abs(sin(rad));
-			this->pDrawer->Draw(GetVertex(i), Drawer::TextureType::CHARACTER, (UINT16)alpha);
+			this->rDrawer.Draw(GetVertex(i), Drawer::TextureType::CHARACTER, (UINT16)alpha);
 		} else {
-			this->pDrawer->Draw(GetVertex(i), Drawer::TextureType::CHARACTER);
+			this->rDrawer.Draw(GetVertex(i), Drawer::TextureType::CHARACTER);
 
 			if (this->enermiesInfo[i].state == State::FOUND_PLAYER || this->enermiesInfo[i].state == State::ATTACKING) {
 				// びっくりマーク表示
@@ -94,7 +95,7 @@ void Enermy::Draw() {
 					exclXY.y = enermyTopLeftXY.y;
 				}
 				Vertices<DrawingVertex> exclVertex = CharacterCommon::GetVertex(exclXY, &Map::MapChip::GetXY, this->exclamationMarkChip);
-				this->pDrawer->Draw(exclVertex, Drawer::TextureType::MAP);
+				this->rDrawer.Draw(exclVertex, Drawer::TextureType::MAP);
 			}
 		}
 	}
@@ -113,7 +114,7 @@ void Enermy::Move(POINT xy) {
 	}
 }
 
-void Enermy::ScoutStone(const std::vector<Vertices<POINT>>& rStoneXYs, int scoutableRadius) {
+void Enermy::ScoutStone(const std::vector<Vertices<POINT>>& rStoneXYs) {
 	for (int i = 0; i < this->enermyCount; ++i) {
 		if (this->enermiesInfo[i].state == Enermy::State::ATTACKING || this->enermiesInfo[i].state == Enermy::State::GOT_STOLEN) {
 			return;
@@ -126,7 +127,7 @@ void Enermy::ScoutStone(const std::vector<Vertices<POINT>>& rStoneXYs, int scout
 			POINT stoneCenter = CharacterCommon::CalcCenter(rStoneXYs.at(j));
 			double distance = CharacterCommon::CalcDistance(enermyCenter, stoneCenter);
 
-			if (distance <= scoutableRadius) {
+			if (distance <= this->scoutableRadius) {
 				hasFound = true;
 				this->enermiesInfo[i].state = State::FOUND_STONE;
 
@@ -144,14 +145,14 @@ void Enermy::ScoutStone(const std::vector<Vertices<POINT>>& rStoneXYs, int scout
 	}
 }
 
-void Enermy::ScoutPlayer(Vertices<POINT> playerXY, int scoutableRadius, bool isPlayerWalking) {
+void Enermy::ScoutPlayer(Vertices<POINT> playerXY, bool isPlayerWalking) {
 	POINT playerCenter = CharacterCommon::CalcCenter(playerXY);
 
 	for (int i = 0; i < this->enermyCount; ++i) {
 		POINT enermyCenter = CharacterCommon::CalcCenter(GetEnermyXY(i));
 		double distance = CharacterCommon::CalcDistance(playerCenter, enermyCenter);
 
-		if (distance <= scoutableRadius && !isPlayerWalking) {
+		if (distance <= this->scoutableRadius && !isPlayerWalking) {
 			this->enermiesInfo[i].state = State::FOUND_PLAYER;
 			this->enermiesInfo[i].restTimeForCancelFinding = TIME_FOR_CANCELING_FINDING;
 
@@ -247,7 +248,7 @@ void Enermy::Attack(int enermyNum, bool canSeePlayer) {
 	}
 }
 
-bool Enermy::CanKillPlayer(Vertices<POINT> playerXY) {
+bool Enermy::CanKillPlayer(Vertices<POINT> playerXY) const {
 	bool ret = false;
 	for (int i = 0; i < this->enermyCount; i++) {
 		if (this->enermiesInfo[i].state == Enermy::State::GOT_STOLEN) {
@@ -274,7 +275,7 @@ void Enermy:: BackToDefaultPosition() {
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */
-Vertices<DrawingVertex> Enermy::GetVertex(int enermyNum) {
+Vertices<DrawingVertex> Enermy::GetVertex(int enermyNum) const {
 	Vertices<DrawingVertex> ret;
 
 	Vertices<FloatPoint> chip;

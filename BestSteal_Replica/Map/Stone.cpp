@@ -10,7 +10,7 @@ namespace Map {
 
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-Stone::Stone(Drawer* pDrawer, POINT topLeftXY, AppCommon::Direction direction) : pDrawer(pDrawer), defaultTopleftXY(topLeftXY), direction(direction), thrownElapsedCount(0), state(Stone::State::BEING_THROWN) {
+Stone::Stone(const Drawer& rDrawer, POINT topLeftXY, AppCommon::Direction direction) : rDrawer(rDrawer), defaultTopleftXY(topLeftXY), direction(direction), thrownElapsedCount(0), state(Stone::State::BEING_THROWN) {
 	this->tutv = MapChip::GetTuTvs(Stone::MAP_CHIP_NUMBER);
 	// 枠線をなくすために一回り小さくする
 	this->tutv.topLeft.x += 0.01f;
@@ -34,7 +34,7 @@ void Stone::SetTopLeftXY(POINT xy) {
 	}
 }
 
-Stone::State Stone::GetState() {
+Stone::State Stone::GetState() const {
 	return this->state;
 }
 
@@ -116,17 +116,17 @@ void Stone::KeepBeingThrown() {
 	}
 }
 
-void Stone::Draw() {
+void Stone::Draw() const {
 	Vertices<DrawingVertex> vertex = GetVertex();
 	switch (this->state) {
 		case Stone::State::BEING_THROWN:
 		case Stone::State::DROPPED:
-			this->pDrawer->Draw(vertex, Drawer::TextureType::MAP);
+			this->rDrawer.Draw(vertex, Drawer::TextureType::MAP);
 			break;
 		case Stone::State::DISAPPEARING:
 		{
 			UINT16 alpha = Drawer::GetAlphaOnBlinking(this->restTime);
-			this->pDrawer->Draw(vertex, Drawer::TextureType::MAP, alpha);
+			this->rDrawer.Draw(vertex, Drawer::TextureType::MAP, alpha);
 			break;
 		}
 		default:
@@ -134,7 +134,7 @@ void Stone::Draw() {
 	}
 }
 
-bool Stone::Exists() {
+bool Stone::Exists() const {
 	return (this->state != Stone::State::DiSAPPEARED);
 }
 
@@ -143,7 +143,7 @@ void Stone::Move(POINT xy) {
 	this->topLeftXY.y += xy.y;
 }
 
-Vertices<POINT> Stone::GetXYsOnGround() {
+Vertices<POINT> Stone::GetXYsOnGround() const {
 	Vertices<POINT> ret;
 	ret.topLeft = this->topLeftXYOnGnd;
 	ret.bottomRight.x = ret.topLeft.x + Stone::WIDTH;
@@ -177,7 +177,7 @@ void Stone::BackOnePixcel() {
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */
-Vertices<DrawingVertex> Stone::GetVertex() {
+Vertices<DrawingVertex> Stone::GetVertex() const {
 	Vertices<DrawingVertex> ret;
 
 	DrawingVertex* pVerticesArr[] = { &ret.topLeft, &ret.bottomRight };

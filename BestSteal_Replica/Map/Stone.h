@@ -4,7 +4,6 @@
 #include <windows.h>
 
 #include "AppCommon.h"
-//#include "MapCommon.h"
 
 
 namespace BestStealReplica {
@@ -23,18 +22,18 @@ public:
 	};
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Stone(Drawer* pDrawer, POINT topLeftXY, AppCommon::Direction direction);
+	Stone(const Drawer& rDrawer, POINT topLeftXY, AppCommon::Direction direction);
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	void SetTopLeftXY(POINT xy);
-	State GetState();
+	State GetState() const;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void KeepBeingThrown();
-	void Draw();
-	bool Exists();
+	void Draw() const;
+	bool Exists() const;
 	void Move(POINT xy);
-	Vertices<POINT> GetXYsOnGround();
+	Vertices<POINT> GetXYsOnGround() const;
 	void SetDropped();
 	void BackOnePixcel();
 
@@ -52,7 +51,7 @@ private:
 	static const int GRAVITY = 2;
 
 	/* Variables ---------------------------------------------------------------------------------------- */
-	Drawer* pDrawer;
+	const Drawer& rDrawer;
 	POINT defaultTopleftXY;
 	POINT topLeftXY;
 	AppCommon::Direction direction;
@@ -63,7 +62,7 @@ private:
 	POINT topLeftXYOnGnd;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	Vertices<DrawingVertex> GetVertex();
+	Vertices<DrawingVertex> GetVertex() const;
 
 };
 
