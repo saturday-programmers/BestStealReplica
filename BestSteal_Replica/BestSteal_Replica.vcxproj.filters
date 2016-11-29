@@ -39,9 +39,6 @@
     <ClCompile Include="Character\CharacterCommon.cpp">
       <Filter>ソース ファイル\Character</Filter>
     </ClCompile>
-    <ClCompile Include="Character\Enermy.cpp">
-      <Filter>ソース ファイル\Character</Filter>
-    </ClCompile>
     <ClCompile Include="Character\Player.cpp">
       <Filter>ソース ファイル\Character</Filter>
     </ClCompile>
@@ -75,6 +72,9 @@
     <ClCompile Include="Map\Stone.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Character\Enemy.cpp">
+      <Filter>ソース ファイル\Character</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Drawer.h">
@@ -84,9 +84,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Character\CharacterCommon.h">
-      <Filter>ヘッダー ファイル\Character</Filter>
-    </ClInclude>
-    <ClInclude Include="Character\Enermy.h">
       <Filter>ヘッダー ファイル\Character</Filter>
     </ClInclude>
     <ClInclude Include="Character\Player.h">
@@ -121,6 +118,9 @@
     </ClInclude>
     <ClInclude Include="Map\Stone.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Character\Enemy.h">
+      <Filter>ヘッダー ファイル\Character</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

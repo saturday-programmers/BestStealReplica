@@ -10,7 +10,7 @@ class Map;
 
 namespace Character{
 class Player;
-class Enermy;
+class Enemy;
 }
 
 namespace Stage {
@@ -56,13 +56,13 @@ private:
 	const Stage::IStage* pStage;
 	Map::Map* pMap;
 	Character::Player* pPlayer;
-	Character::Enermy* pEnermy;
+	Character::Enemy* pEnemy;
 	StageController::Handling lastTimeHandling;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	StageController::Handling ConvertKeyToHandling(AppCommon::Key key) const;
 	int ControlPlayer(StageController::Handling* pHandling);
-	void ControlEnermy(int playerMovingPixel, const StageController::Handling& rHandling);
+	void ControlEnemy(int playerMovingPixel, const StageController::Handling& rHandling);
 	void ControlMap(int playerMovingPixel);
 	void MoveMap(int playerMovingPixel);
 	void RevertStage();
