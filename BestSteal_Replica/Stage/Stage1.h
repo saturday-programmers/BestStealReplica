@@ -12,7 +12,7 @@ public:
 	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int Y_CHIP_COUNT = 21;
 	static const int X_CHIP_COUNT = 30;
-	static const int ENERMY_COUNT = 7;
+	static const int ENEMY_COUNT = 7;
 	static const int MAX_STONE_COUNT = 3;
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
@@ -20,10 +20,10 @@ public:
 	int GetXChipCount() const;
 	Map::MapCommon::MapChipType GetMapChipType(int y, int x) const;
 	POINT GetPlayerFirstChipPos() const;
-	int GetEnermyCount() const;
-	POINT GetEnermyChipPos(int enermyNum) const;
-	Character::Enermy::EnermyInfo* GetEnermiesInfo() const;
-	int GetEnermyScoutableRadius() const;
+	int GetEnemyCount() const;
+	POINT GetEnemyChipPos(int enemyNum) const;
+	Character::Enemy::EnemyInfo* GetEnemiesInfo() const;
+	int GetEnemyScoutableRadius() const;
 	int GetMaxStoneCount() const;
 };
 

@@ -6,7 +6,7 @@
 #include "Drawer.h"
 #include "Map.h"
 #include "Player.h"
-#include "Enermy.h"
+#include "Enemy.h"
 
 using namespace BestStealReplica::Map;
 using namespace BestStealReplica::Character;
@@ -20,11 +20,11 @@ StageController::StageController(Drawer* pDrawer) :
 	pStage(nullptr),
 	pMap(nullptr),
 	pPlayer(nullptr),
-	pEnermy(nullptr)
+	pEnemy(nullptr)
 {}
 
 StageController::~StageController() {
-	delete this->pEnermy;
+	delete this->pEnemy;
 	delete this->pPlayer;
 	delete this->pMap;
 }
@@ -42,12 +42,12 @@ void StageController::LoadStage(const Stage::IStage& rStage) {
 	this->pPlayer = new Player(this->pMap->GetTopLeftXYonChip(playerChipPos), this->pDrawer);
 
 	// 敵情報
-	int enermyCount = this->pStage->GetEnermyCount();
-	POINT enermiesXY[Enermy::MAX_ENERMY_COUNT];
-	for (int i = 0; i < enermyCount; ++i) {
-		enermiesXY[i] = this->pMap->GetTopLeftXYonChip(this->pStage->GetEnermyChipPos(i));
+	int enemyCount = this->pStage->GetEnemyCount();
+	POINT enemiesXY[Enemy::MAX_ENEMY_COUNT];
+	for (int i = 0; i < enemyCount; ++i) {
+		enemiesXY[i] = this->pMap->GetTopLeftXYonChip(this->pStage->GetEnemyChipPos(i));
 	}
-	this->pEnermy = new Enermy(enermiesXY, this->pStage->GetEnermiesInfo(), this->pStage->GetEnermyCount(), this->pStage->GetEnermyScoutableRadius(), *this->pDrawer);
+	this->pEnemy = new Enemy(enemiesXY, this->pStage->GetEnemiesInfo(), this->pStage->GetEnemyCount(), this->pStage->GetEnemyScoutableRadius(), *this->pDrawer);
 }
 
 void StageController::Control(AppCommon::Key key) {
@@ -55,7 +55,7 @@ void StageController::Control(AppCommon::Key key) {
 
 	// プレイヤー死亡
 	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
-	if (this->pEnermy->CanKillPlayer(playerXY)) {
+	if (this->pEnemy->CanKillPlayer(playerXY)) {
 		RevertStage();
 		AppCommon::SetScene(AppCommon::SceneType::BLACKOUT);
 		return;
@@ -65,7 +65,7 @@ void StageController::Control(AppCommon::Key key) {
 	int movingPixel = ControlPlayer(&handling);
 
 	// 敵アニメージョン
-	ControlEnermy(movingPixel, handling);
+	ControlEnemy(movingPixel, handling);
 
 	// マップアニメーション
 	ControlMap(movingPixel);
@@ -77,7 +77,7 @@ void StageController::Draw() const {
 	this->pDrawer->BeginDraw();
 	this->pMap->Draw();
 	this->pPlayer->Draw();
-	this->pEnermy->Draw();
+	this->pEnemy->Draw();
 	this->pDrawer->EndDraw();
 }
 
@@ -249,22 +249,22 @@ int StageController::ControlPlayer(Handling* pHandling) {
 	return movingPixel;
 }
 
-void StageController::ControlEnermy(int playerMovingPixel, const Handling& rHandling) {
-	this->pEnermy->Stay();
+void StageController::ControlEnemy(int playerMovingPixel, const Handling& rHandling) {
+	this->pEnemy->Stay();
 
 	// 盗まれる処理
 	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
-	AppCommon::KeyType keyType = this->pEnermy->GetStolen(playerXY, this->pPlayer->IsStealing());
+	AppCommon::KeyType keyType = this->pEnemy->GetStolen(playerXY, this->pPlayer->IsStealing());
 	if (keyType != AppCommon::KeyType::None) {
 		this->pPlayer->AddKey(keyType);
 	}
 
 	// プレイヤーを発見したか
-	this->pEnermy->ScoutPlayer(playerXY, rHandling.isWalking);
+	this->pEnemy->ScoutPlayer(playerXY, rHandling.isWalking);
 
 	// 突進可能か
-	for (int i = 0; i < this->pStage->GetEnermyCount(); ++i) {
-		if (this->pEnermy->GetState(i) == Enermy::State::GOT_STOLEN) {
+	for (int i = 0; i < this->pStage->GetEnemyCount(); ++i) {
+		if (this->pEnemy->GetState(i) == Enemy::State::GOT_STOLEN) {
 			continue;
 		}
 
@@ -272,41 +272,41 @@ void StageController::ControlEnermy(int playerMovingPixel, const Handling& rHand
 		POINT centerPlayer = CharacterCommon::CalcCenter(playerXY);
 		POINT playerPos = this->pMap->ConvertToMapChipPos(centerPlayer);
 
-		Vertices<POINT> enermyXY = this->pEnermy->GetEnermyXY(i);
-		POINT centerEnermy = CharacterCommon::CalcCenter(enermyXY);
-		POINT enermyPos = this->pMap->ConvertToMapChipPos(centerEnermy);
+		Vertices<POINT> enemyXY = this->pEnemy->GetEnemyXY(i);
+		POINT centerEnemy = CharacterCommon::CalcCenter(enemyXY);
+		POINT enemyPos = this->pMap->ConvertToMapChipPos(centerEnemy);
 		bool canSeePlayer = false;
 		int distance;
-		switch (this->pEnermy->GetHeadingDirection(i)) {
+		switch (this->pEnemy->GetHeadingDirection(i)) {
 			case AppCommon::Direction::TOP:
-				canSeePlayer = (enermyPos.x == playerPos.x && enermyPos.y >= playerPos.y);
-				distance = centerEnermy.y - centerPlayer.y;
+				canSeePlayer = (enemyPos.x == playerPos.x && enemyPos.y >= playerPos.y);
+				distance = centerEnemy.y - centerPlayer.y;
 				break;
 			case AppCommon::Direction::RIGHT:
-				canSeePlayer = (enermyPos.y== playerPos.y && enermyPos.x <= playerPos.x);
-				distance = centerPlayer.x - centerEnermy.x;
+				canSeePlayer = (enemyPos.y== playerPos.y && enemyPos.x <= playerPos.x);
+				distance = centerPlayer.x - centerEnemy.x;
 				break;
 			case AppCommon::Direction::BOTTOM:
-				canSeePlayer = (enermyPos.x == playerPos.x && enermyPos.y <= playerPos.y);
-				distance = centerPlayer.y - centerEnermy.y;
+				canSeePlayer = (enemyPos.x == playerPos.x && enemyPos.y <= playerPos.y);
+				distance = centerPlayer.y - centerEnemy.y;
 				break;
 			case AppCommon::Direction::LEFT:
-				canSeePlayer = (enermyPos.y == playerPos.y && enermyPos.x >= playerPos.x);
-				distance = centerEnermy.x - centerPlayer.x;
+				canSeePlayer = (enemyPos.y == playerPos.y && enemyPos.x >= playerPos.x);
+				distance = centerEnemy.x - centerPlayer.x;
 				break;
 		}
-		canSeePlayer = canSeePlayer && distance <= this->pStage->GetEnermyScoutableRadius();
+		canSeePlayer = canSeePlayer && distance <= this->pStage->GetEnemyScoutableRadius();
 
 		// プレイヤーとの間に壁があるか
-		canSeePlayer = canSeePlayer && !this->pMap->ExistsWallBetween(centerEnermy, centerPlayer);
+		canSeePlayer = canSeePlayer && !this->pMap->ExistsWallBetween(centerEnemy, centerPlayer);
 
 		// 突進
-		this->pEnermy->Attack(i, canSeePlayer);
+		this->pEnemy->Attack(i, canSeePlayer);
 	}
 
 	// 石を発見したか
 	std::vector<Vertices<POINT>> stoneXYs = this->pMap->GetDroppedStoneXYs();
-	this->pEnermy->ScoutStone(stoneXYs);
+	this->pEnemy->ScoutStone(stoneXYs);
 }
 
 void StageController::ControlMap(int playerMovingPixel) {
@@ -350,14 +350,14 @@ void StageController::MoveMap(int playerMovingPixel) {
 	if (mapMovingPoint.x != 0 || mapMovingPoint.y != 0) {
 		this->pMap->Move(mapMovingPoint);
 		this->pPlayer->Move(mapMovingPoint);
-		this->pEnermy->Move(mapMovingPoint);
+		this->pEnemy->Move(mapMovingPoint);
 	}
 }
 
 void StageController::RevertStage() {
 	this->pMap->MoveToDefault();
 	this->pPlayer->GetKilled();
-	this->pEnermy->BackToDefaultPosition();
+	this->pEnemy->BackToDefaultPosition();
 }
 
 }

@@ -1,5 +1,5 @@
 ﻿#include "Stage1.h"
-#include "Enermy.h"
+#include "Enemy.h"
 
 
 namespace BestStealReplica {
@@ -8,7 +8,7 @@ namespace {
 
 using Map::MapCommon;
 using Character::CharacterCommon;
-using Character::Enermy;
+using Character::Enemy;
 
 MapCommon::MapChipType mapChipTypes[Stage1::Y_CHIP_COUNT][Stage1::X_CHIP_COUNT] = {
 	// 1									2									3									4									5									6									7									8									9									10									11									12									13									14									15									16									17									18									19									20									21									22									23									24									25									26									27									28									29									30
@@ -35,14 +35,14 @@ MapCommon::MapChipType mapChipTypes[Stage1::Y_CHIP_COUNT][Stage1::X_CHIP_COUNT] 
 	{ MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::WALL, MapCommon::MapChipType::WALL, MapCommon::MapChipType::WALL, MapCommon::MapChipType::WALL, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::WALL, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::WALL, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::WALL_SIDE, MapCommon::MapChipType::WALL_SIDE, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD, MapCommon::MapChipType::ROAD },		// 21
 };
 
-Enermy::EnermyInfo enermiesInfo[Stage1::ENERMY_COUNT] = {
-	Enermy::EnermyInfo(6, 4, AppCommon::Direction::RIGHT, AppCommon::KeyType::None),
-	Enermy::EnermyInfo(24, 0, AppCommon::Direction::LEFT, AppCommon::KeyType::Silver),
-	Enermy::EnermyInfo(1, 20, AppCommon::Direction::RIGHT, AppCommon::KeyType::Silver),
-	Enermy::EnermyInfo(22, 7, AppCommon::Direction::LEFT, AppCommon::KeyType::None),
-	Enermy::EnermyInfo(3, 16, AppCommon::Direction::BOTTOM, AppCommon::KeyType::Silver),
-	Enermy::EnermyInfo(9, 20, AppCommon::Direction::RIGHT, AppCommon::KeyType::Silver),
-	Enermy::EnermyInfo(21, 14, AppCommon::Direction::RIGHT, AppCommon::KeyType::Gold)
+Enemy::EnemyInfo enemiesInfo[Stage1::ENEMY_COUNT] = {
+	Enemy::EnemyInfo(6, 4, AppCommon::Direction::RIGHT, AppCommon::KeyType::None),
+	Enemy::EnemyInfo(24, 0, AppCommon::Direction::LEFT, AppCommon::KeyType::Silver),
+	Enemy::EnemyInfo(1, 20, AppCommon::Direction::RIGHT, AppCommon::KeyType::Silver),
+	Enemy::EnemyInfo(22, 7, AppCommon::Direction::LEFT, AppCommon::KeyType::None),
+	Enemy::EnemyInfo(3, 16, AppCommon::Direction::BOTTOM, AppCommon::KeyType::Silver),
+	Enemy::EnemyInfo(9, 20, AppCommon::Direction::RIGHT, AppCommon::KeyType::Silver),
+	Enemy::EnemyInfo(21, 14, AppCommon::Direction::RIGHT, AppCommon::KeyType::Gold)
 };
 
 }
@@ -67,19 +67,19 @@ POINT Stage1::GetPlayerFirstChipPos() const {
 	return ret;
 }
 
-int Stage1::GetEnermyCount() const {
-	return Stage1::ENERMY_COUNT;
+int Stage1::GetEnemyCount() const {
+	return Stage1::ENEMY_COUNT;
 }
 
-POINT Stage1::GetEnermyChipPos(int enermyNum) const {
-	return enermiesInfo[enermyNum].chipPos;
+POINT Stage1::GetEnemyChipPos(int enemyNum) const {
+	return enemiesInfo[enemyNum].chipPos;
 }
 
-Enermy::EnermyInfo* Stage1::GetEnermiesInfo() const {
-	return enermiesInfo;
+Enemy::EnemyInfo* Stage1::GetEnemiesInfo() const {
+	return enemiesInfo;
 }
 
-int Stage1::GetEnermyScoutableRadius() const {
+int Stage1::GetEnemyScoutableRadius() const {
 	return 260;
 }
 
