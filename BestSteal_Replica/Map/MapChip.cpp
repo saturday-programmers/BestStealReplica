@@ -76,7 +76,7 @@ void MapChip::SetXY(POINT topLeftXY) {
 	this->vertices.bottomRight.y = xy.bottomRight.y;
 }
 
-Vertices<DrawingVertex> MapChip::GetVertex() const {
+Vertices<DrawingVertex> MapChip::CreateVertex() const {
 	return this->vertices;
 }
 

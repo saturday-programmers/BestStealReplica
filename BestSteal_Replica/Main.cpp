@@ -18,8 +18,8 @@ static const TCHAR* TITLE = TEXT("Best Steal Replica");
 
 static IDirect3D9*			 pDirect3D;
 static D3DPRESENT_PARAMETERS d3dpp;
-static LPDIRECTINPUT8        g_lpDI;
-static LPDIRECTINPUTDEVICE8  g_lpDIDevice;
+static LPDIRECTINPUT8        lpDI;
+static LPDIRECTINPUTDEVICE8  lpDIDevice;
 
 static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 static void WINAPI DI_Term();
@@ -83,28 +83,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 	AppCommon::SetWindowWidth(rc.right - rc.left);
 
 	// DirectInputオブジェクト作成
-	HRESULT hr = DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&g_lpDI, NULL);
+	HRESULT hr = DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&lpDI, NULL);
 	if FAILED(hr) {
 		// DirectInput not available; take appropriate action 
 		return false;
 	}
 
 	// DirectInputキーボードデバイスの作成
-	hr = g_lpDI->CreateDevice(GUID_SysKeyboard, &g_lpDIDevice, NULL);
+	hr = lpDI->CreateDevice(GUID_SysKeyboard, &lpDIDevice, NULL);
 	if FAILED(hr) {
 		DI_Term();
 		return FALSE;
 	}
 
 	// キーボードデータフォーマットの設定
-	hr = g_lpDIDevice->SetDataFormat(&c_dfDIKeyboard);
+	hr = lpDIDevice->SetDataFormat(&c_dfDIKeyboard);
 	if FAILED(hr) {
 		DI_Term();
 		return FALSE;
 	}
 
 	// キーボードの動作の設定 
-	hr = g_lpDIDevice->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	hr = lpDIDevice->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 	if FAILED(hr) {
 		DI_Term();
 		return FALSE;
@@ -128,10 +128,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 		} else {
 			SyncNow = timeGetTime();
 			if (SyncNow - SyncOld >= 1000 / 60) {
-				if (g_lpDIDevice) {
-					g_lpDIDevice->Acquire();
+				if (lpDIDevice) {
+					lpDIDevice->Acquire();
 				}
-				sceneController.Control(g_lpDIDevice);
+				sceneController.Control(lpDIDevice);
 				SyncOld = SyncNow;
 			}
 		}
@@ -165,15 +165,15 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 static void WINAPI DI_Term(void) {
-	if (g_lpDI) {
-		if (g_lpDIDevice) {
+	if (lpDI) {
+		if (lpDIDevice) {
 			// Always unacquire device before calling Release(). 
-			g_lpDIDevice->Unacquire();
-			g_lpDIDevice->Release();
-			g_lpDIDevice = NULL;
+			lpDIDevice->Unacquire();
+			lpDIDevice->Release();
+			lpDIDevice = NULL;
 		}
-		g_lpDI->Release();
-		g_lpDI = NULL;
+		lpDI->Release();
+		lpDI = NULL;
 	}
 }
 

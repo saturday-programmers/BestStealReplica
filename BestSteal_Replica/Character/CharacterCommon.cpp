@@ -4,13 +4,13 @@ namespace BestStealReplica {
 namespace Character {
 
 /* Static Public Functions -------------------------------------------------------------------------- */
-void CharacterCommon::SetTuTvs(Vertices<FloatPoint> chips[], int chipCntPerDir, int rowNum, int colNum) {
-	for (int i = 0; i < chipCntPerDir; ++i) {
-		chips[i] = GetTuTv(rowNum, colNum + i);
+void CharacterCommon::CreateChipTuTvs(int chipCount, int rowNum, int colNum, Vertices<FloatPoint> chips[]) {
+	for (int i = 0; i < chipCount; ++i) {
+		chips[i] = CreateTuTv(rowNum, colNum + i);
 	}
 }
 
-Vertices<FloatPoint> CharacterCommon::GetTuTv(int rowNum, int colNum) {
+Vertices<FloatPoint> CharacterCommon::CreateTuTv(int rowNum, int colNum) {
 	Vertices<FloatPoint> ret;
 	ret.topLeft.x = colNum / (float)CharacterCommon::CHIP_COUNT_PER_COL;
 	ret.topLeft.y = rowNum / (float)CharacterCommon::CHIP_COUNT_PER_ROW;
@@ -30,7 +30,7 @@ int CharacterCommon::GetAnimationNumber(int currentAnimationCnt) {
 	return currentAnimationCnt / AppCommon::FRAME_COUNT_PER_CUT;
 }
 
-Vertices<DrawingVertex> CharacterCommon::GetVertex(POINT topLeftXY, Vertices<POINT>(*getXY)(POINT), Vertices<FloatPoint> chip) {
+Vertices<DrawingVertex> CharacterCommon::CreateVertex(POINT topLeftXY, Vertices<POINT>(*getXY)(POINT), Vertices<FloatPoint> chip) {
 	Vertices<DrawingVertex> ret;
 	Vertices<POINT> xy = getXY(topLeftXY);
 

@@ -15,15 +15,15 @@ Player::Player(POINT topLeftXY, Drawer* pDrawer):
 	holdingSilverKeyCount(0),
 	holdingGoldKeyCount(0)
 {
-	CharacterCommon::SetTuTvs(this->headingTopChips, Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_TOP, Player::COL_NUM_OF_HEADING_TOP);
-	CharacterCommon::SetTuTvs(this->headingRightChips, Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_RIGHT, Player::COL_NUM_OF_HEADING_RIGHT);
-	CharacterCommon::SetTuTvs(this->headingBottomChips, Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_BOTTOM, Player::COL_NUM_OF_HEADING_BOTTOM);
-	CharacterCommon::SetTuTvs(this->headingLeftChips, Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_LEFT, Player::COL_NUM_OF_HEADING_LEFT);
+	CharacterCommon::CreateChipTuTvs(Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_TOP, Player::COL_NUM_OF_HEADING_TOP, this->headingTopChips);
+	CharacterCommon::CreateChipTuTvs(Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_RIGHT, Player::COL_NUM_OF_HEADING_RIGHT, this->headingRightChips);
+	CharacterCommon::CreateChipTuTvs(Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_BOTTOM, Player::COL_NUM_OF_HEADING_BOTTOM, this->headingBottomChips);
+	CharacterCommon::CreateChipTuTvs(Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_LEFT, Player::COL_NUM_OF_HEADING_LEFT, this->headingLeftChips);
 
-	this->StealingTopChip = CharacterCommon::GetTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_TOP);
-	this->StealingRightChip = CharacterCommon::GetTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_RIGHT);
-	this->StealingBottomChip = CharacterCommon::GetTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_BOTTOM);
-	this->StealingLeftChip = CharacterCommon::GetTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_LEFT);
+	this->StealingTopChip = CharacterCommon::CreateTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_TOP);
+	this->StealingRightChip = CharacterCommon::CreateTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_RIGHT);
+	this->StealingBottomChip = CharacterCommon::CreateTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_BOTTOM);
+	this->StealingLeftChip = CharacterCommon::CreateTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_LEFT);
 
 	SetDefaultProperty();
 	this->pDrawer->CreateTexture(this->FILE_PATH, Drawer::TextureType::CHARACTER);
@@ -48,12 +48,12 @@ void Player::Draw() const {
 			this->pDrawer->Draw(vertex, Drawer::TextureType::CHARACTER);
 		}
 	} else {
-		this->pDrawer->Draw(GetVertex(), Drawer::TextureType::CHARACTER);
+		this->pDrawer->Draw(CreateVertex(), Drawer::TextureType::CHARACTER);
 	}
 }
 
 void Player::SetDirection(AppCommon::Direction direction) {
-	this->isDirectionChanged = (this->headingDirection != direction);
+	this->hasDirectionChanged = (this->headingDirection != direction);
 	this->headingDirection = direction;
 }
 
@@ -65,7 +65,7 @@ void Player::Walk(POINT movingPoint) {
 	this->topLeftXY.x += movingPoint.x;
 	this->topLeftXY.y += movingPoint.y;
 	
-	if (this->isDirectionChanged) {
+	if (this->hasDirectionChanged) {
 		// 向きが変わったらアニメーション番号を最初に戻す
 		this->currentAnimationCnt = 0;
 	} else {
@@ -143,19 +143,19 @@ Vertices<POINT> Player::GetPlayerXY() const {
 }
 
 bool Player::HasKey(AppCommon::KeyType key) const {
-	int holdingKeyCnt = GetHoldingKeyCnt(key);
-	return (holdingKeyCnt > 0);
+	const int* pHoldingKeyCnt = GetHoldingKeyCnt(key);
+	return (pHoldingKeyCnt == NULL ? 0 : (*pHoldingKeyCnt > 0));
 }
 
 void Player::AddKey(AppCommon::KeyType key) {
-	int* pHoldingKeyCnt = GetHoldingKeyCnt(key);
+	int* pHoldingKeyCnt = (int*)GetHoldingKeyCnt(key);
 	if (pHoldingKeyCnt != NULL) {
 		++(*pHoldingKeyCnt);
 	}
 }	
 
 void Player::SubtractKey(AppCommon::KeyType key) {
-	int* pHoldingKeyCnt = GetHoldingKeyCnt(key);
+	int* pHoldingKeyCnt = (int*)GetHoldingKeyCnt(key);
 	if (pHoldingKeyCnt != NULL) {
 		--(*pHoldingKeyCnt);
 	}
@@ -173,10 +173,10 @@ void Player::SetDefaultProperty() {
 	this->topLeftXY = defaultTopLeftXY;
 	this->isStealing = false;
 	this->currentKeepingStealingNum = 0;
-	this->isDirectionChanged = false;
+	this->hasDirectionChanged = false;
 }
 
-Vertices<DrawingVertex> Player::GetVertex() const {
+Vertices<DrawingVertex> Player::CreateVertex() const {
 	Vertices<DrawingVertex> ret;
 
 	Vertices<FloatPoint> chip;
@@ -196,7 +196,7 @@ Vertices<DrawingVertex> Player::GetVertex() const {
 			break;
 	}
 
-	ret = CharacterCommon::GetVertex(this->topLeftXY, &CharacterCommon::GetChipXY, chip);
+	ret = CharacterCommon::CreateVertex(this->topLeftXY, &CharacterCommon::GetChipXY, chip);
 
 	return ret;
 }
@@ -231,11 +231,11 @@ Vertices<DrawingVertex> Player::GetVerticesOnStealing(int afterImageNum) const {
 			chip = this->StealingLeftChip;
 			break;
 	}
-	Vertices<DrawingVertex> ret = CharacterCommon::GetVertex(topLeftXY, &CharacterCommon::GetChipXY, chip);
+	Vertices<DrawingVertex> ret = CharacterCommon::CreateVertex(topLeftXY, &CharacterCommon::GetChipXY, chip);
 	return ret;
 }
 
-int* Player::GetHoldingKeyCnt(AppCommon::KeyType key) {
+const int* Player::GetHoldingKeyCnt(AppCommon::KeyType key) const {
 	switch (key) {
 		case AppCommon::KeyType::Silver:
 			return &this->holdingSilverKeyCount;
@@ -246,21 +246,6 @@ int* Player::GetHoldingKeyCnt(AppCommon::KeyType key) {
 		default:
 			return NULL;
 	}
-}
-
-int Player::GetHoldingKeyCnt(AppCommon::KeyType key) const {
-	int ret = 0;
-	switch (key) {
-		case AppCommon::KeyType::Silver:
-			ret = this->holdingSilverKeyCount;
-			break;
-		case AppCommon::KeyType::Gold:
-			ret = this->holdingGoldKeyCount;
-			break;
-		default:
-			break;
-	}
-	return ret;
 }
 
 }

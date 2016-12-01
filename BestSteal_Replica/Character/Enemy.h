@@ -41,13 +41,11 @@ public:
 		EnemyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, AppCommon::KeyType holdingKey);
 	};
 
-	/* Constants ---------------------------------------------------------------------------------------- */
-	static const int MAX_ENEMY_COUNT = 7;
-
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Enemy(const POINT topLeftXY[Enemy::MAX_ENEMY_COUNT], EnemyInfo enemiesInfo[Enemy::MAX_ENEMY_COUNT], int enemyCount, int scoutableRadius, const Drawer& rDrawer);
+	Enemy(std::vector<EnemyInfo> enemiesInfo, std::vector<POINT> topLeftXYs, int scoutableRadius, const Drawer& rDrawer);
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
+	int GetEnermyCount() const;
 	Vertices<POINT> GetEnemyXY(int enemyNum) const;
 	AppCommon::Direction GetHeadingDirection(int enemyNum) const;
 	Enemy::State GetState(int enemyNum) const;
@@ -89,13 +87,12 @@ private:
 	Vertices<FloatPoint> headingRightChips[Enemy::CHIP_COUNT_PER_DIRECTION];
 	Vertices<FloatPoint> exclamationMarkChip;
 
-	int enemyCount;
-	EnemyInfo enemiesInfo[MAX_ENEMY_COUNT];
+	std::vector<EnemyInfo> enemiesInfo;
 	const Drawer& rDrawer;
 	int scoutableRadius;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	Vertices<DrawingVertex> GetVertex(int enemyNum) const;
+	Vertices<DrawingVertex> CreateVertex(int enemyNum) const;
 	void TurnTo(POINT targetXY, int enemyNum);
 };
 

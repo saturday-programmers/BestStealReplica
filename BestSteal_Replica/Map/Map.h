@@ -23,7 +23,7 @@ class Stone;
 class Map {
 public:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Map(int yChipCount, int xChipCount, Drawer* pDrawer);
+	Map(Drawer* pDrawer);
 	~Map();
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
@@ -51,18 +51,13 @@ public:
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */
-	static const int MAX_Y_CHIP_COUNT = 21;
-	static const int MAX_X_CHIP_COUNT = 30;
-
 	static const TCHAR* FILE_PATH;
 
 	/* Variables ---------------------------------------------------------------------------------------- */
-	int yChipCount;
-	int xChipCount;
 	Drawer* pDrawer;
 	POINT defaultTopLeft;
 	POINT topLeft;
-	MapChip* pMapData[MAX_Y_CHIP_COUNT][MAX_X_CHIP_COUNT];
+	DataTable<MapChip*> pMapData;
 	std::vector<MapChipDoor*> pDoorMapChips;
 	MapChipJewelry* pJewelryMapChip;
 	std::vector<Stone*> pStones;

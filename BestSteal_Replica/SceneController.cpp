@@ -56,7 +56,7 @@ void SceneController::Control(LPDIRECTINPUTDEVICE8 pDIDevice) {
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */
-AppCommon::Key SceneController::ProcessKBInput(LPDIRECTINPUTDEVICE8 pDIDevice) const{
+AppCommon::Key SceneController::ProcessKBInput(LPDIRECTINPUTDEVICE8 pDIDevice) const {
 	#define KEYDOWN(name, key) (name[key] & 0x80) > 0
 
 	AppCommon::Key ret;

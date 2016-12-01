@@ -28,7 +28,7 @@ public:
 	virtual void SetChipNumber();
 	POINT GetTopLeftXY() const;
 	void SetXY(POINT topLeftXY);
-	Vertices<DrawingVertex> GetVertex() const;
+	Vertices<DrawingVertex> CreateVertex() const;
 
 protected:
 	/* Structs ------------------------------------------------------------------------------------------ */

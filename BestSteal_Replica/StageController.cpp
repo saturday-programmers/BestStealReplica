@@ -1,7 +1,6 @@
 ﻿#include <vector>
 
 #include "StageController.h"
-
 #include "Stage1.h"
 #include "Drawer.h"
 #include "Map.h"
@@ -34,7 +33,7 @@ StageController::~StageController() {
 void StageController::LoadStage(const Stage::IStage& rStage) {
 	// マップ情報
 	this->pStage = &rStage;
-	this->pMap = new Map::Map(this->pStage->GetYChipCount(), this->pStage->GetXChipCount(), this->pDrawer);
+	this->pMap = new Map::Map(this->pDrawer);
 	this->pMap->Load(*this->pStage);
 
 	// プレイヤー情報
@@ -42,12 +41,12 @@ void StageController::LoadStage(const Stage::IStage& rStage) {
 	this->pPlayer = new Player(this->pMap->GetTopLeftXYonChip(playerChipPos), this->pDrawer);
 
 	// 敵情報
-	int enemyCount = this->pStage->GetEnemyCount();
-	POINT enemiesXY[Enemy::MAX_ENEMY_COUNT];
-	for (int i = 0; i < enemyCount; ++i) {
-		enemiesXY[i] = this->pMap->GetTopLeftXYonChip(this->pStage->GetEnemyChipPos(i));
+	std::vector<Enemy::EnemyInfo> enemiesInfo = this->pStage->GetEnemiesInfo();
+	std::vector<POINT> enemiesXY;
+	for (int i = 0; i < (int)enemiesInfo.size(); ++i) {
+		enemiesXY.push_back(this->pMap->GetTopLeftXYonChip(enemiesInfo[i].chipPos));
 	}
-	this->pEnemy = new Enemy(enemiesXY, this->pStage->GetEnemiesInfo(), this->pStage->GetEnemyCount(), this->pStage->GetEnemyScoutableRadius(), *this->pDrawer);
+	this->pEnemy = new Enemy(enemiesInfo, enemiesXY, this->pStage->GetEnemyScoutableRadius(), *this->pDrawer);
 }
 
 void StageController::Control(AppCommon::Key key) {
@@ -263,7 +262,7 @@ void StageController::ControlEnemy(int playerMovingPixel, const Handling& rHandl
 	this->pEnemy->ScoutPlayer(playerXY, rHandling.isWalking);
 
 	// 突進可能か
-	for (int i = 0; i < this->pStage->GetEnemyCount(); ++i) {
+	for (int i = 0; i < this->pEnemy->GetEnermyCount(); ++i) {
 		if (this->pEnemy->GetState(i) == Enemy::State::GOT_STOLEN) {
 			continue;
 		}
