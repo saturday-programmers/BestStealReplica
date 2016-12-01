@@ -9,6 +9,7 @@
 #include "IStage.h"
 #include "Stone.h"
 
+
 namespace BestStealReplica {
 namespace Map {
 
@@ -16,19 +17,15 @@ const TCHAR* Map::FILE_PATH = TEXT("image\\mapchip.png");
 
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-Map::Map(int yChipCount, int xChipCount, Drawer* pDrawer) :
-	pDrawer(pDrawer),
-	yChipCount(yChipCount),
-	xChipCount(xChipCount)
-{
+Map::Map(Drawer* pDrawer) : pDrawer(pDrawer) {
 	this->topLeft.x = 0;
 	this->topLeft.y = 0;
 	pDrawer->CreateTexture(this->FILE_PATH, Drawer::TextureType::MAP);
 }
 
 Map::~Map() {
-	for (int i = 0; i < this->yChipCount; ++i) {
-		for (int j = 0; j < this->xChipCount; ++j) {
+	for (int i = 0; i < (int)this->pMapData.size(); ++i) {
+		for (int j = 0; j < (int)this->pMapData[i].size(); ++j) {
 			delete this->pMapData[i][j];
 		}
 	}
@@ -51,8 +48,14 @@ MapCommon::MapChipType Map::GetMapChipType(POINT mapChipPos) const {
 
 /* Public Functions  -------------------------------------------------------------------------------- */
 void Map::Load(const Stage::IStage& rStage) {
-	for (int i = 0; i < this->yChipCount; ++i) {
-		for (int j = 0; j < this->xChipCount; ++j) {
+	int yChipCount = rStage.GetYChipCount();
+	int xChipCount = rStage.GetXChipCount();
+
+	this->pMapData.resize(yChipCount);
+	for (int i = 0; i < yChipCount; ++i) {
+		this->pMapData[i].resize(xChipCount);
+
+		for (int j = 0; j < xChipCount; ++j) {			
 			this->pMapData[i][j] = MapChip::Create(rStage.GetMapChipType(i, j));
 
 			switch (this->pMapData[i][j]->GetChipType()) {
@@ -87,8 +90,8 @@ void Map::Load(const Stage::IStage& rStage) {
 
 	// 右下が余白になる場合は余白が0になるように調整
 	POINT minTopLeft;
-	minTopLeft.x = AppCommon::GetWindowWidth() - (this->xChipCount * MapChip::WIDTH);
-	minTopLeft.y = AppCommon::GetWindowHeight() - (this->yChipCount * MapChip::HEIGHT);
+	minTopLeft.x = AppCommon::GetWindowWidth() - (xChipCount * MapChip::WIDTH);
+	minTopLeft.y = AppCommon::GetWindowHeight() - (yChipCount * MapChip::HEIGHT);
 	if (this->topLeft.x < minTopLeft.x) {
 		this->topLeft.x = minTopLeft.x;
 	}
@@ -97,8 +100,8 @@ void Map::Load(const Stage::IStage& rStage) {
 	}
 	this->defaultTopLeft = this->topLeft;
 
-	for (int i = 0; i < this->yChipCount; ++i) {
-		for (int j = 0; j < this->xChipCount; ++j) {
+	for (int i = 0; i < yChipCount; ++i) {
+		for (int j = 0; j < xChipCount; ++j) {
 			if (this->pMapData[i][j]->GetChipType() == MapCommon::MapChipType::WALL) {
 				MapChipWall* chip = (MapChipWall*)this->pMapData[i][j];
 				// 壁とそれ以外のチップの間に線を引く
@@ -141,9 +144,9 @@ void Map::Load(const Stage::IStage& rStage) {
 }
 
 void Map::Draw() const {
-	for (int i = 0; i < this->yChipCount; ++i) {
-		for (int j = 0; j < this->xChipCount; ++j) {
-			this->pDrawer->Draw(pMapData[i][j]->GetVertex(), Drawer::TextureType::MAP);
+	for (int i = 0; i < (int)this->pMapData.size(); ++i) {
+		for (int j = 0; j < (int)this->pMapData[i].size(); ++j) {
+			this->pDrawer->Draw(pMapData[i][j]->CreateVertex(), Drawer::TextureType::MAP);
 		}
 	}
 
@@ -194,7 +197,7 @@ bool Map::IsMovableX(int x) const {
 			return false;
 		}
 	} else {
-		if (this->topLeft.x + this->xChipCount * MapChip::WIDTH <= AppCommon::GetWindowWidth()) {
+		if (this->topLeft.x + (int)this->pMapData[0].size() * MapChip::WIDTH <= AppCommon::GetWindowWidth()) {
 			return false;
 		}
 	}
@@ -210,7 +213,7 @@ bool Map::IsMovableY(int y) const {
 			return false;
 		}
 	} else if (y < 0) {
-		if (this->topLeft.y + this->yChipCount * MapChip::HEIGHT <= AppCommon::GetWindowHeight()) {
+		if (this->topLeft.y + (int)this->pMapData.size() * MapChip::HEIGHT <= AppCommon::GetWindowHeight()) {
 			return false;
 		}
 	}
@@ -245,12 +248,12 @@ POINT Map::GetFrontMapChipPos(Vertices<POINT> playerXY, AppCommon::Direction hea
 			}
 			break;
 		case AppCommon::Direction::RIGHT:
-			if (chipPos.x < this->xChipCount - 1) {
+			if (chipPos.x < (int)this->pMapData[0].size() - 1) {
 				++chipPos.x;
 			}
 			break;
 		case AppCommon::Direction::BOTTOM:
-			if (chipPos.y < this->yChipCount - 1) {
+			if (chipPos.y < (int)this->pMapData.size() - 1) {
 				++chipPos.y;
 			}
 			break;
@@ -417,8 +420,8 @@ std::vector<Vertices<POINT>> Map::GetDroppedStoneXYs() const {
 /* Private Functions  ------------------------------------------------------------------------------- */
 void Map::SetChipXY() {
 	POINT point;
-	for (int i = 0; i < this->yChipCount; ++i) {
-		for (int j = 0; j < this->xChipCount; ++j) {
+	for (int i = 0; i < (int)this->pMapData.size(); ++i) {
+		for (int j = 0; j < (int)this->pMapData[i].size(); ++j) {
 			point.x = this->topLeft.x + (j * MapChip::WIDTH);
 			point.y = this->topLeft.y + (i * MapChip::HEIGHT);
 			this->pMapData[i][j]->SetXY(point);
@@ -427,7 +430,7 @@ void Map::SetChipXY() {
 }
 
 bool Map::IsOnRoad(POINT mapChipPos) const {
-	if (mapChipPos.x < 0 || mapChipPos.x >= xChipCount || mapChipPos.y < 0 || mapChipPos.y >= yChipCount) {
+	if (mapChipPos.x < 0 || mapChipPos.x >= (int)this->pMapData[0].size() || mapChipPos.y < 0 || mapChipPos.y >= (int)this->pMapData.size()) {
 		return false;
 	}
 	switch (this->pMapData[mapChipPos.y][mapChipPos.x]->GetChipType()) {

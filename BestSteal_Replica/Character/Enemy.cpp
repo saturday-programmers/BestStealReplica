@@ -26,27 +26,30 @@ Enemy::EnemyInfo::EnemyInfo(int chipPosX, int chipPosY, AppCommon::Direction def
 }
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-Enemy::Enemy(const POINT topLeftXY[], EnemyInfo enemiesInfo[], int enemyCount, int scoutableRadius, const Drawer& rDrawer) :
-	enemyCount(enemyCount),
+Enemy::Enemy(std::vector<EnemyInfo> enemiesInfo, std::vector<POINT> topLeftXYs, int scoutableRadius, const Drawer& rDrawer) :
 	scoutableRadius(scoutableRadius),
 	rDrawer(rDrawer)
 {	
-	for (int i = 0; i < enemyCount; ++i) {
-		this->enemiesInfo[i] = enemiesInfo[i];
-		this->enemiesInfo[i].topLeftXY = topLeftXY[i];
-		this->enemiesInfo[i].defaultTopLeftXY = topLeftXY[i];
+	for (int i = 0; i < (int)enemiesInfo.size(); ++i) {
+		this->enemiesInfo.push_back(enemiesInfo[i]);
+		this->enemiesInfo[i].topLeftXY = topLeftXYs[i];
+		this->enemiesInfo[i].defaultTopLeftXY = topLeftXYs[i];
 	}
 
-	CharacterCommon::SetTuTvs(this->headingTopChips, Enemy::CHIP_COUNT_PER_DIRECTION, Enemy::ROW_NUM_OF_HEADING_TOP, Enemy::COL_NUM_OF_HEADING_TOP);
-	CharacterCommon::SetTuTvs(this->headingRightChips, Enemy::CHIP_COUNT_PER_DIRECTION, Enemy::ROW_NUM_OF_HEADING_RIGHT, Enemy::COL_NUM_OF_HEADING_RIGHT);
-	CharacterCommon::SetTuTvs(this->headingBottomChips, Enemy::CHIP_COUNT_PER_DIRECTION, Enemy::ROW_NUM_OF_HEADING_BOTTOM, Enemy::COL_NUM_OF_HEADING_BOTTOM);
-	CharacterCommon::SetTuTvs(this->headingLeftChips, Enemy::CHIP_COUNT_PER_DIRECTION, Enemy::ROW_NUM_OF_HEADING_LEFT, Enemy::COL_NUM_OF_HEADING_LEFT);
+	CharacterCommon::CreateChipTuTvs(Enemy::CHIP_COUNT_PER_DIRECTION, Enemy::ROW_NUM_OF_HEADING_TOP, Enemy::COL_NUM_OF_HEADING_TOP, this->headingTopChips);
+	CharacterCommon::CreateChipTuTvs(Enemy::CHIP_COUNT_PER_DIRECTION, Enemy::ROW_NUM_OF_HEADING_RIGHT, Enemy::COL_NUM_OF_HEADING_RIGHT, this->headingRightChips);
+	CharacterCommon::CreateChipTuTvs(Enemy::CHIP_COUNT_PER_DIRECTION, Enemy::ROW_NUM_OF_HEADING_BOTTOM, Enemy::COL_NUM_OF_HEADING_BOTTOM, this->headingBottomChips);
+	CharacterCommon::CreateChipTuTvs(Enemy::CHIP_COUNT_PER_DIRECTION, Enemy::ROW_NUM_OF_HEADING_LEFT, Enemy::COL_NUM_OF_HEADING_LEFT, this->headingLeftChips);
 
 	this->exclamationMarkChip = BestStealReplica::Map::MapChip::GetTuTvs(MAP_CHIP_NUMBER_OF_EXCL);
 }
 
 
 /* Getters / Setters -------------------------------------------------------------------------------- */
+int Enemy::GetEnermyCount() const {
+	return this->enemiesInfo.size();
+}
+
 Vertices<POINT> Enemy::GetEnemyXY(int enemyNum) const {
 	Vertices<POINT> ret = CharacterCommon::GetChipXY(this->enemiesInfo[enemyNum].topLeftXY);
 	int xDiff = (CharacterCommon::WIDTH - Enemy::ENEMY_WIDTH) / 2;
@@ -68,14 +71,14 @@ Enemy::State Enemy::GetState(int enemyNum) const {
 
 /* Public Functions  -------------------------------------------------------------------------------- */
 void Enemy::Draw() const {
-	for (int i = 0; i < this->enemyCount; ++i) {
+	for (int i = 0; i < (int)this->enemiesInfo.size(); ++i) {
 		if (this->enemiesInfo[i].state == State::GOT_STOLEN) {
 			// 点滅
 			double rad = this->enemiesInfo[i].restTimeForBackingToNormal * 18 * M_PI / 180;
 			double alpha = 0xFF * abs(sin(rad));
-			this->rDrawer.Draw(GetVertex(i), Drawer::TextureType::CHARACTER, (UINT16)alpha);
+			this->rDrawer.Draw(CreateVertex(i), Drawer::TextureType::CHARACTER, (UINT16)alpha);
 		} else {
-			this->rDrawer.Draw(GetVertex(i), Drawer::TextureType::CHARACTER);
+			this->rDrawer.Draw(CreateVertex(i), Drawer::TextureType::CHARACTER);
 
 			if (this->enemiesInfo[i].state == State::FOUND_PLAYER || this->enemiesInfo[i].state == State::ATTACKING) {
 				// びっくりマーク表示
@@ -94,7 +97,7 @@ void Enemy::Draw() const {
 					exclXY.x = enemyTopLeftXY.x + Map::MapChip::WIDTH;
 					exclXY.y = enemyTopLeftXY.y;
 				}
-				Vertices<DrawingVertex> exclVertex = CharacterCommon::GetVertex(exclXY, &Map::MapChip::GetXY, this->exclamationMarkChip);
+				Vertices<DrawingVertex> exclVertex = CharacterCommon::CreateVertex(exclXY, &Map::MapChip::GetXY, this->exclamationMarkChip);
 				this->rDrawer.Draw(exclVertex, Drawer::TextureType::MAP);
 			}
 		}
@@ -102,20 +105,20 @@ void Enemy::Draw() const {
 }
 
 void Enemy::Stay() {
-	for (int i = 0; i < this->enemyCount; ++i) {
+	for (int i = 0; i < (int)this->enemiesInfo.size(); ++i) {
 		CharacterCommon::CountUpAnimationCnt(&this->enemiesInfo[i].currentAnimationCnt, Enemy::CHIP_COUNT_PER_DIRECTION);
 	}
 }
 
 void Enemy::Move(POINT xy) {
-	for (int i = 0; i < this->enemyCount; ++i) {
+	for (int i = 0; i < (int)this->enemiesInfo.size(); ++i) {
 		this->enemiesInfo[i].topLeftXY.x += xy.x;
 		this->enemiesInfo[i].topLeftXY.y += xy.y;
 	}
 }
 
 void Enemy::ScoutStone(const std::vector<Vertices<POINT>>& rStoneXYs) {
-	for (int i = 0; i < this->enemyCount; ++i) {
+	for (int i = 0; i < (int)this->enemiesInfo.size(); ++i) {
 		if (this->enemiesInfo[i].state == Enemy::State::ATTACKING || this->enemiesInfo[i].state == Enemy::State::GOT_STOLEN) {
 			return;
 		}
@@ -148,7 +151,7 @@ void Enemy::ScoutStone(const std::vector<Vertices<POINT>>& rStoneXYs) {
 void Enemy::ScoutPlayer(Vertices<POINT> playerXY, bool isPlayerWalking) {
 	POINT playerCenter = CharacterCommon::CalcCenter(playerXY);
 
-	for (int i = 0; i < this->enemyCount; ++i) {
+	for (int i = 0; i < (int)this->enemiesInfo.size(); ++i) {
 		POINT enemyCenter = CharacterCommon::CalcCenter(GetEnemyXY(i));
 		double distance = CharacterCommon::CalcDistance(playerCenter, enemyCenter);
 
@@ -185,7 +188,7 @@ void Enemy::ScoutPlayer(Vertices<POINT> playerXY, bool isPlayerWalking) {
 
 AppCommon::KeyType Enemy::GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing) {
 	AppCommon::KeyType ret = AppCommon::KeyType::None;
-	for (int i = 0; i < this->enemyCount; ++i) {
+	for (int i = 0; i < (int)this->enemiesInfo.size(); ++i) {
 		if (this->enemiesInfo[i].state == State::GOT_STOLEN) {
 			--this->enemiesInfo[i].restTimeForBackingToNormal;
 			if (this->enemiesInfo[i].restTimeForBackingToNormal == 0) {
@@ -216,7 +219,7 @@ AppCommon::KeyType Enemy::GetStolen(Vertices<POINT> playerXY, bool isPlayerSteal
 }
 
 void Enemy::Attack(int enemyNum, bool canSeePlayer) {
-	EnemyInfo* pEnemyInfo = &(this->enemiesInfo[enemyNum]);
+	EnemyInfo* pEnemyInfo = &this->enemiesInfo[enemyNum];
 	if (pEnemyInfo->state == Enemy::State::GOT_STOLEN) {
 		// 盗まれ中の場合は動かない
 		return;
@@ -250,7 +253,7 @@ void Enemy::Attack(int enemyNum, bool canSeePlayer) {
 
 bool Enemy::CanKillPlayer(Vertices<POINT> playerXY) const {
 	bool ret = false;
-	for (int i = 0; i < this->enemyCount; i++) {
+	for (int i = 0; i < (int)this->enemiesInfo.size(); i++) {
 		if (this->enemiesInfo[i].state == Enemy::State::GOT_STOLEN) {
 			continue;
 		}
@@ -266,7 +269,7 @@ bool Enemy::CanKillPlayer(Vertices<POINT> playerXY) const {
 }
 
 void Enemy:: BackToDefaultPosition() {
-	for (int i = 0; i < this->enemyCount; i++) {
+	for (int i = 0; i < (int)this->enemiesInfo.size(); i++) {
 		this->enemiesInfo[i].topLeftXY = this->enemiesInfo[i].defaultTopLeftXY;
 		this->enemiesInfo[i].headingDirection = this->enemiesInfo[i].defaultDirection;
 		this->enemiesInfo[i].state = Enemy::State::NORMAL;
@@ -275,7 +278,7 @@ void Enemy:: BackToDefaultPosition() {
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */
-Vertices<DrawingVertex> Enemy::GetVertex(int enemyNum) const {
+Vertices<DrawingVertex> Enemy::CreateVertex(int enemyNum) const {
 	Vertices<DrawingVertex> ret;
 
 	Vertices<FloatPoint> chip;
@@ -295,7 +298,7 @@ Vertices<DrawingVertex> Enemy::GetVertex(int enemyNum) const {
 			break;
 	}
 
-	ret = CharacterCommon::GetVertex(this->enemiesInfo[enemyNum].topLeftXY, &CharacterCommon::GetChipXY, chip);
+	ret = CharacterCommon::CreateVertex(this->enemiesInfo[enemyNum].topLeftXY, &CharacterCommon::GetChipXY, chip);
 	return ret;
 }
 

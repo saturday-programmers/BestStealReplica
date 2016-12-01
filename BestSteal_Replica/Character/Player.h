@@ -73,7 +73,7 @@ private:
 	POINT topLeftXY;
 	POINT defaultTopLeftXY;
 	int currentKeepingStealingNum;
-	bool isDirectionChanged;
+	bool hasDirectionChanged;
 	bool isStealing;
 	AppCommon::Direction headingDirection;
 	int holdingGoldKeyCount;
@@ -90,10 +90,9 @@ private:
 	
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void SetDefaultProperty();
-	Vertices<DrawingVertex> GetVertex() const;
+	Vertices<DrawingVertex> CreateVertex() const;
 	Vertices<DrawingVertex> GetVerticesOnStealing(int afterImageNum) const;
-	int* GetHoldingKeyCnt(AppCommon::KeyType key);
-	int GetHoldingKeyCnt(AppCommon::KeyType key) const;
+	const int* GetHoldingKeyCnt(AppCommon::KeyType key) const;
 
 };
 

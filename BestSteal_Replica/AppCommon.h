@@ -1,6 +1,7 @@
 ﻿#ifndef APP_COMMON_H_
 #define APP_COMMON_H_
 
+#include <vector>
 #include <windows.h>
 
 // new演算子をオーバーロードしているクラスはcrtdbg.hより前にincludeする必要有
@@ -34,6 +35,9 @@ template<typename T> struct Vertices {
 	T topLeft;
 	T bottomRight;
 };
+
+template<typename T>
+using DataTable = std::vector<std::vector<T>>;
 
 
 class AppCommon {

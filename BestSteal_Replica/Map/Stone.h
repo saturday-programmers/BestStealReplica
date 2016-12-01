@@ -62,7 +62,7 @@ private:
 	POINT topLeftXYOnGnd;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	Vertices<DrawingVertex> GetVertex() const;
+	Vertices<DrawingVertex> CreateVertex() const;
 
 };
 

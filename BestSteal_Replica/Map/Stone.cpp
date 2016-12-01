@@ -117,7 +117,7 @@ void Stone::KeepBeingThrown() {
 }
 
 void Stone::Draw() const {
-	Vertices<DrawingVertex> vertex = GetVertex();
+	Vertices<DrawingVertex> vertex = CreateVertex();
 	switch (this->state) {
 		case Stone::State::BEING_THROWN:
 		case Stone::State::DROPPED:
@@ -177,7 +177,7 @@ void Stone::BackOnePixcel() {
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */
-Vertices<DrawingVertex> Stone::GetVertex() const {
+Vertices<DrawingVertex> Stone::CreateVertex() const {
 	Vertices<DrawingVertex> ret;
 
 	DrawingVertex* pVerticesArr[] = { &ret.topLeft, &ret.bottomRight };
