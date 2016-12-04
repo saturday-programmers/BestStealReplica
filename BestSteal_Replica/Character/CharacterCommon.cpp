@@ -30,8 +30,8 @@ int CharacterCommon::GetAnimationNumber(int currentAnimationCnt) {
 	return currentAnimationCnt / AppCommon::FRAME_COUNT_PER_CUT;
 }
 
-Vertices<DrawingVertex> CharacterCommon::CreateVertex(POINT topLeftXY, Vertices<POINT>(*getXY)(POINT), Vertices<FloatPoint> chip) {
-	Vertices<DrawingVertex> ret;
+Vertices<Drawing::DrawingVertex> CharacterCommon::CreateVertex(POINT topLeftXY, Vertices<POINT>(*getXY)(POINT), Vertices<FloatPoint> chip) {
+	Vertices<Drawing::DrawingVertex> ret;
 	Vertices<POINT> xy = getXY(topLeftXY);
 
 	ret.topLeft.x = xy.topLeft.x;

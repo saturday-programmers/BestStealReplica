@@ -1,7 +1,7 @@
 ﻿#ifndef STAGE1_H_
 #define STAGE1_H_
 
-#include "IStage.h"
+#include "../Stage/IStage.h"
 
 namespace BestStealReplica {
 namespace Stage {
@@ -12,7 +12,7 @@ public:
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	int GetYChipCount() const;
 	int GetXChipCount() const;
-	Map::MapCommon::MapChipType GetMapChipType(int y, int x) const;
+	Map::MapChipType GetMapChipType(int y, int x) const;
 	POINT GetPlayerFirstChipPos() const;
 	std::vector<Character::Enemy::EnemyInfo> GetEnemiesInfo() const;
 	int GetEnemyScoutableRadius() const;

@@ -3,8 +3,9 @@
 
 #include <windows.h>
 
-#include "AppCommon.h"
-#include "MapCommon.h"
+#include "../AppCommon.h"
+#include "../Map/MapCommon.h"
+#include "../Drawing/DrawingCommon.h"
 
 
 namespace BestStealReplica {
@@ -19,16 +20,16 @@ public:
 	static const int WIDTH = 80;
 
 	/* Static Functions --------------------------------------------------------------------------------- */
-	static MapChip* Create(MapCommon::MapChipType chipType);
+	static MapChip* Create(MapChipType chipType);
 	static Vertices<FloatPoint> GetTuTvs(int mapChipNumber);
 	static Vertices<POINT> GetXY(POINT topLeftXY);
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
-	MapCommon::MapChipType GetChipType() const;
+	MapChipType GetChipType() const;
 	virtual void SetChipNumber();
 	POINT GetTopLeftXY() const;
 	void SetXY(POINT topLeftXY);
-	Vertices<DrawingVertex> CreateVertex() const;
+	Vertices<Drawing::DrawingVertex> CreateVertex() const;
 
 protected:
 	/* Structs ------------------------------------------------------------------------------------------ */
@@ -59,12 +60,12 @@ protected:
 	static const int CHIP_COUNT_PER_COL = 8;
 
 	/* Variables ---------------------------------------------------------------------------------------- */
-	MapCommon::MapChipType chipType;
+	MapChipType chipType;
 	int chipNumber;
-	Vertices<DrawingVertex> vertices;
+	Vertices<Drawing::DrawingVertex> vertices;
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	explicit MapChip(MapCommon::MapChipType chipType);
+	explicit MapChip(MapChipType chipType);
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void SetTuTv();

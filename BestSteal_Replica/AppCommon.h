@@ -24,13 +24,6 @@ struct FloatPoint {
 	FloatPoint(float x, float y);
 };
 
-struct DrawingVertex {
-	int x;
-	int y;
-	float tu;
-	float tv;
-};
-
 template<typename T> struct Vertices {
 	T topLeft;
 	T bottomRight;

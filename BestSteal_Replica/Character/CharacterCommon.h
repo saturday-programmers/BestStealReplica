@@ -1,7 +1,8 @@
 ﻿#ifndef CHARACTER_COMMON_H_
 #define CHARACTER_COMMON_H_
 
-#include "AppCommon.h"
+#include "../AppCommon.h"
+#include "../Drawing/DrawingCommon.h"
 
 
 namespace BestStealReplica {
@@ -18,7 +19,7 @@ public:
 	static Vertices<FloatPoint> CreateTuTv(int rowNum, int colNum);
 	static void CountUpAnimationCnt(int* pAnimationCnt, int chipCntPerDir);
 	static int GetAnimationNumber(int currentAnimationCnt);
-	static Vertices<DrawingVertex> CreateVertex(POINT topLeftXY, Vertices<POINT>(*getXY)(POINT), Vertices<FloatPoint> chip);
+	static Vertices<Drawing::DrawingVertex> CreateVertex(POINT topLeftXY, Vertices<POINT>(*getXY)(POINT), Vertices<FloatPoint> chip);
 	static Vertices<POINT> GetChipXY(POINT topLeftXY);
 	static POINT CalcCenter(Vertices<POINT> xy);
 	static double CalcDistance(POINT xy1, POINT xy2);

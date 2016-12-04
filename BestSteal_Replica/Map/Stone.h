@@ -3,12 +3,11 @@
 
 #include <windows.h>
 
-#include "AppCommon.h"
+#include "../AppCommon.h"
+#include "../Drawing/DrawingCommon.h"
 
 
 namespace BestStealReplica {
-class Drawer;
-
 namespace Map {
 
 class Stone {
@@ -22,15 +21,15 @@ public:
 	};
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Stone(const Drawer& rDrawer, POINT topLeftXY, AppCommon::Direction direction);
+	Stone(POINT topLeftXY, AppCommon::Direction direction);
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	void SetTopLeftXY(POINT xy);
 	State GetState() const;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
+	void Stone::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const;
 	void KeepBeingThrown();
-	void Draw() const;
 	bool Exists() const;
 	void Move(POINT xy);
 	Vertices<POINT> GetXYsOnGround() const;
@@ -51,7 +50,6 @@ private:
 	static const int GRAVITY = 2;
 
 	/* Variables ---------------------------------------------------------------------------------------- */
-	const Drawer& rDrawer;
 	POINT defaultTopleftXY;
 	POINT topLeftXY;
 	AppCommon::Direction direction;
@@ -62,7 +60,7 @@ private:
 	POINT topLeftXYOnGnd;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	Vertices<DrawingVertex> CreateVertex() const;
+	Vertices<Drawing::DrawingVertex> CreateVertex() const;
 
 };
 

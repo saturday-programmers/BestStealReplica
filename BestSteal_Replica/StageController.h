@@ -38,13 +38,12 @@ public:
 	};
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	explicit StageController(Drawer* pDrawer);
+	StageController();
 	~StageController();
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void LoadStage(const Stage::IStage& rStage);
 	void Control(AppCommon::Key key);
-	void Draw() const;
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */
@@ -52,7 +51,6 @@ private:
 	static const int MOVING_PIXEL_ON_WALKING = 3;
 
 	/* Variables ---------------------------------------------------------------------------------------- */
-	Drawer* pDrawer;
 	const Stage::IStage* pStage;
 	Map::Map* pMap;
 	Character::Player* pPlayer;

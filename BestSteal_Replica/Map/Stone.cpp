@@ -1,8 +1,8 @@
 ﻿#include <math.h>
 
 #include "Stone.h"
-#include "Drawer.h"
-#include "MapChip.h"
+#include "../Drawing/Drawer.h"
+#include "../Map/MapChip.h"
 
 
 namespace BestStealReplica {
@@ -10,7 +10,7 @@ namespace Map {
 
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-Stone::Stone(const Drawer& rDrawer, POINT topLeftXY, AppCommon::Direction direction) : rDrawer(rDrawer), defaultTopleftXY(topLeftXY), direction(direction), thrownElapsedCount(0), state(Stone::State::BEING_THROWN) {
+Stone::Stone(POINT topLeftXY, AppCommon::Direction direction) : defaultTopleftXY(topLeftXY), direction(direction), thrownElapsedCount(0), state(Stone::State::BEING_THROWN) {
 	this->tutv = MapChip::GetTuTvs(Stone::MAP_CHIP_NUMBER);
 	// 枠線をなくすために一回り小さくする
 	this->tutv.topLeft.x += 0.01f;
@@ -40,6 +40,24 @@ Stone::State Stone::GetState() const {
 
 
 /* Public Functions  -------------------------------------------------------------------------------- */
+void Stone::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const {
+	Drawing::DrawingContext context;
+	context.textureType = Drawing::TextureType::MAP;
+	context.vertices = CreateVertex();
+	switch (this->state) {
+		case Stone::State::BEING_THROWN:
+		case Stone::State::DROPPED:
+			pDrawingContexts->push_back(context);
+			break;
+		case Stone::State::DISAPPEARING:
+			context.alpha = Drawing::Drawer::GetAlphaOnBlinking(this->restTime);
+			pDrawingContexts->push_back(context);
+			break;
+		default:
+			break;
+	}
+}
+
 void Stone::KeepBeingThrown() {
 	/*
 	 *  放物線の位置の求め方
@@ -116,24 +134,6 @@ void Stone::KeepBeingThrown() {
 	}
 }
 
-void Stone::Draw() const {
-	Vertices<DrawingVertex> vertex = CreateVertex();
-	switch (this->state) {
-		case Stone::State::BEING_THROWN:
-		case Stone::State::DROPPED:
-			this->rDrawer.Draw(vertex, Drawer::TextureType::MAP);
-			break;
-		case Stone::State::DISAPPEARING:
-		{
-			UINT16 alpha = Drawer::GetAlphaOnBlinking(this->restTime);
-			this->rDrawer.Draw(vertex, Drawer::TextureType::MAP, alpha);
-			break;
-		}
-		default:
-			break;
-	}
-}
-
 bool Stone::Exists() const {
 	return (this->state != Stone::State::DiSAPPEARED);
 }
@@ -177,10 +177,10 @@ void Stone::BackOnePixcel() {
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */
-Vertices<DrawingVertex> Stone::CreateVertex() const {
-	Vertices<DrawingVertex> ret;
+Vertices<Drawing::DrawingVertex> Stone::CreateVertex() const {
+	Vertices<Drawing::DrawingVertex> ret;
 
-	DrawingVertex* pVerticesArr[] = { &ret.topLeft, &ret.bottomRight };
+	Drawing::DrawingVertex* pVerticesArr[] = { &ret.topLeft, &ret.bottomRight };
 	FloatPoint tutv[] = { this->tutv.topLeft, this->tutv.bottomRight };
 
 	POINT bottomRightXY;
