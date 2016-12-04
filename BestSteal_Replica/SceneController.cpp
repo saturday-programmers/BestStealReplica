@@ -3,21 +3,18 @@
 
 #include "SceneController.h"
 #include "StageController.h"
-#include "Stage1.h"
-#include "Drawer.h"
+#include "Stage/Stage1.h"
+#include "Drawing/Drawer.h"
 
 
 namespace BestStealReplica {
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-SceneController::SceneController(Drawer* pDrawer) : 
-	pDrawer(pDrawer), 
+SceneController::SceneController() : 
 	pStage(nullptr),
-	pStageController(nullptr),
+	pStageController(new StageController()),
 	blackoutFrameCount(0) 
-{
-	this->pStageController = new StageController(pDrawer);
-}
+{}
 
 void SceneController::Release() {
 	delete this->pStageController;
@@ -39,12 +36,12 @@ void SceneController::Control(LPDIRECTINPUTDEVICE8 pDIDevice) {
 			AppCommon::Key key = ProcessKBInput(pDIDevice);
 			this->pStageController->Control(key);
 			if (AppCommon::GetScene() == AppCommon::SceneType::DRAWING_MAP) {
-				this->pStageController->Draw();
+				Drawing::Drawer::Draw();
 			}
 			break;
 		}
 		case AppCommon::SceneType::BLACKOUT:
-			this->pDrawer->Blackout();
+			Drawing::Drawer::Blackout();
 			++this->blackoutFrameCount;
 			if (blackoutFrameCount > 15) {
 				AppCommon::SetScene(AppCommon::SceneType::DRAWING_MAP);

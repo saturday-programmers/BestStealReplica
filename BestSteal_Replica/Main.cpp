@@ -6,11 +6,11 @@
 #include <dinput.h>
 
 #include "AppCommon.h"
-#include "Drawer.h"
+#include "Drawing/Drawer.h"
 #include "SceneController.h"
-#include "Stage1.h"
-#include "Map.h"
-#include "Player.h"
+#include "Stage/Stage1.h"
+#include "Map/Map.h"
+#include "Character/Player.h"
 
 
 namespace BestStealReplica {
@@ -110,8 +110,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 		return FALSE;
 	}
 
-	Drawer drawer(hWnd, pDirect3D, &d3dpp);
-	SceneController sceneController(&drawer);
+	Drawing::Drawer::Create(hWnd, pDirect3D, &d3dpp);
+	SceneController sceneController;
 	sceneController.StartStage();
 
 	DWORD SyncOld = timeGetTime();
@@ -141,7 +141,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 
 	// 終了処理
 	DI_Term();
-	drawer.Release();
+	Drawing::Drawer::Release();
 	sceneController.Release();
 
 	return (int)msg.wParam;

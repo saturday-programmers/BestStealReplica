@@ -7,9 +7,11 @@
 typedef struct IDirectInputDevice8 *LPDIRECTINPUTDEVICE8;
 
 namespace BestStealReplica {
-
-class Drawer;
 class StageController;
+
+namespace Drawing {
+class Drawer;
+}
 
 namespace Stage {
 class IStage;
@@ -18,7 +20,7 @@ class IStage;
 class SceneController {
 public:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	explicit SceneController(Drawer* pDrawer);
+	SceneController();
 	void Release();
 
 	/* Functions ---------------------------------------------------------------------------------------- */
@@ -27,7 +29,6 @@ public:
 
 private:
 	/* Variables ---------------------------------------------------------------------------------------- */
-	Drawer* pDrawer;
 	Stage::IStage* pStage;
 	StageController* pStageController;
 	int blackoutFrameCount;

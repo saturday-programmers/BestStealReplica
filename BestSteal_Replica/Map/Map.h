@@ -4,9 +4,10 @@
 #include <windows.h>
 #include <vector>
 
-#include "AppCommon.h"
-#include "MapChip.h"
-#include "MapChipDoor.h"
+#include "../AppCommon.h"
+#include "../Map/MapCommon.h"
+#include "../Drawing/IDrawable.h"
+
 
 namespace BestStealReplica {
 class Drawer;
@@ -16,23 +17,29 @@ class IStage;
 }
 
 namespace Map {
-class MapChpDoor;
+class MapChip;
+class MapChipDoor;
 class MapChipJewelry;
 class Stone;
 
-class Map {
+class Map : public Drawing::IDrawable {
 public:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Map(Drawer* pDrawer);
+	Map();
 	~Map();
 
+
 	/* Getters / Setters -------------------------------------------------------------------------------- */
+	std::vector<Drawing::TextureType> GetTextureTypes() const;
+
 	POINT GetTopLeftXYonChip(POINT mapChipPos) const;
-	MapCommon::MapChipType GetMapChipType(POINT mapChipPos) const;
+	MapChipType GetMapChipType(POINT mapChipPos) const;
+
 
 	/* Functions ---------------------------------------------------------------------------------------- */
+	void CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const;
+
 	void Load(const Stage::IStage& rStage);
-	void Draw() const;
 	void Move(POINT xy);
 	void MoveToDefault();
 	bool IsOnRoad(Vertices<POINT> xy) const;
@@ -49,18 +56,20 @@ public:
 	void AnimateStones();
 	std::vector<Vertices<POINT>> GetDroppedStoneXYs() const;
 
+
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */
 	static const TCHAR* FILE_PATH;
 
+
 	/* Variables ---------------------------------------------------------------------------------------- */
-	Drawer* pDrawer;
 	POINT defaultTopLeft;
 	POINT topLeft;
 	DataTable<MapChip*> pMapData;
 	std::vector<MapChipDoor*> pDoorMapChips;
 	MapChipJewelry* pJewelryMapChip;
 	std::vector<Stone*> pStones;
+
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void SetChipXY();

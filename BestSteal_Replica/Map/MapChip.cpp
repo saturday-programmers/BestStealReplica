@@ -1,23 +1,23 @@
 ﻿#include "MapChip.h"
-#include "MapChipWall.h"
-#include "MapChipDoor.h"
-#include "MapChipJewelry.h"
+#include "../Map/MapChipWall.h"
+#include "../Map/MapChipDoor.h"
+#include "../Map/MapChipJewelry.h"
 
 
 namespace BestStealReplica {
 namespace Map {
 
 /* Static Public Functions -------------------------------------------------------------------------- */
-MapChip* MapChip::Create(MapCommon::MapChipType chipType) {
+MapChip* MapChip::Create(MapChipType chipType) {
 	switch (chipType) {
-		case MapCommon::MapChipType::WALL:
+		case MapChipType::WALL:
 			return new MapChipWall();
 			break;
-		case MapCommon::MapChipType::DOOR:
-		case MapCommon::MapChipType::GOLD_DOOR:
+		case MapChipType::DOOR:
+		case MapChipType::GOLD_DOOR:
 			return new MapChipDoor(chipType);
 			break;
-		case MapCommon::MapChipType::JEWELRY:
+		case MapChipType::JEWELRY:
 			return new MapChipJewelry();
 		default:
 			return new MapChip(chipType);
@@ -50,7 +50,7 @@ Vertices<POINT> MapChip::GetXY(POINT topLeftXY) {
 
 
 /* Getters / Setters -------------------------------------------------------------------------------- */
-MapCommon::MapChipType MapChip::GetChipType() const {
+MapChipType MapChip::GetChipType() const {
 	return this->chipType;
 }
 
@@ -76,13 +76,13 @@ void MapChip::SetXY(POINT topLeftXY) {
 	this->vertices.bottomRight.y = xy.bottomRight.y;
 }
 
-Vertices<DrawingVertex> MapChip::CreateVertex() const {
+Vertices<Drawing::DrawingVertex> MapChip::CreateVertex() const {
 	return this->vertices;
 }
 
 
 /* Private Constructor / Destructor ----------------------------------------------------------------- */
-MapChip::MapChip(MapCommon::MapChipType chipType) {
+MapChip::MapChip(MapChipType chipType) {
 	this->chipType = chipType;
 }
 

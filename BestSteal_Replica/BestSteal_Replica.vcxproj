@@ -47,7 +47,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDIr);$(ProjectDIr)Character;$(ProjectDIr)Map;$(ProjectDIr)Stage;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDIr);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -74,7 +74,7 @@
     <ClCompile Include="Character\CharacterCommon.cpp" />
     <ClCompile Include="Map\Stone.cpp" />
     <ClCompile Include="SceneController.cpp" />
-    <ClCompile Include="Drawer.cpp" />
+    <ClCompile Include="Drawing\Drawer.cpp" />
     <ClCompile Include="Character\Enemy.cpp" />
     <ClCompile Include="Map\MapChipJewelry.cpp" />
     <ClCompile Include="StageController.cpp" />
@@ -90,9 +90,11 @@
   <ItemGroup>
     <ClInclude Include="AppCommon.h" />
     <ClInclude Include="Character\CharacterCommon.h" />
+    <ClInclude Include="Drawing\DrawingCommon.h" />
+    <ClInclude Include="Drawing\IDrawable.h" />
     <ClInclude Include="Map\Stone.h" />
     <ClInclude Include="SceneController.h" />
-    <ClInclude Include="Drawer.h" />
+    <ClInclude Include="Drawing\Drawer.h" />
     <ClInclude Include="Character\Enemy.h" />
     <ClInclude Include="Map\Map.h" />
     <ClInclude Include="Map\MapChip.h" />

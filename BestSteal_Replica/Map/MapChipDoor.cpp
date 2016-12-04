@@ -5,7 +5,7 @@ namespace BestStealReplica {
 namespace Map {
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-MapChipDoor::MapChipDoor(MapCommon::MapChipType chipType) : MapChip(chipType),
+MapChipDoor::MapChipDoor(MapChipType chipType) : MapChip(chipType),
 	state(State::CLOSED),
 	openingCount(0)
 {}

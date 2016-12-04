@@ -3,7 +3,7 @@
 
 #include <windows.h>
 
-#include "MapChip.h"
+#include "../Map/MapChip.h"
 
 
 namespace BestStealReplica {

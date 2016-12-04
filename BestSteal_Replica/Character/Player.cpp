@@ -1,16 +1,12 @@
 ﻿#include "Player.h"
-#include "Drawer.h"
+#include "../Drawing/Drawer.h"
 
 
 namespace BestStealReplica {
 namespace Character {
 
-const TCHAR* Player::FILE_PATH = TEXT("image\\character.png");
-
-
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-Player::Player(POINT topLeftXY, Drawer* pDrawer):
-	pDrawer(pDrawer),
+Player::Player(POINT topLeftXY) :
 	defaultTopLeftXY(topLeftXY),
 	holdingSilverKeyCount(0),
 	holdingGoldKeyCount(0)
@@ -26,11 +22,16 @@ Player::Player(POINT topLeftXY, Drawer* pDrawer):
 	this->StealingLeftChip = CharacterCommon::CreateTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_LEFT);
 
 	SetDefaultProperty();
-	this->pDrawer->CreateTexture(this->FILE_PATH, Drawer::TextureType::CHARACTER);
 }
 
 
 /* Getters / Setters -------------------------------------------------------------------------------- */
+std::vector<Drawing::TextureType> Player::GetTextureTypes() const {
+	std::vector<Drawing::TextureType> ret;
+	ret.push_back(Drawing::TextureType::CHARACTER);
+	return ret;
+}
+
 bool Player::IsStealing() const {
 	return this->isStealing;
 }
@@ -41,14 +42,19 @@ AppCommon::Direction Player::GetHeadingDirection() const {
 
 
 /* Public Functions  -------------------------------------------------------------------------------- */
-void Player::Draw() const {
+void Player::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const {
 	if (isStealing) {
 		for (int i = this->currentKeepingStealingNum; i > 0; --i) {
-			Vertices<DrawingVertex> vertex = GetVerticesOnStealing(i - 1);
-			this->pDrawer->Draw(vertex, Drawer::TextureType::CHARACTER);
+			Drawing::DrawingContext context;
+			context.textureType = Drawing::TextureType::CHARACTER;
+			context.vertices = GetVerticesOnStealing(i - 1);
+			pDrawingContexts->push_back(context);
 		}
 	} else {
-		this->pDrawer->Draw(CreateVertex(), Drawer::TextureType::CHARACTER);
+		Drawing::DrawingContext context;
+		context.textureType = Drawing::TextureType::CHARACTER;
+		context.vertices = CreateVertex();
+		pDrawingContexts->push_back(context);
 	}
 }
 
@@ -176,8 +182,8 @@ void Player::SetDefaultProperty() {
 	this->hasDirectionChanged = false;
 }
 
-Vertices<DrawingVertex> Player::CreateVertex() const {
-	Vertices<DrawingVertex> ret;
+Vertices<Drawing::DrawingVertex> Player::CreateVertex() const {
+	Vertices<Drawing::DrawingVertex> ret;
 
 	Vertices<FloatPoint> chip;
 	int animationNum = CharacterCommon::GetAnimationNumber(this->currentAnimationCnt);
@@ -206,7 +212,7 @@ Vertices<DrawingVertex> Player::CreateVertex() const {
  *
  * @param afterImageNum 残像番号
  */
-Vertices<DrawingVertex> Player::GetVerticesOnStealing(int afterImageNum) const {
+Vertices<Drawing::DrawingVertex> Player::GetVerticesOnStealing(int afterImageNum) const {
 	POINT topLeftXY;
 	Vertices<FloatPoint> chip;
 	switch (this->headingDirection) {
@@ -231,7 +237,7 @@ Vertices<DrawingVertex> Player::GetVerticesOnStealing(int afterImageNum) const {
 			chip = this->StealingLeftChip;
 			break;
 	}
-	Vertices<DrawingVertex> ret = CharacterCommon::CreateVertex(topLeftXY, &CharacterCommon::GetChipXY, chip);
+	Vertices<Drawing::DrawingVertex> ret = CharacterCommon::CreateVertex(topLeftXY, &CharacterCommon::GetChipXY, chip);
 	return ret;
 }
 
