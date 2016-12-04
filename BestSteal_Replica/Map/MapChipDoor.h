@@ -3,7 +3,7 @@
 
 #include <windows.h>
 
-#include "MapChip.h"
+#include "../Map/MapChip.h"
 
 
 namespace BestStealReplica {
@@ -23,7 +23,7 @@ public:
 	MapChipDoor::State GetState() const;
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	explicit MapChipDoor(MapCommon::MapChipType chipType);
+	explicit MapChipDoor(MapChipType chipType);
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void StartOpeningDoor();

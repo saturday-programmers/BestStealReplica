@@ -1,26 +1,19 @@
 ﻿#include <vector>
 
 #include "StageController.h"
-#include "Stage1.h"
-#include "Drawer.h"
-#include "Map.h"
-#include "Player.h"
-#include "Enemy.h"
+#include "Stage/Stage1.h"
+#include "Drawing/Drawer.h"
+#include "Map/Map.h"
+#include "Character/Player.h"
+#include "Character/Enemy.h"
 
-using namespace BestStealReplica::Map;
 using namespace BestStealReplica::Character;
 
 
 namespace BestStealReplica {
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-StageController::StageController(Drawer* pDrawer) :
-	pDrawer(pDrawer),
-	pStage(nullptr),
-	pMap(nullptr),
-	pPlayer(nullptr),
-	pEnemy(nullptr)
-{}
+StageController::StageController() : pStage(nullptr), pMap(nullptr), pPlayer(nullptr), pEnemy(nullptr) {}
 
 StageController::~StageController() {
 	delete this->pEnemy;
@@ -33,12 +26,14 @@ StageController::~StageController() {
 void StageController::LoadStage(const Stage::IStage& rStage) {
 	// マップ情報
 	this->pStage = &rStage;
-	this->pMap = new Map::Map(this->pDrawer);
+	this->pMap = new Map::Map();
+	Drawing::Drawer::AddDrawable(this->pMap);
 	this->pMap->Load(*this->pStage);
 
 	// プレイヤー情報
 	POINT playerChipPos = this->pStage->GetPlayerFirstChipPos();
-	this->pPlayer = new Player(this->pMap->GetTopLeftXYonChip(playerChipPos), this->pDrawer);
+	this->pPlayer = new Player(this->pMap->GetTopLeftXYonChip(playerChipPos));
+	Drawing::Drawer::AddDrawable(this->pPlayer);
 
 	// 敵情報
 	std::vector<Enemy::EnemyInfo> enemiesInfo = this->pStage->GetEnemiesInfo();
@@ -46,7 +41,8 @@ void StageController::LoadStage(const Stage::IStage& rStage) {
 	for (int i = 0; i < (int)enemiesInfo.size(); ++i) {
 		enemiesXY.push_back(this->pMap->GetTopLeftXYonChip(enemiesInfo[i].chipPos));
 	}
-	this->pEnemy = new Enemy(enemiesInfo, enemiesXY, this->pStage->GetEnemyScoutableRadius(), *this->pDrawer);
+	this->pEnemy = new Enemy(enemiesInfo, enemiesXY, this->pStage->GetEnemyScoutableRadius());
+	Drawing::Drawer::AddDrawable(this->pEnemy);
 }
 
 void StageController::Control(AppCommon::Key key) {
@@ -70,14 +66,6 @@ void StageController::Control(AppCommon::Key key) {
 	ControlMap(movingPixel);
 
 	this->lastTimeHandling = handling;
-}
-
-void StageController::Draw() const {
-	this->pDrawer->BeginDraw();
-	this->pMap->Draw();
-	this->pPlayer->Draw();
-	this->pEnemy->Draw();
-	this->pDrawer->EndDraw();
 }
 
 
@@ -119,12 +107,12 @@ int StageController::ControlPlayer(Handling* pHandling) {
 		Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
 		POINT frontMapChipPos = this->pMap->GetFrontMapChipPos(playerXY, this->pPlayer->GetHeadingDirection());
 		bool canStartStealing = true;
-		MapCommon::MapChipType mapChipType = this->pMap->GetMapChipType(frontMapChipPos);
+		Map::MapChipType mapChipType = this->pMap->GetMapChipType(frontMapChipPos);
 		switch (mapChipType) {
-			case MapCommon::MapChipType::DOOR:
-			case MapCommon::MapChipType::GOLD_DOOR: {
+			case Map::MapChipType::DOOR:
+			case Map::MapChipType::GOLD_DOOR: {
 				if (!this->pMap->IsDoorOpened(frontMapChipPos)) {
-					AppCommon::KeyType keyType = (mapChipType == MapCommon::MapChipType::DOOR) ? AppCommon::KeyType::Silver : AppCommon::KeyType::Gold;
+					AppCommon::KeyType keyType = (mapChipType == Map::MapChipType::DOOR) ? AppCommon::KeyType::Silver : AppCommon::KeyType::Gold;
 					if (this->pPlayer->HasKey(keyType)) {
 						// ドアを開ける
 						if (this->pMap->StartOpeningDoor(frontMapChipPos)) {
@@ -135,7 +123,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 				}
 				break;
 			}
-			case MapCommon::MapChipType::JEWELRY:
+			case Map::MapChipType::JEWELRY:
 				// 宝箱を開ける
 				this->pMap->OpenJewelryBox();
 				canStartStealing = false;

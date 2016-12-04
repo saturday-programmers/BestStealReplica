@@ -3,7 +3,8 @@
 
 #include <windows.h>
 
-#include "CharacterCommon.h"
+#include "../Character/CharacterCommon.h"
+#include "../Drawing/IDrawable.h"
 
 
 namespace BestStealReplica {
@@ -11,20 +12,26 @@ class Drawer;
 
 namespace Character {
 
-class Player {
+class Player : public Drawing::IDrawable {
 public:
 	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int MOVING_PIXEL_ON_STEALING = 50;
 
+
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Player(POINT topLeftXY, Drawer* pDrawer);
+	Player(POINT topLeftXY);
+
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
+	std::vector<Drawing::TextureType> GetTextureTypes() const;
+
 	bool IsStealing() const;
 	AppCommon::Direction GetHeadingDirection() const;
 
+
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void Draw() const;
+	void CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const;
+
 	void SetDirection(AppCommon::Direction direction);
 	void Walk(POINT movingPoint);
 	void Stay();
@@ -40,6 +47,7 @@ public:
 	void AddKey(AppCommon::KeyType key);
 	void SubtractKey(AppCommon::KeyType key);
 	void GetKilled();
+
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */
@@ -67,8 +75,8 @@ private:
 
 	static const TCHAR* FILE_PATH;
 
+
 	/* Variables ---------------------------------------------------------------------------------------- */
-	Drawer* pDrawer;
 	int currentAnimationCnt;
 	POINT topLeftXY;
 	POINT defaultTopLeftXY;
@@ -87,11 +95,12 @@ private:
 	Vertices<FloatPoint> StealingTopChip;
 	Vertices<FloatPoint> StealingLeftChip;
 	Vertices<FloatPoint> StealingRightChip;
-	
+
+
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void SetDefaultProperty();
-	Vertices<DrawingVertex> CreateVertex() const;
-	Vertices<DrawingVertex> GetVerticesOnStealing(int afterImageNum) const;
+	Vertices<Drawing::DrawingVertex> CreateVertex() const;
+	Vertices<Drawing::DrawingVertex> GetVerticesOnStealing(int afterImageNum) const;
 	const int* GetHoldingKeyCnt(AppCommon::KeyType key) const;
 
 };

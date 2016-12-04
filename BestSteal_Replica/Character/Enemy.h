@@ -4,7 +4,8 @@
 #include <vector>
 #include <windows.h>
 
-#include "CharacterCommon.h"
+#include "../Character/CharacterCommon.h"
+#include "../Drawing/IDrawable.h" 
 
 
 namespace BestStealReplica {
@@ -12,7 +13,7 @@ class Drawer;
 
 namespace Character {
 
-class Enemy {
+class Enemy : public Drawing::IDrawable {
 public:
 	/* Enums -------------------------------------------------------------------------------------------- */
 	enum State {
@@ -23,6 +24,7 @@ public:
 		GOT_STOLEN,
 		ATTACKING
 	};
+
 
 	/* Structs ------------------------------------------------------------------------------------------ */
 	struct EnemyInfo {
@@ -41,17 +43,23 @@ public:
 		EnemyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, AppCommon::KeyType holdingKey);
 	};
 
+
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Enemy(std::vector<EnemyInfo> enemiesInfo, std::vector<POINT> topLeftXYs, int scoutableRadius, const Drawer& rDrawer);
+	Enemy(std::vector<EnemyInfo> enemiesInfo, std::vector<POINT> topLeftXYs, int scoutableRadius);
+
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
+	std::vector<Drawing::TextureType> GetTextureTypes() const;
+
 	int GetEnermyCount() const;
 	Vertices<POINT> GetEnemyXY(int enemyNum) const;
 	AppCommon::Direction GetHeadingDirection(int enemyNum) const;
 	Enemy::State GetState(int enemyNum) const;
 
+
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void Draw() const;
+	void CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const;
+
 	void Stay();
 	void Move(POINT xy);
 	void ScoutStone(const std::vector<Vertices<POINT>>& rStonesXY);
@@ -60,6 +68,7 @@ public:
 	void Attack(int enemyNum, bool canSeePlayer);
 	bool CanKillPlayer(Vertices<POINT> playerXY) const;
 	void BackToDefaultPosition();
+
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */
@@ -80,6 +89,7 @@ private:
 	static const int COL_NUM_OF_HEADING_RIGHT = 3;
 	static const int MAP_CHIP_NUMBER_OF_EXCL = 66;
 
+
 	/* Variables ---------------------------------------------------------------------------------------- */
 	Vertices<FloatPoint> headingBottomChips[Enemy::CHIP_COUNT_PER_DIRECTION];
 	Vertices<FloatPoint> headingTopChips[Enemy::CHIP_COUNT_PER_DIRECTION];
@@ -88,11 +98,11 @@ private:
 	Vertices<FloatPoint> exclamationMarkChip;
 
 	std::vector<EnemyInfo> enemiesInfo;
-	const Drawer& rDrawer;
 	int scoutableRadius;
 
+
 	/* Functions ---------------------------------------------------------------------------------------- */
-	Vertices<DrawingVertex> CreateVertex(int enemyNum) const;
+	Vertices<Drawing::DrawingVertex> CreateVertex(int enemyNum) const;
 	void TurnTo(POINT targetXY, int enemyNum);
 };
 

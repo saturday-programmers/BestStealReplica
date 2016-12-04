@@ -6,7 +6,7 @@ namespace Map {
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
 MapChipWall::MapChipWall() : 
-	MapChip(MapCommon::MapChipType::WALL), 
+	MapChip(MapChipType::WALL), 
 	needsTopLine(false), 
 	needsRightLine(false),
 	needsBottomLine(false), 

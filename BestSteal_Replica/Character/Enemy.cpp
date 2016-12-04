@@ -2,8 +2,8 @@
 #include <math.h>
 
 #include "Enemy.h"
-#include "Drawer.h"
-#include "MapChip.h"
+#include "../Drawing/Drawer.h"
+#include "../Map/MapChip.h"
 
 
 namespace BestStealReplica {
@@ -26,10 +26,7 @@ Enemy::EnemyInfo::EnemyInfo(int chipPosX, int chipPosY, AppCommon::Direction def
 }
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-Enemy::Enemy(std::vector<EnemyInfo> enemiesInfo, std::vector<POINT> topLeftXYs, int scoutableRadius, const Drawer& rDrawer) :
-	scoutableRadius(scoutableRadius),
-	rDrawer(rDrawer)
-{	
+Enemy::Enemy(std::vector<EnemyInfo> enemiesInfo, std::vector<POINT> topLeftXYs, int scoutableRadius) : scoutableRadius(scoutableRadius) {	
 	for (int i = 0; i < (int)enemiesInfo.size(); ++i) {
 		this->enemiesInfo.push_back(enemiesInfo[i]);
 		this->enemiesInfo[i].topLeftXY = topLeftXYs[i];
@@ -46,6 +43,13 @@ Enemy::Enemy(std::vector<EnemyInfo> enemiesInfo, std::vector<POINT> topLeftXYs, 
 
 
 /* Getters / Setters -------------------------------------------------------------------------------- */
+std::vector<Drawing::TextureType> Enemy::GetTextureTypes() const {
+	std::vector<Drawing::TextureType> ret;
+	ret.push_back(Drawing::TextureType::CHARACTER);
+	ret.push_back(Drawing::TextureType::MAP);
+	return ret;
+}
+
 int Enemy::GetEnermyCount() const {
 	return this->enemiesInfo.size();
 }
@@ -69,16 +73,23 @@ Enemy::State Enemy::GetState(int enemyNum) const {
 	return this->enemiesInfo[enemyNum].state;
 }
 
+
 /* Public Functions  -------------------------------------------------------------------------------- */
-void Enemy::Draw() const {
+void Enemy::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const {
 	for (int i = 0; i < (int)this->enemiesInfo.size(); ++i) {
+		Drawing::DrawingContext context;
+		context.textureType = Drawing::TextureType::CHARACTER;
+
 		if (this->enemiesInfo[i].state == State::GOT_STOLEN) {
 			// 点滅
 			double rad = this->enemiesInfo[i].restTimeForBackingToNormal * 18 * M_PI / 180;
-			double alpha = 0xFF * abs(sin(rad));
-			this->rDrawer.Draw(CreateVertex(i), Drawer::TextureType::CHARACTER, (UINT16)alpha);
+			context.alpha = 0xFF * (UINT16)abs(sin(rad));
+
+			context.vertices = CreateVertex(i);
+			pDrawingContexts->push_back(context);
 		} else {
-			this->rDrawer.Draw(CreateVertex(i), Drawer::TextureType::CHARACTER);
+			context.vertices = CreateVertex(i);
+			pDrawingContexts->push_back(context);
 
 			if (this->enemiesInfo[i].state == State::FOUND_PLAYER || this->enemiesInfo[i].state == State::ATTACKING) {
 				// びっくりマーク表示
@@ -97,8 +108,10 @@ void Enemy::Draw() const {
 					exclXY.x = enemyTopLeftXY.x + Map::MapChip::WIDTH;
 					exclXY.y = enemyTopLeftXY.y;
 				}
-				Vertices<DrawingVertex> exclVertex = CharacterCommon::CreateVertex(exclXY, &Map::MapChip::GetXY, this->exclamationMarkChip);
-				this->rDrawer.Draw(exclVertex, Drawer::TextureType::MAP);
+				Drawing::DrawingContext context;
+				context.textureType = Drawing::TextureType::MAP;
+				context.vertices = CharacterCommon::CreateVertex(exclXY, &Map::MapChip::GetXY, this->exclamationMarkChip);
+				pDrawingContexts->push_back(context);
 			}
 		}
 	}
@@ -278,8 +291,8 @@ void Enemy:: BackToDefaultPosition() {
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */
-Vertices<DrawingVertex> Enemy::CreateVertex(int enemyNum) const {
-	Vertices<DrawingVertex> ret;
+Vertices<Drawing::DrawingVertex> Enemy::CreateVertex(int enemyNum) const {
+	Vertices<Drawing::DrawingVertex> ret;
 
 	Vertices<FloatPoint> chip;
 	int animationNum = CharacterCommon::GetAnimationNumber(this->enemiesInfo[enemyNum].currentAnimationCnt);
