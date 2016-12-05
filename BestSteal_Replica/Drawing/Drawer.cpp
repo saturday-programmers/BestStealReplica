@@ -22,7 +22,7 @@ struct CUSTOMVERTEX {
 
 /* Static Variables --------------------------------------------------------------------------------- */
 IDirect3DDevice9* pD3Device = nullptr;
-std::vector<IDrawable*> pDrawables;
+std::vector<const IDrawable*> pDrawables;
 std::map<Drawing::TextureType, LPDIRECT3DTEXTURE9> textures;
 }
 
@@ -55,10 +55,10 @@ UINT16 Drawer::GetAlphaOnBlinking(int time) {
 	return (UINT16)alpha;
 }
 
-bool Drawer::AddDrawable(IDrawable* pDrawable) {
+bool Drawer::AddDrawable(const IDrawable& rDrawable) {
 	bool ret = true;
-	pDrawables.push_back(pDrawable);
-	std::vector<Drawing::TextureType> requiredTextureTypes = pDrawable->GetTextureTypes();
+	pDrawables.push_back(&rDrawable);
+	std::vector<Drawing::TextureType> requiredTextureTypes = rDrawable.GetTextureTypes();
 	for (auto tex : requiredTextureTypes) {
 		// ロードされていないテクスチャのみ処理
 		if (textures.count(tex) == 0) {

@@ -21,7 +21,7 @@ public:
 	static void Create(HWND hWnd, IDirect3D9* pDirect3D, D3DPRESENT_PARAMETERS* pD3dpp);
 	static void Release();
 	static UINT16 GetAlphaOnBlinking(int time);
-	static bool AddDrawable(IDrawable* pDrawable);
+	static bool AddDrawable(const IDrawable& rDrawable);
 	static void Draw();
 	static void Blackout();
 

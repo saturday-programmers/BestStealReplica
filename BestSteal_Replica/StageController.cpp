@@ -27,13 +27,13 @@ void StageController::LoadStage(const Stage::IStage& rStage) {
 	// マップ情報
 	this->pStage = &rStage;
 	this->pMap = new Map::Map();
-	Drawing::Drawer::AddDrawable(this->pMap);
+	Drawing::Drawer::AddDrawable(*this->pMap);
 	this->pMap->Load(*this->pStage);
 
 	// プレイヤー情報
 	POINT playerChipPos = this->pStage->GetPlayerFirstChipPos();
 	this->pPlayer = new Player(this->pMap->GetTopLeftXYonChip(playerChipPos));
-	Drawing::Drawer::AddDrawable(this->pPlayer);
+	Drawing::Drawer::AddDrawable(*this->pPlayer);
 
 	// 敵情報
 	std::vector<Enemy::EnemyInfo> enemiesInfo = this->pStage->GetEnemiesInfo();
@@ -42,7 +42,7 @@ void StageController::LoadStage(const Stage::IStage& rStage) {
 		enemiesXY.push_back(this->pMap->GetTopLeftXYonChip(enemiesInfo[i].chipPos));
 	}
 	this->pEnemy = new Enemy(enemiesInfo, enemiesXY, this->pStage->GetEnemyScoutableRadius());
-	Drawing::Drawer::AddDrawable(this->pEnemy);
+	Drawing::Drawer::AddDrawable(*this->pEnemy);
 }
 
 void StageController::Control(AppCommon::Key key) {
