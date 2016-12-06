@@ -4,7 +4,7 @@
 #include "../AppCommon.h"
 #include "../Map/MapChip.h"
 #include "../Map/MapChipWall.h"
-#include "../Map/MapChipDoor.h"
+#include "../Map/MapChipGate.h"
 #include "../Map/MapChipJewelry.h"
 #include "../Drawing/Drawer.h"
 #include "../Stage/IStage.h"
@@ -77,9 +77,9 @@ void Map::Load(const Stage::IStage& rStage) {
 			this->pMapData[i][j] = MapChip::Create(rStage.GetMapChipType(i, j));
 
 			switch (this->pMapData[i][j]->GetChipType()) {
-				case MapChipType::DOOR:
-				case MapChipType::GOLD_DOOR:
-					this->pDoorMapChips.push_back((MapChipDoor*)this->pMapData[i][j]);
+				case MapChipType::GATE:
+				case MapChipType::GOLD_GATE:
+					this->pGateMapChips.push_back((MapChipGate*)this->pMapData[i][j]);
 					break;
 				case MapChipType::JEWELRY:
 					this->pJewelryMapChip = (MapChipJewelry*)this->pMapData[i][j];
@@ -226,13 +226,13 @@ bool Map::IsMovableY(int y) const {
 	return true;
 }
 
-void Map::KeepOpeningDoors() {
+void Map::KeepOpeningGates() {
 	// 開きかけのドアがあればアニメーション
-	for (int i = 0; i < (int)this->pDoorMapChips.size(); ++i) {
-		switch (this->pDoorMapChips[i]->GetState()) {
-			case MapChipDoor::State::START_OPENING:
-			case MapChipDoor::State::OPENING:
-				this->pDoorMapChips[i]->OpenDoor();
+	for (int i = 0; i < (int)this->pGateMapChips.size(); ++i) {
+		switch (this->pGateMapChips[i]->GetState()) {
+			case MapChipGate::State::START_OPENING:
+			case MapChipGate::State::OPENING:
+				this->pGateMapChips[i]->OpenGate();
 				break;
 			default:
 				break;
@@ -273,16 +273,16 @@ POINT Map::GetFrontMapChipPos(Vertices<POINT> playerXY, AppCommon::Direction hea
 	return chipPos;
 }
 
-bool Map::StartOpeningDoor(POINT mapChipPos) {
+bool Map::StartOpeningGate(POINT mapChipPos) {
 	bool ret = false;
 	switch (this->pMapData[mapChipPos.y][mapChipPos.x]->GetChipType()) {
-		case MapChipType::DOOR:
-		case MapChipType::GOLD_DOOR:
+		case MapChipType::GATE:
+		case MapChipType::GOLD_GATE:
 		{
-			MapChipDoor* pMapChipDoor = (MapChipDoor*)this->pMapData[mapChipPos.y][mapChipPos.x];
-			switch (pMapChipDoor->GetState()) {
-				case MapChipDoor::State::CLOSED:
-					pMapChipDoor->StartOpeningDoor();
+			MapChipGate* pMapChipGate = (MapChipGate*)this->pMapData[mapChipPos.y][mapChipPos.x];
+			switch (pMapChipGate->GetState()) {
+				case MapChipGate::State::CLOSED:
+					pMapChipGate->StartOpeningGate();
 					ret = true;
 					break;
 				default:
@@ -296,13 +296,13 @@ bool Map::StartOpeningDoor(POINT mapChipPos) {
 	return ret;
 }
 
-bool Map::IsDoorOpened(POINT mapChipPos) const {
+bool Map::IsGateOpened(POINT mapChipPos) const {
 	bool ret = false;
 	MapChip& rChip = *(this->pMapData[mapChipPos.y][mapChipPos.x]);
 	switch (rChip.GetChipType()) {
-		case MapChipType::DOOR:
-		case MapChipType::GOLD_DOOR:
-			ret = ((MapChipDoor&)rChip).GetState() == MapChipDoor::State::OPENED;
+		case MapChipType::GATE:
+		case MapChipType::GOLD_GATE:
+			ret = ((MapChipGate&)rChip).GetState() == MapChipGate::State::OPENED;
 			break;
 		default:
 			break;
@@ -327,9 +327,9 @@ bool Map::ExistsWallBetween(POINT xy1, POINT xy2) const {
 			case MapChipType::JEWELRY:
 				ret = true;
 				break;
-			case MapChipType::DOOR:
-			case MapChipType::GOLD_DOOR:
-				if (!IsDoorOpened(checkPos)) {
+			case MapChipType::GATE:
+			case MapChipType::GOLD_GATE:
+				if (!IsGateOpened(checkPos)) {
 					ret = true;
 				}
 				break;
@@ -444,9 +444,9 @@ bool Map::IsOnRoad(POINT mapChipPos) const {
 		case MapChipType::WALL_SIDE:
 		case MapChipType::JEWELRY:
 			return false;
-		case MapChipType::DOOR:
-		case MapChipType::GOLD_DOOR:
-			if (((MapChipDoor*)this->pMapData[mapChipPos.y][mapChipPos.x])->GetState() != MapChipDoor::OPENED) {
+		case MapChipType::GATE:
+		case MapChipType::GOLD_GATE:
+			if (((MapChipGate*)this->pMapData[mapChipPos.y][mapChipPos.x])->GetState() != MapChipGate::OPENED) {
 				return false;
 			}
 			break;

@@ -83,7 +83,7 @@
     <ClCompile Include="Map\Map.cpp" />
     <ClCompile Include="Map\MapChip.cpp" />
     <ClCompile Include="Character\Player.cpp" />
-    <ClCompile Include="Map\MapChipDoor.cpp" />
+    <ClCompile Include="Map\MapChipGate.cpp" />
     <ClCompile Include="Map\MapChipWall.cpp" />
     <ClCompile Include="Stage\Stage1.cpp" />
   </ItemGroup>
@@ -98,7 +98,7 @@
     <ClInclude Include="Character\Enemy.h" />
     <ClInclude Include="Map\Map.h" />
     <ClInclude Include="Map\MapChip.h" />
-    <ClInclude Include="Map\MapChipDoor.h" />
+    <ClInclude Include="Map\MapChipGate.h" />
     <ClInclude Include="Map\MapChipJewelry.h" />
     <ClInclude Include="Map\MapChipWall.h" />
     <ClInclude Include="Map\MapCommon.h" />

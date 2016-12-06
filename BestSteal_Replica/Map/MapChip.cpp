@@ -1,6 +1,6 @@
 ﻿#include "MapChip.h"
 #include "../Map/MapChipWall.h"
-#include "../Map/MapChipDoor.h"
+#include "../Map/MapChipGate.h"
 #include "../Map/MapChipJewelry.h"
 
 
@@ -13,9 +13,9 @@ MapChip* MapChip::Create(MapChipType chipType) {
 		case MapChipType::WALL:
 			return new MapChipWall();
 			break;
-		case MapChipType::DOOR:
-		case MapChipType::GOLD_DOOR:
-			return new MapChipDoor(chipType);
+		case MapChipType::GATE:
+		case MapChipType::GOLD_GATE:
+			return new MapChipGate(chipType);
 			break;
 		case MapChipType::JEWELRY:
 			return new MapChipJewelry();

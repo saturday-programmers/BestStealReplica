@@ -1,5 +1,5 @@
-﻿#ifndef MAP_CHIP_DOOR_H_
-#define MAP_CHIP_DOOR_H_
+﻿#ifndef MAP_CHIP_GATE_H_
+#define MAP_CHIP_GATE_H_
 
 #include <windows.h>
 
@@ -9,7 +9,7 @@
 namespace BestStealReplica {
 namespace Map {
 
-class MapChipDoor : public MapChip {
+class MapChipGate : public MapChip {
 public:
 	/* Enums -------------------------------------------------------------------------------------------- */
 	enum State {
@@ -20,14 +20,14 @@ public:
 	};
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
-	MapChipDoor::State GetState() const;
+	MapChipGate::State GetState() const;
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	explicit MapChipDoor(MapChipType chipType);
+	explicit MapChipGate(MapChipType chipType);
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void StartOpeningDoor();
-	void OpenDoor();
+	void StartOpeningGate();
+	void OpenGate();
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */

@@ -1,28 +1,28 @@
-﻿#include "MapChipDoor.h"
+﻿#include "MapChipGate.h"
 
 
 namespace BestStealReplica {
 namespace Map {
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-MapChipDoor::MapChipDoor(MapChipType chipType) : MapChip(chipType),
+MapChipGate::MapChipGate(MapChipType chipType) : MapChip(chipType),
 	state(State::CLOSED),
 	openingCount(0)
 {}
 
 
 /* Getters / Setters -------------------------------------------------------------------------------- */
-MapChipDoor::State MapChipDoor::GetState() const {
+MapChipGate::State MapChipGate::GetState() const {
 	return this->state;
 }
 
 
 /* Public Functions  -------------------------------------------------------------------------------- */
-void MapChipDoor::StartOpeningDoor() {
+void MapChipGate::StartOpeningGate() {
 	this->state = State::START_OPENING;
 }
 
-void MapChipDoor::OpenDoor() {
+void MapChipGate::OpenGate() {
 	switch (this->state) {
 		case State::START_OPENING:
 			++this->openingCount;
@@ -33,7 +33,7 @@ void MapChipDoor::OpenDoor() {
 			++this->openingCount;
 			if (this->openingCount % AppCommon::FRAME_COUNT_PER_CUT == 0) {
 				++this->chipNumber;
-				if (this->openingCount / AppCommon::FRAME_COUNT_PER_CUT == MapChipDoor::OPENING_CHIP_COUNT - 1) {
+				if (this->openingCount / AppCommon::FRAME_COUNT_PER_CUT == MapChipGate::OPENING_CHIP_COUNT - 1) {
 					this->state = State::OPENED;
 				}
 			}

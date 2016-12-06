@@ -12,10 +12,10 @@ namespace Character {
 /* Structs ------------------------------------------------------------------------------------------ */
 Enemy::EnemyInfo::EnemyInfo() {}
 
-Enemy::EnemyInfo::EnemyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, AppCommon::KeyType holdingKey) :
+Enemy::EnemyInfo::EnemyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, AppCommon::GateKeyType holdingGateKey) :
 	defaultDirection(defaultDirection),
 	headingDirection(defaultDirection),
-	holdingKey(holdingKey),
+	holdingGateKey(holdingGateKey),
 	state(State::NORMAL),
 	currentAnimationCnt(0),
 	restTimeForCancelFinding(0),
@@ -199,8 +199,8 @@ void Enemy::ScoutPlayer(Vertices<POINT> playerXY, bool isPlayerWalking) {
 	}
 }
 
-AppCommon::KeyType Enemy::GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing) {
-	AppCommon::KeyType ret = AppCommon::KeyType::None;
+AppCommon::GateKeyType Enemy::GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing) {
+	AppCommon::GateKeyType ret = AppCommon::GateKeyType::None;
 	for (int i = 0; i < (int)this->enemiesInfo.size(); ++i) {
 		if (this->enemiesInfo[i].state == State::GOT_STOLEN) {
 			--this->enemiesInfo[i].restTimeForBackingToNormal;
@@ -222,8 +222,8 @@ AppCommon::KeyType Enemy::GetStolen(Vertices<POINT> playerXY, bool isPlayerSteal
 				// 盗み成功
 				this->enemiesInfo[i].state = State::GOT_STOLEN;
 				this->enemiesInfo[i].restTimeForBackingToNormal = Enemy::TIME_FOR_BACKING_TO_NORMAL;
-				ret = this->enemiesInfo[i].holdingKey;
-				this->enemiesInfo[i].holdingKey = AppCommon::KeyType::None;
+				ret = this->enemiesInfo[i].holdingGateKey;
+				this->enemiesInfo[i].holdingGateKey = AppCommon::GateKeyType::None;
 				break;
 			}
 		}

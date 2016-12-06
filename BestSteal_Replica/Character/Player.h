@@ -43,9 +43,9 @@ public:
 	bool IsStayingNearlyWindowBottom() const;
 	bool IsStayingNearlyWindowLeft() const;
 	Vertices<POINT> GetPlayerXY() const;
-	bool HasKey(AppCommon::KeyType key) const;
-	void AddKey(AppCommon::KeyType key);
-	void SubtractKey(AppCommon::KeyType key);
+	bool HasGateKey(AppCommon::GateKeyType key) const;
+	void GainGateKey(AppCommon::GateKeyType key);
+	void LoseGateKey(AppCommon::GateKeyType key);
 	void GetKilled();
 
 
@@ -84,8 +84,8 @@ private:
 	bool hasDirectionChanged;
 	bool isStealing;
 	AppCommon::Direction headingDirection;
-	int holdingGoldKeyCount;
-	int holdingSilverKeyCount;
+	int holdingGoldGateKeyCount;
+	int holdingSilverGateKeyCount;
 
 	Vertices<FloatPoint> headingBottomChips[Player::CHIP_COUNT_PER_DIRECTION];
 	Vertices<FloatPoint> headingTopChips[Player::CHIP_COUNT_PER_DIRECTION];
@@ -101,7 +101,7 @@ private:
 	void SetDefaultProperty();
 	Vertices<Drawing::DrawingVertex> CreateVertex() const;
 	Vertices<Drawing::DrawingVertex> GetVerticesOnStealing(int afterImageNum) const;
-	const int* GetHoldingKeyCnt(AppCommon::KeyType key) const;
+	const int* GetHoldingGateKeyCnt(AppCommon::GateKeyType key) const;
 
 };
 
