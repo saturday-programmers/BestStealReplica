@@ -59,7 +59,7 @@ public:
 		LEFT
 	};
 
-	enum KeyType {
+	enum GateKeyType {
 		None,
 		Silver,
 		Gold

@@ -33,14 +33,14 @@ public:
 		POINT defaultTopLeftXY;
 		AppCommon::Direction defaultDirection;
 		AppCommon::Direction headingDirection;
-		AppCommon::KeyType holdingKey;
+		AppCommon::GateKeyType holdingGateKey;
 		State state;
 		int currentAnimationCnt;
 		int restTimeForCancelFinding;
 		int restTimeForBackingToNormal;
 
 		EnemyInfo();
-		EnemyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, AppCommon::KeyType holdingKey);
+		EnemyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, AppCommon::GateKeyType holdingGateKey);
 	};
 
 
@@ -64,7 +64,7 @@ public:
 	void Move(POINT xy);
 	void ScoutStone(const std::vector<Vertices<POINT>>& rStonesXY);
 	void ScoutPlayer(Vertices<POINT> playerXY, bool isPlayerWalking);
-	AppCommon::KeyType GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing);
+	AppCommon::GateKeyType GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing);
 	void Attack(int enemyNum, bool canSeePlayer);
 	bool CanKillPlayer(Vertices<POINT> playerXY) const;
 	void BackToDefaultPosition();

@@ -109,14 +109,14 @@ int StageController::ControlPlayer(Handling* pHandling) {
 		bool canStartStealing = true;
 		Map::MapChipType mapChipType = this->pMap->GetMapChipType(frontMapChipPos);
 		switch (mapChipType) {
-			case Map::MapChipType::DOOR:
-			case Map::MapChipType::GOLD_DOOR: {
-				if (!this->pMap->IsDoorOpened(frontMapChipPos)) {
-					AppCommon::KeyType keyType = (mapChipType == Map::MapChipType::DOOR) ? AppCommon::KeyType::Silver : AppCommon::KeyType::Gold;
-					if (this->pPlayer->HasKey(keyType)) {
+			case Map::MapChipType::GATE:
+			case Map::MapChipType::GOLD_GATE: {
+				if (!this->pMap->IsGateOpened(frontMapChipPos)) {
+					AppCommon::GateKeyType gateKeyType = (mapChipType == Map::MapChipType::GATE) ? AppCommon::GateKeyType::Silver : AppCommon::GateKeyType::Gold;
+					if (this->pPlayer->HasGateKey(gateKeyType)) {
 						// ドアを開ける
-						if (this->pMap->StartOpeningDoor(frontMapChipPos)) {
-							this->pPlayer->SubtractKey(keyType);
+						if (this->pMap->StartOpeningGate(frontMapChipPos)) {
+							this->pPlayer->LoseGateKey(gateKeyType);
 						}
 					}
 					canStartStealing = false;
@@ -241,9 +241,9 @@ void StageController::ControlEnemy(int playerMovingPixel, const Handling& rHandl
 
 	// 盗まれる処理
 	Vertices<POINT> playerXY = this->pPlayer->GetPlayerXY();
-	AppCommon::KeyType keyType = this->pEnemy->GetStolen(playerXY, this->pPlayer->IsStealing());
-	if (keyType != AppCommon::KeyType::None) {
-		this->pPlayer->AddKey(keyType);
+	AppCommon::GateKeyType gateKeyType = this->pEnemy->GetStolen(playerXY, this->pPlayer->IsStealing());
+	if (gateKeyType != AppCommon::GateKeyType::None) {
+		this->pPlayer->GainGateKey(gateKeyType);
 	}
 
 	// プレイヤーを発見したか
@@ -298,7 +298,7 @@ void StageController::ControlEnemy(int playerMovingPixel, const Handling& rHandl
 
 void StageController::ControlMap(int playerMovingPixel) {
 	// ドアを開けるアニメーション
-	this->pMap->KeepOpeningDoors();
+	this->pMap->KeepOpeningGates();
 
 	// 石を投げるアニメーション
 	this->pMap->AnimateStones();

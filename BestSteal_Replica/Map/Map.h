@@ -18,7 +18,7 @@ class IStage;
 
 namespace Map {
 class MapChip;
-class MapChipDoor;
+class MapChipGate;
 class MapChipJewelry;
 class Stone;
 
@@ -45,10 +45,10 @@ public:
 	bool IsOnRoad(Vertices<POINT> xy) const;
 	bool IsMovableX(int x) const;
 	bool IsMovableY(int y) const;
-	void KeepOpeningDoors();
+	void KeepOpeningGates();
 	POINT GetFrontMapChipPos(Vertices<POINT> playerXY, AppCommon::Direction headingDirection) const;
-	bool StartOpeningDoor(POINT mapChipPos);
-	bool IsDoorOpened(POINT mapChipPos) const;
+	bool StartOpeningGate(POINT mapChipPos);
+	bool IsGateOpened(POINT mapChipPos) const;
 	bool ExistsWallBetween(POINT xy1, POINT xy2) const;
 	void OpenJewelryBox();
 	POINT ConvertToMapChipPos(POINT xy) const;
@@ -66,7 +66,7 @@ private:
 	POINT defaultTopLeft;
 	POINT topLeft;
 	DataTable<MapChip*> pMapData;
-	std::vector<MapChipDoor*> pDoorMapChips;
+	std::vector<MapChipGate*> pGateMapChips;
 	MapChipJewelry* pJewelryMapChip;
 	std::vector<Stone*> pStones;
 

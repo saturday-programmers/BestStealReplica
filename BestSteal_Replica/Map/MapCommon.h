@@ -11,8 +11,8 @@ enum MapChipType {
 	WALL = 34,
 	WALL_SIDE = 1,
 	JEWELRY = 52,
-	DOOR = 48,
-	GOLD_DOOR = 44
+	GATE = 48,
+	GOLD_GATE = 44
 };
 
 }

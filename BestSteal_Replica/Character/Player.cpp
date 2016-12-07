@@ -8,8 +8,8 @@ namespace Character {
 /* Constructor / Destructor ------------------------------------------------------------------------- */
 Player::Player(POINT topLeftXY) :
 	defaultTopLeftXY(topLeftXY),
-	holdingSilverKeyCount(0),
-	holdingGoldKeyCount(0)
+	holdingSilverGateKeyCount(0),
+	holdingGoldGateKeyCount(0)
 {
 	CharacterCommon::CreateChipTuTvs(Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_TOP, Player::COL_NUM_OF_HEADING_TOP, this->headingTopChips);
 	CharacterCommon::CreateChipTuTvs(Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_RIGHT, Player::COL_NUM_OF_HEADING_RIGHT, this->headingRightChips);
@@ -148,22 +148,22 @@ Vertices<POINT> Player::GetPlayerXY() const {
 	return ret;
 }
 
-bool Player::HasKey(AppCommon::KeyType key) const {
-	const int* pHoldingKeyCnt = GetHoldingKeyCnt(key);
-	return (pHoldingKeyCnt == NULL ? 0 : (*pHoldingKeyCnt > 0));
+bool Player::HasGateKey(AppCommon::GateKeyType gateKey) const {
+	const int* pHoldingGateKeyCnt = GetHoldingGateKeyCnt(gateKey);
+	return (pHoldingGateKeyCnt == NULL ? 0 : (*pHoldingGateKeyCnt > 0));
 }
 
-void Player::AddKey(AppCommon::KeyType key) {
-	int* pHoldingKeyCnt = (int*)GetHoldingKeyCnt(key);
-	if (pHoldingKeyCnt != NULL) {
-		++(*pHoldingKeyCnt);
+void Player::GainGateKey(AppCommon::GateKeyType gateKey) {
+	int* pHoldingGateKeyCnt = (int*)GetHoldingGateKeyCnt(gateKey);
+	if (pHoldingGateKeyCnt != NULL) {
+		++(*pHoldingGateKeyCnt);
 	}
 }	
 
-void Player::SubtractKey(AppCommon::KeyType key) {
-	int* pHoldingKeyCnt = (int*)GetHoldingKeyCnt(key);
-	if (pHoldingKeyCnt != NULL) {
-		--(*pHoldingKeyCnt);
+void Player::LoseGateKey(AppCommon::GateKeyType gateKey) {
+	int* pHoldingGateKeyCnt = (int*)GetHoldingGateKeyCnt(gateKey);
+	if (pHoldingGateKeyCnt != NULL) {
+		--(*pHoldingGateKeyCnt);
 	}
 }
 
@@ -241,13 +241,13 @@ Vertices<Drawing::DrawingVertex> Player::GetVerticesOnStealing(int afterImageNum
 	return ret;
 }
 
-const int* Player::GetHoldingKeyCnt(AppCommon::KeyType key) const {
-	switch (key) {
-		case AppCommon::KeyType::Silver:
-			return &this->holdingSilverKeyCount;
+const int* Player::GetHoldingGateKeyCnt(AppCommon::GateKeyType gateKey) const {
+	switch (gateKey) {
+		case AppCommon::GateKeyType::Silver:
+			return &this->holdingSilverGateKeyCount;
 			break;
-		case AppCommon::KeyType::Gold:
-			return &this->holdingGoldKeyCount;
+		case AppCommon::GateKeyType::Gold:
+			return &this->holdingGoldGateKeyCount;
 			break;
 		default:
 			return NULL;
