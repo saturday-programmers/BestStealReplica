@@ -15,8 +15,8 @@ public:
 	static const int WIDTH = 80;
 
 	/* Static Functions --------------------------------------------------------------------------------- */
-	static void CharacterCommon::CreateChipTuTvs(int chipCount, int rowNum, int colNum, Vertices<FloatPoint> chips[]);
-	static Vertices<FloatPoint> CreateTuTv(int rowNum, int colNum);
+	static void CharacterCommon::CreateChipTuTvs(int chipCount, int rowIdx, int colIdx, Vertices<FloatPoint> chips[]);
+	static Vertices<FloatPoint> CreateTuTv(int rowIdx, int colIdx);
 	static void CountUpAnimationCnt(int* pAnimationCnt, int chipCntPerDir);
 	static int GetAnimationNumber(int currentAnimationCnt);
 	static Vertices<Drawing::DrawingVertex> CreateVertex(POINT topLeftXY, Vertices<POINT>(*getXY)(POINT), Vertices<FloatPoint> chip);

@@ -72,8 +72,11 @@ private:
 
 
 	/* Functions ---------------------------------------------------------------------------------------- */
+	void AssignChipNumber();
 	void SetChipXY();
 	bool IsOnRoad(POINT mapChipPos) const;
+	bool Map::IsMovable(int targetPoint, int topLeftPoint, int mapChipCount, int mapChipSize, int windowSize) const;
+
 };
 
 }

@@ -21,14 +21,14 @@ Map::Map() {
 }
 
 Map::~Map() {
-	for (int i = 0; i < (int)this->pMapData.size(); ++i) {
-		for (int j = 0; j < (int)this->pMapData[i].size(); ++j) {
-			delete this->pMapData[i][j];
+	for (auto& pRow : this->pMapData) {
+		for (auto& pCell : pRow) {
+			delete pCell;
 		}
 	}
 
-	for (int i = 0; i < (int)this->pStones.size(); ++i) {
-		delete this->pStones[i];
+	for (auto& pStone : this->pStones) {
+		delete pStone;
 	}
 }
 
@@ -51,17 +51,17 @@ MapChipType Map::GetMapChipType(POINT mapChipPos) const {
 
 /* Public Functions  -------------------------------------------------------------------------------- */
 void Map::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const {
-	for (int i = 0; i < (int)this->pMapData.size(); ++i) {
-		for (int j = 0; j < (int)this->pMapData[i].size(); ++j) {
+	for (auto& pRow : this->pMapData) {
+		for (auto& pCell : pRow) {
 			Drawing::DrawingContext context;
-			context.vertices = pMapData[i][j]->CreateVertex();
+			context.vertices = pCell->CreateVertex();
 			context.textureType = Drawing::TextureType::MAP;
 			pDrawingContexts->push_back(context);
 		}
 	}
 
-	for (int i = 0; i < (int)this->pStones.size(); ++i) {
-		this->pStones[i]->CreateDrawingContexts(pDrawingContexts);
+	for (auto& pStone : this->pStones) {
+		pStone->CreateDrawingContexts(pDrawingContexts);
 	}
 }
 
@@ -70,19 +70,19 @@ void Map::Load(const Stage::IStage& rStage) {
 	int xChipCount = rStage.GetXChipCount();
 
 	this->pMapData.resize(yChipCount);
-	for (int i = 0; i < yChipCount; ++i) {
-		this->pMapData[i].resize(xChipCount);
+	for (int rowIdx = 0; rowIdx < yChipCount; ++rowIdx) {
+		this->pMapData[rowIdx].resize(xChipCount);
 
-		for (int j = 0; j < xChipCount; ++j) {			
-			this->pMapData[i][j] = MapChip::Create(rStage.GetMapChipType(i, j));
+		for (int colIdx = 0; colIdx < xChipCount; ++colIdx) {			
+			this->pMapData[rowIdx][colIdx] = MapChip::Create(rStage.GetMapChipType(rowIdx, colIdx));
 
-			switch (this->pMapData[i][j]->GetChipType()) {
+			switch (this->pMapData[rowIdx][colIdx]->GetChipType()) {
 				case MapChipType::GATE:
 				case MapChipType::GOLD_GATE:
-					this->pGateMapChips.push_back((MapChipGate*)this->pMapData[i][j]);
+					this->pGateMapChips.push_back((MapChipGate*)this->pMapData[rowIdx][colIdx]);
 					break;
 				case MapChipType::JEWELRY:
-					this->pJewelryMapChip = (MapChipJewelry*)this->pMapData[i][j];
+					this->pJewelryMapChip = (MapChipJewelry*)this->pMapData[rowIdx][colIdx];
 					break;
 				default:
 					break;
@@ -118,46 +118,8 @@ void Map::Load(const Stage::IStage& rStage) {
 	}
 	this->defaultTopLeft = this->topLeft;
 
-	for (int i = 0; i < yChipCount; ++i) {
-		for (int j = 0; j < xChipCount; ++j) {
-			if (this->pMapData[i][j]->GetChipType() == MapChipType::WALL) {
-				MapChipWall* chip = (MapChipWall*)this->pMapData[i][j];
-				// 壁とそれ以外のチップの間に線を引く
-				if (i == 0) {
-					chip->SetNeedsTopLine();
-				} else {
-					if (this->pMapData[i - 1][j]->GetChipType() != MapChipType::WALL) {
-						chip->SetNeedsTopLine();
-					}
-				}
+	AssignChipNumber();
 
-				if (j == 0) {
-					chip->SetNeedsLeftLine();
-				} else {
-					if (this->pMapData[i][j - 1]->GetChipType() != MapChipType::WALL) {
-						chip->SetNeedsLeftLine();
-					}
-				}
-
-				if (i == yChipCount - 1) {
-					chip->SetNeedsBottomLine();
-				} else {
-					if (this->pMapData[i + 1][j]->GetChipType() != MapChipType::WALL) {
-						chip->SetNeedsBottomLine();
-					}
-				}
-
-				if (j == xChipCount - 1) {
-					chip->SetNeedsRightLine();
-				} else {
-					if (this->pMapData[i][j + 1]->GetChipType() != MapChipType::WALL) {
-						chip->SetNeedsRightLine();
-					}
-				}
-			}
-			this->pMapData[i][j]->SetChipNumber();
-		}
-	}
 	SetChipXY();
 }
 
@@ -194,45 +156,20 @@ bool Map::IsOnRoad(Vertices<POINT> xy) const {
 }
 
 bool Map::IsMovableX(int x) const {
-	if (x == 0) {
-		return true;
-	}
-
-	if (x > 0) {
-		if (this->topLeft.x + x > 0) {
-			return false;
-		}
-	} else {
-		if (this->topLeft.x + (int)this->pMapData[0].size() * MapChip::WIDTH <= AppCommon::GetWindowWidth()) {
-			return false;
-		}
-	}
-	return true;
+	return IsMovable(x, this->topLeft.x, (int)this->pMapData[0].size(), MapChip::WIDTH, AppCommon::GetWindowWidth());
 }
 
 bool Map::IsMovableY(int y) const {
-	if (y == 0) {
-		return true;
-	}
-	if (y > 0) {
-		if (this->topLeft.y + y > 0) {
-			return false;
-		}
-	} else if (y < 0) {
-		if (this->topLeft.y + (int)this->pMapData.size() * MapChip::HEIGHT <= AppCommon::GetWindowHeight()) {
-			return false;
-		}
-	}
-	return true;
+	return IsMovable(y, this->topLeft.y, (int)this->pMapData.size(), MapChip::HEIGHT, AppCommon::GetWindowHeight());
 }
 
 void Map::KeepOpeningGates() {
 	// 開きかけのドアがあればアニメーション
-	for (int i = 0; i < (int)this->pGateMapChips.size(); ++i) {
-		switch (this->pGateMapChips[i]->GetState()) {
+	for (auto& pGateMapChip : this->pGateMapChips) {
+		switch (pGateMapChip->GetState()) {
 			case MapChipGate::State::START_OPENING:
 			case MapChipGate::State::OPENING:
-				this->pGateMapChips[i]->OpenGate();
+				pGateMapChip->OpenGate();
 				break;
 			default:
 				break;
@@ -409,11 +346,11 @@ void Map::AnimateStones() {
 
 std::vector<Vertices<POINT>> Map::GetDroppedStoneXYs() const {
 	std::vector<Vertices<POINT>> stoneXYs;
-	for (int i = 0; i < (int)this->pStones.size(); ++i) {
-		switch (this->pStones[i]->GetState()) {
+	for (auto& pStone : this->pStones) {
+		switch (pStone->GetState()) {
 			case Stone::State::DROPPED:
 			case Stone::State::DISAPPEARING:
-				stoneXYs.push_back(this->pStones[i]->GetXYsOnGround());
+				stoneXYs.push_back(pStone->GetXYsOnGround());
 				break;
 			default:
 				break;
@@ -424,13 +361,58 @@ std::vector<Vertices<POINT>> Map::GetDroppedStoneXYs() const {
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */
+void Map::AssignChipNumber() {
+	for (int rowIdx = 0; rowIdx < (int)this->pMapData.size(); ++rowIdx) {
+		for (int colIdx = 0; colIdx < (int)this->pMapData[rowIdx].size(); ++colIdx) {
+
+			if (this->pMapData[rowIdx][colIdx]->GetChipType() == MapChipType::WALL) {
+				MapChipWall* chip = (MapChipWall*)this->pMapData[rowIdx][colIdx];
+				// 壁とそれ以外のチップの間に線を引く
+				if (rowIdx == 0) {
+					chip->SetNeedsTopLine();
+				} else {
+					if (this->pMapData[rowIdx - 1][colIdx]->GetChipType() != MapChipType::WALL) {
+						chip->SetNeedsTopLine();
+					}
+				}
+
+				if (colIdx == 0) {
+					chip->SetNeedsLeftLine();
+				} else {
+					if (this->pMapData[rowIdx][colIdx - 1]->GetChipType() != MapChipType::WALL) {
+						chip->SetNeedsLeftLine();
+					}
+				}
+
+				if (rowIdx == this->pMapData.size() - 1) {
+					chip->SetNeedsBottomLine();
+				} else {
+					if (this->pMapData[rowIdx + 1][colIdx]->GetChipType() != MapChipType::WALL) {
+						chip->SetNeedsBottomLine();
+					}
+				}
+
+				if (colIdx == this->pMapData[rowIdx].size() - 1) {
+					chip->SetNeedsRightLine();
+				} else {
+					if (this->pMapData[rowIdx][colIdx + 1]->GetChipType() != MapChipType::WALL) {
+						chip->SetNeedsRightLine();
+					}
+				}
+			}
+			this->pMapData[rowIdx][colIdx]->AssignChipNumber();
+		}
+
+	}
+}
+
 void Map::SetChipXY() {
 	POINT point;
-	for (int i = 0; i < (int)this->pMapData.size(); ++i) {
-		for (int j = 0; j < (int)this->pMapData[i].size(); ++j) {
-			point.x = this->topLeft.x + (j * MapChip::WIDTH);
-			point.y = this->topLeft.y + (i * MapChip::HEIGHT);
-			this->pMapData[i][j]->SetXY(point);
+	for (int rowIdx = 0; rowIdx < (int)this->pMapData.size(); ++rowIdx) {
+		for (int colIdx = 0; colIdx < (int)this->pMapData[rowIdx].size(); ++colIdx) {
+			point.x = this->topLeft.x + (colIdx * MapChip::WIDTH);
+			point.y = this->topLeft.y + (rowIdx * MapChip::HEIGHT);
+			this->pMapData[rowIdx][colIdx]->SetXY(point);
 		}
 	}
 }
@@ -453,5 +435,22 @@ bool Map::IsOnRoad(POINT mapChipPos) const {
 	}
 	return true;
 }
+
+bool Map::IsMovable(int targetPoint, int topLeftPoint, int mapChipCount, int mapChipSize, int windowSize) const {
+	if (targetPoint == 0) {
+		return true;
+	}
+	if (targetPoint > 0) {
+		if (topLeftPoint + targetPoint > 0) {
+			return false;
+		}
+	} else if (targetPoint < 0) {
+		if (topLeftPoint + mapChipCount * mapChipSize <= windowSize) {
+			return false;
+		}
+	}
+	return true;
+}
+
 }
 }

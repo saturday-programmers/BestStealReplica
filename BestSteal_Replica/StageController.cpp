@@ -19,6 +19,9 @@ StageController::~StageController() {
 	delete this->pEnemy;
 	delete this->pPlayer;
 	delete this->pMap;
+	if (this->pStage != nullptr) {
+		delete this->pStage;
+	}
 }
 
 
@@ -38,8 +41,8 @@ void StageController::LoadStage(const Stage::IStage& rStage) {
 	// 敵情報
 	std::vector<Enemy::EnemyInfo> enemiesInfo = this->pStage->GetEnemiesInfo();
 	std::vector<POINT> enemiesXY;
-	for (int i = 0; i < (int)enemiesInfo.size(); ++i) {
-		enemiesXY.push_back(this->pMap->GetTopLeftXYonChip(enemiesInfo[i].chipPos));
+	for (auto& enemy: enemiesInfo) {
+		enemiesXY.push_back(this->pMap->GetTopLeftXYonChip(enemy.chipPos));
 	}
 	this->pEnemy = new Enemy(enemiesInfo, enemiesXY, this->pStage->GetEnemyScoutableRadius());
 	Drawing::Drawer::AddDrawable(*this->pEnemy);
@@ -250,8 +253,8 @@ void StageController::ControlEnemy(int playerMovingPixel, const Handling& rHandl
 	this->pEnemy->ScoutPlayer(playerXY, rHandling.isWalking);
 
 	// 突進可能か
-	for (int i = 0; i < this->pEnemy->GetEnermyCount(); ++i) {
-		if (this->pEnemy->GetState(i) == Enemy::State::GOT_STOLEN) {
+	for (int enemyIdx = 0; enemyIdx < this->pEnemy->GetEnermyCount(); ++enemyIdx) {
+		if (this->pEnemy->GetState(enemyIdx) == Enemy::State::GOT_STOLEN) {
 			continue;
 		}
 
@@ -259,12 +262,12 @@ void StageController::ControlEnemy(int playerMovingPixel, const Handling& rHandl
 		POINT centerPlayer = CharacterCommon::CalcCenter(playerXY);
 		POINT playerPos = this->pMap->ConvertToMapChipPos(centerPlayer);
 
-		Vertices<POINT> enemyXY = this->pEnemy->GetEnemyXY(i);
+		Vertices<POINT> enemyXY = this->pEnemy->GetEnemyXY(enemyIdx);
 		POINT centerEnemy = CharacterCommon::CalcCenter(enemyXY);
 		POINT enemyPos = this->pMap->ConvertToMapChipPos(centerEnemy);
 		bool canSeePlayer = false;
 		int distance;
-		switch (this->pEnemy->GetHeadingDirection(i)) {
+		switch (this->pEnemy->GetHeadingDirection(enemyIdx)) {
 			case AppCommon::Direction::TOP:
 				canSeePlayer = (enemyPos.x == playerPos.x && enemyPos.y >= playerPos.y);
 				distance = centerEnemy.y - centerPlayer.y;
@@ -288,7 +291,7 @@ void StageController::ControlEnemy(int playerMovingPixel, const Handling& rHandl
 		canSeePlayer = canSeePlayer && !this->pMap->ExistsWallBetween(centerEnemy, centerPlayer);
 
 		// 突進
-		this->pEnemy->Attack(i, canSeePlayer);
+		this->pEnemy->Attack(enemyIdx, canSeePlayer);
 	}
 
 	// 石を発見したか

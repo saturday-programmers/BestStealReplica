@@ -140,9 +140,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 	timeEndPeriod(1);
 
 	// 終了処理
-	DI_Term();
-	Drawing::Drawer::Release();
 	sceneController.Release();
+	Drawing::Drawer::Release();
+	DI_Term();
 
 	return (int)msg.wParam;
 }

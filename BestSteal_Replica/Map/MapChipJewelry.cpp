@@ -5,9 +5,7 @@ namespace BestStealReplica {
 namespace Map {
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-MapChipJewelry::MapChipJewelry() : MapChip(MapChipType::JEWELRY),
-	state(State::CLOSED)
-{}
+MapChipJewelry::MapChipJewelry() : MapChip(MapChipType::JEWELRY), state(State::CLOSED) {}
 
 
 /* Getters / Setters -------------------------------------------------------------------------------- */

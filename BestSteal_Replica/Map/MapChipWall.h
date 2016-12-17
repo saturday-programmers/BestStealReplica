@@ -15,7 +15,7 @@ public:
 	MapChipWall();
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void SetChipNumber();
+	void AssignChipNumber();
 	void SetNeedsTopLine();
 	void SetNeedsRightLine();
 	void SetNeedsBottomLine();

@@ -26,7 +26,7 @@ public:
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	MapChipType GetChipType() const;
-	virtual void SetChipNumber();
+	virtual void AssignChipNumber();
 	POINT GetTopLeftXY() const;
 	void SetXY(POINT topLeftXY);
 	Vertices<Drawing::DrawingVertex> CreateVertex() const;
