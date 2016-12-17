@@ -52,9 +52,9 @@ public:
 	std::vector<Drawing::TextureType> GetTextureTypes() const;
 
 	int GetEnermyCount() const;
-	Vertices<POINT> GetEnemyXY(int enemyNum) const;
-	AppCommon::Direction GetHeadingDirection(int enemyNum) const;
-	Enemy::State GetState(int enemyNum) const;
+	Vertices<POINT> GetEnemyXY(int enemyIdx) const;
+	AppCommon::Direction GetHeadingDirection(int enemyIdx) const;
+	Enemy::State GetState(int enemyIdx) const;
 
 
 	/* Functions ---------------------------------------------------------------------------------------- */
@@ -65,7 +65,7 @@ public:
 	void ScoutStone(const std::vector<Vertices<POINT>>& rStonesXY);
 	void ScoutPlayer(Vertices<POINT> playerXY, bool isPlayerWalking);
 	AppCommon::GateKeyType GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing);
-	void Attack(int enemyNum, bool canSeePlayer);
+	void Attack(int enemyIdx, bool canSeePlayer);
 	bool CanKillPlayer(Vertices<POINT> playerXY) const;
 	void BackToDefaultPosition();
 
@@ -102,8 +102,8 @@ private:
 
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	Vertices<Drawing::DrawingVertex> CreateVertex(int enemyNum) const;
-	void TurnTo(POINT targetXY, int enemyNum);
+	Vertices<Drawing::DrawingVertex> CreateVertex(int enemyIdx) const;
+	void TurnTo(POINT targetXY, int enemyIdx);
 };
 
 }

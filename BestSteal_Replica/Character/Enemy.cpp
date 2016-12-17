@@ -10,13 +10,11 @@ namespace BestStealReplica {
 namespace Character {
 
 /* Structs ------------------------------------------------------------------------------------------ */
-Enemy::EnemyInfo::EnemyInfo() {}
-
 Enemy::EnemyInfo::EnemyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, AppCommon::GateKeyType holdingGateKey) :
 	defaultDirection(defaultDirection),
 	headingDirection(defaultDirection),
 	holdingGateKey(holdingGateKey),
-	state(State::NORMAL),
+	state(Enemy::State::NORMAL),
 	currentAnimationCnt(0),
 	restTimeForCancelFinding(0),
 	restTimeForBackingToNormal(0)
@@ -29,8 +27,8 @@ Enemy::EnemyInfo::EnemyInfo(int chipPosX, int chipPosY, AppCommon::Direction def
 Enemy::Enemy(std::vector<EnemyInfo> enemiesInfo, std::vector<POINT> topLeftXYs, int scoutableRadius) : scoutableRadius(scoutableRadius) {	
 	for (int i = 0; i < (int)enemiesInfo.size(); ++i) {
 		this->enemiesInfo.push_back(enemiesInfo[i]);
-		this->enemiesInfo[i].topLeftXY = topLeftXYs[i];
-		this->enemiesInfo[i].defaultTopLeftXY = topLeftXYs[i];
+		this->enemiesInfo.back().topLeftXY = topLeftXYs[i];
+		this->enemiesInfo.back().defaultTopLeftXY = topLeftXYs[i];
 	}
 
 	CharacterCommon::CreateChipTuTvs(Enemy::CHIP_COUNT_PER_DIRECTION, Enemy::ROW_NUM_OF_HEADING_TOP, Enemy::COL_NUM_OF_HEADING_TOP, this->headingTopChips);
@@ -54,8 +52,8 @@ int Enemy::GetEnermyCount() const {
 	return this->enemiesInfo.size();
 }
 
-Vertices<POINT> Enemy::GetEnemyXY(int enemyNum) const {
-	Vertices<POINT> ret = CharacterCommon::GetChipXY(this->enemiesInfo[enemyNum].topLeftXY);
+Vertices<POINT> Enemy::GetEnemyXY(int enemyIdx) const {
+	Vertices<POINT> ret = CharacterCommon::GetChipXY(this->enemiesInfo[enemyIdx].topLeftXY);
 	int xDiff = (CharacterCommon::WIDTH - Enemy::ENEMY_WIDTH) / 2;
 	int yDiff = (CharacterCommon::HEIGHT - Enemy::ENEMY_HEIGHT) / 2;
 	ret.topLeft.x += xDiff;
@@ -65,35 +63,35 @@ Vertices<POINT> Enemy::GetEnemyXY(int enemyNum) const {
 	return ret;
 }
 
-AppCommon::Direction Enemy::GetHeadingDirection(int enemyNum) const {
-	return this->enemiesInfo[enemyNum].headingDirection;
+AppCommon::Direction Enemy::GetHeadingDirection(int enemyIdx) const {
+	return this->enemiesInfo[enemyIdx].headingDirection;
 }
 
-Enemy::State Enemy::GetState(int enemyNum) const {
-	return this->enemiesInfo[enemyNum].state;
+Enemy::State Enemy::GetState(int enemyIdx) const {
+	return this->enemiesInfo[enemyIdx].state;
 }
 
 
 /* Public Functions  -------------------------------------------------------------------------------- */
 void Enemy::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const {
-	for (int i = 0; i < (int)this->enemiesInfo.size(); ++i) {
+	for (int enemyIdx = 0; enemyIdx < (int)this->enemiesInfo.size(); ++enemyIdx) {
 		Drawing::DrawingContext context;
 		context.textureType = Drawing::TextureType::CHARACTER;
 
-		if (this->enemiesInfo[i].state == State::GOT_STOLEN) {
+		if (this->enemiesInfo[enemyIdx].state == State::GOT_STOLEN) {
 			// 点滅
-			double rad = this->enemiesInfo[i].restTimeForBackingToNormal * 18 * M_PI / 180;
+			double rad = this->enemiesInfo[enemyIdx].restTimeForBackingToNormal * 18 * M_PI / 180;
 			context.alpha = 0xFF * (UINT16)abs(sin(rad));
 
-			context.vertices = CreateVertex(i);
+			context.vertices = CreateVertex(enemyIdx);
 			pDrawingContexts->push_back(context);
 		} else {
-			context.vertices = CreateVertex(i);
+			context.vertices = CreateVertex(enemyIdx);
 			pDrawingContexts->push_back(context);
 
-			if (this->enemiesInfo[i].state == State::FOUND_PLAYER || this->enemiesInfo[i].state == State::ATTACKING) {
+			if (this->enemiesInfo[enemyIdx].state == State::FOUND_PLAYER || this->enemiesInfo[enemyIdx].state == State::ATTACKING) {
 				// びっくりマーク表示
-				POINT enemyTopLeftXY = this->enemiesInfo[i].topLeftXY;
+				POINT enemyTopLeftXY = this->enemiesInfo[enemyIdx].topLeftXY;
 				POINT exclXY;
 				if (enemyTopLeftXY.y >= Map::MapChip::HEIGHT) {
 					// 上が空いている場合は上に表示
@@ -118,45 +116,45 @@ void Enemy::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawing
 }
 
 void Enemy::Stay() {
-	for (int i = 0; i < (int)this->enemiesInfo.size(); ++i) {
-		CharacterCommon::CountUpAnimationCnt(&this->enemiesInfo[i].currentAnimationCnt, Enemy::CHIP_COUNT_PER_DIRECTION);
+	for (auto& enemy : this->enemiesInfo) {
+		CharacterCommon::CountUpAnimationCnt(&enemy.currentAnimationCnt, Enemy::CHIP_COUNT_PER_DIRECTION);
 	}
 }
 
 void Enemy::Move(POINT xy) {
-	for (int i = 0; i < (int)this->enemiesInfo.size(); ++i) {
-		this->enemiesInfo[i].topLeftXY.x += xy.x;
-		this->enemiesInfo[i].topLeftXY.y += xy.y;
+	for (auto& enemy : this->enemiesInfo) {
+		enemy.topLeftXY.x += xy.x;
+		enemy.topLeftXY.y += xy.y;
 	}
 }
 
 void Enemy::ScoutStone(const std::vector<Vertices<POINT>>& rStoneXYs) {
-	for (int i = 0; i < (int)this->enemiesInfo.size(); ++i) {
-		if (this->enemiesInfo[i].state == Enemy::State::ATTACKING || this->enemiesInfo[i].state == Enemy::State::GOT_STOLEN) {
+	for (int enemyIdx = 0; enemyIdx < (int)this->enemiesInfo.size(); ++enemyIdx) {
+		if (this->enemiesInfo[enemyIdx].state == Enemy::State::ATTACKING || this->enemiesInfo[enemyIdx].state == Enemy::State::GOT_STOLEN) {
 			return;
 		}
 
 		bool hasFound = false;
-		POINT enemyCenter = CharacterCommon::CalcCenter(GetEnemyXY(i));
+		POINT enemyCenter = CharacterCommon::CalcCenter(GetEnemyXY(enemyIdx));
 
-		for (int j = 0; j < (int)rStoneXYs.size(); ++j) {
-			POINT stoneCenter = CharacterCommon::CalcCenter(rStoneXYs.at(j));
+		for (int stoneIdx = 0; stoneIdx < (int)rStoneXYs.size(); ++stoneIdx) {
+			POINT stoneCenter = CharacterCommon::CalcCenter(rStoneXYs.at(stoneIdx));
 			double distance = CharacterCommon::CalcDistance(enemyCenter, stoneCenter);
 
 			if (distance <= this->scoutableRadius) {
 				hasFound = true;
-				this->enemiesInfo[i].state = State::FOUND_STONE;
+				this->enemiesInfo[enemyIdx].state = State::FOUND_STONE;
 
 				// 石の方を向く
-				TurnTo(stoneCenter, i);
+				TurnTo(stoneCenter, enemyIdx);
 				break;
 			}
 		}
 
-		if (!hasFound && this->enemiesInfo[i].state == State::FOUND_STONE) {
+		if (!hasFound && this->enemiesInfo[enemyIdx].state == State::FOUND_STONE) {
 			// 索敵範囲内の石がなくなった場合
-			this->enemiesInfo[i].state = State::NORMAL;
-			this->enemiesInfo[i].headingDirection = this->enemiesInfo[i].defaultDirection;
+			this->enemiesInfo[enemyIdx].state = State::NORMAL;
+			this->enemiesInfo[enemyIdx].headingDirection = this->enemiesInfo[enemyIdx].defaultDirection;
 		} 
 	}
 }
@@ -164,32 +162,32 @@ void Enemy::ScoutStone(const std::vector<Vertices<POINT>>& rStoneXYs) {
 void Enemy::ScoutPlayer(Vertices<POINT> playerXY, bool isPlayerWalking) {
 	POINT playerCenter = CharacterCommon::CalcCenter(playerXY);
 
-	for (int i = 0; i < (int)this->enemiesInfo.size(); ++i) {
-		POINT enemyCenter = CharacterCommon::CalcCenter(GetEnemyXY(i));
+	for (int enemyIdx = 0; enemyIdx < (int)this->enemiesInfo.size(); ++enemyIdx) {
+		POINT enemyCenter = CharacterCommon::CalcCenter(GetEnemyXY(enemyIdx));
 		double distance = CharacterCommon::CalcDistance(playerCenter, enemyCenter);
 
 		if (distance <= this->scoutableRadius && !isPlayerWalking) {
-			this->enemiesInfo[i].state = State::FOUND_PLAYER;
-			this->enemiesInfo[i].restTimeForCancelFinding = TIME_FOR_CANCELING_FINDING;
+			this->enemiesInfo[enemyIdx].state = State::FOUND_PLAYER;
+			this->enemiesInfo[enemyIdx].restTimeForCancelFinding = TIME_FOR_CANCELING_FINDING;
 
 			// プレイヤーの方を向く
-			TurnTo(playerCenter, i);
+			TurnTo(playerCenter, enemyIdx);
 		} else {
-			switch (this->enemiesInfo[i].state) {
+			switch (this->enemiesInfo[enemyIdx].state) {
 				case State::FOUND_PLAYER:
-					--this->enemiesInfo[i].restTimeForCancelFinding;
-					if (this->enemiesInfo[i].restTimeForCancelFinding == 0) {
+					--this->enemiesInfo[enemyIdx].restTimeForCancelFinding;
+					if (this->enemiesInfo[enemyIdx].restTimeForCancelFinding == 0) {
 						// プレイヤー発見状態解除
-						this->enemiesInfo[i].state = State::LOST_PLAYER;
-						this->enemiesInfo[i].restTimeForBackingToNormal = TIME_FOR_BACKING_TO_NORMAL;
+						this->enemiesInfo[enemyIdx].state = State::LOST_PLAYER;
+						this->enemiesInfo[enemyIdx].restTimeForBackingToNormal = TIME_FOR_BACKING_TO_NORMAL;
 					}
 					break;
 				case State::LOST_PLAYER:
-					--this->enemiesInfo[i].restTimeForBackingToNormal;
-					if (this->enemiesInfo[i].restTimeForBackingToNormal == 0) {
-						this->enemiesInfo[i].state = State::NORMAL;
+					--this->enemiesInfo[enemyIdx].restTimeForBackingToNormal;
+					if (this->enemiesInfo[enemyIdx].restTimeForBackingToNormal == 0) {
+						this->enemiesInfo[enemyIdx].state = State::NORMAL;
 						// 元の向きに戻る
-						this->enemiesInfo[i].headingDirection = this->enemiesInfo[i].defaultDirection;
+						this->enemiesInfo[enemyIdx].headingDirection = this->enemiesInfo[enemyIdx].defaultDirection;
 					}
 					break;
 				default:
@@ -201,29 +199,29 @@ void Enemy::ScoutPlayer(Vertices<POINT> playerXY, bool isPlayerWalking) {
 
 AppCommon::GateKeyType Enemy::GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing) {
 	AppCommon::GateKeyType ret = AppCommon::GateKeyType::None;
-	for (int i = 0; i < (int)this->enemiesInfo.size(); ++i) {
-		if (this->enemiesInfo[i].state == State::GOT_STOLEN) {
-			--this->enemiesInfo[i].restTimeForBackingToNormal;
-			if (this->enemiesInfo[i].restTimeForBackingToNormal == 0) {
-				this->enemiesInfo[i].state = State::NORMAL;
+	for (int enemyIdx = 0; enemyIdx < (int)this->enemiesInfo.size(); ++enemyIdx) {
+		if (this->enemiesInfo[enemyIdx].state == State::GOT_STOLEN) {
+			--this->enemiesInfo[enemyIdx].restTimeForBackingToNormal;
+			if (this->enemiesInfo[enemyIdx].restTimeForBackingToNormal == 0) {
+				this->enemiesInfo[enemyIdx].state = State::NORMAL;
 				// 向きが変わっている間に盗まれた場合はこのタイミングで元の向きに戻る
-				this->enemiesInfo[i].headingDirection = this->enemiesInfo[i].defaultDirection;
+				this->enemiesInfo[enemyIdx].headingDirection = this->enemiesInfo[enemyIdx].defaultDirection;
 			}
 			continue;
 		}
 
 		if (isPlayerStealing) {
-			Vertices<POINT> enemyXY = GetEnemyXY(i);
+			Vertices<POINT> enemyXY = GetEnemyXY(enemyIdx);
 			if (((playerXY.topLeft.x < enemyXY.bottomRight.x && playerXY.bottomRight.x > enemyXY.topLeft.x)
 				|| (enemyXY.topLeft.x < playerXY.bottomRight.x && enemyXY.bottomRight.x > playerXY.topLeft.x))
 				&& ((playerXY.topLeft.y < enemyXY.bottomRight.y && playerXY.bottomRight.y > enemyXY.topLeft.y)
 				|| (enemyXY.topLeft.y < playerXY.bottomRight.y && enemyXY.bottomRight.y > playerXY.topLeft.y))) {
 
 				// 盗み成功
-				this->enemiesInfo[i].state = State::GOT_STOLEN;
-				this->enemiesInfo[i].restTimeForBackingToNormal = Enemy::TIME_FOR_BACKING_TO_NORMAL;
-				ret = this->enemiesInfo[i].holdingGateKey;
-				this->enemiesInfo[i].holdingGateKey = AppCommon::GateKeyType::None;
+				this->enemiesInfo[enemyIdx].state = State::GOT_STOLEN;
+				this->enemiesInfo[enemyIdx].restTimeForBackingToNormal = Enemy::TIME_FOR_BACKING_TO_NORMAL;
+				ret = this->enemiesInfo[enemyIdx].holdingGateKey;
+				this->enemiesInfo[enemyIdx].holdingGateKey = AppCommon::GateKeyType::None;
 				break;
 			}
 		}
@@ -231,8 +229,8 @@ AppCommon::GateKeyType Enemy::GetStolen(Vertices<POINT> playerXY, bool isPlayerS
 	return ret;
 }
 
-void Enemy::Attack(int enemyNum, bool canSeePlayer) {
-	EnemyInfo* pEnemyInfo = &this->enemiesInfo[enemyNum];
+void Enemy::Attack(int enemyIdx, bool canSeePlayer) {
+	EnemyInfo* pEnemyInfo = &this->enemiesInfo[enemyIdx];
 	if (pEnemyInfo->state == Enemy::State::GOT_STOLEN) {
 		// 盗まれ中の場合は動かない
 		return;
@@ -266,12 +264,12 @@ void Enemy::Attack(int enemyNum, bool canSeePlayer) {
 
 bool Enemy::CanKillPlayer(Vertices<POINT> playerXY) const {
 	bool ret = false;
-	for (int i = 0; i < (int)this->enemiesInfo.size(); i++) {
-		if (this->enemiesInfo[i].state == Enemy::State::GOT_STOLEN) {
+	for (int enemyIdx = 0; enemyIdx < (int)this->enemiesInfo.size(); enemyIdx++) {
+		if (this->enemiesInfo[enemyIdx].state == Enemy::State::GOT_STOLEN) {
 			continue;
 		}
 
-		Vertices<POINT> enemyXY = GetEnemyXY(i);
+		Vertices<POINT> enemyXY = GetEnemyXY(enemyIdx);
 		if (enemyXY.topLeft.x <= playerXY.bottomRight.x && playerXY.topLeft.x <= enemyXY.bottomRight.x
 				&& enemyXY.topLeft.y <= playerXY.bottomRight.y && playerXY.topLeft.y <= enemyXY.bottomRight.y) {
 			ret = true;
@@ -282,21 +280,21 @@ bool Enemy::CanKillPlayer(Vertices<POINT> playerXY) const {
 }
 
 void Enemy:: BackToDefaultPosition() {
-	for (int i = 0; i < (int)this->enemiesInfo.size(); i++) {
-		this->enemiesInfo[i].topLeftXY = this->enemiesInfo[i].defaultTopLeftXY;
-		this->enemiesInfo[i].headingDirection = this->enemiesInfo[i].defaultDirection;
-		this->enemiesInfo[i].state = Enemy::State::NORMAL;
+	for (auto& enemy : this->enemiesInfo) {
+		enemy.topLeftXY = enemy.defaultTopLeftXY;
+		enemy.headingDirection = enemy.defaultDirection;
+		enemy.state = Enemy::State::NORMAL;
 	}
 }
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */
-Vertices<Drawing::DrawingVertex> Enemy::CreateVertex(int enemyNum) const {
+Vertices<Drawing::DrawingVertex> Enemy::CreateVertex(int enemyIdx) const {
 	Vertices<Drawing::DrawingVertex> ret;
 
 	Vertices<FloatPoint> chip;
-	int animationNum = CharacterCommon::GetAnimationNumber(this->enemiesInfo[enemyNum].currentAnimationCnt);
-	switch (this->enemiesInfo[enemyNum].headingDirection) {
+	int animationNum = CharacterCommon::GetAnimationNumber(this->enemiesInfo[enemyIdx].currentAnimationCnt);
+	switch (this->enemiesInfo[enemyIdx].headingDirection) {
 		case AppCommon::Direction::TOP:
 			chip = this->headingTopChips[animationNum];
 			break;
@@ -311,26 +309,26 @@ Vertices<Drawing::DrawingVertex> Enemy::CreateVertex(int enemyNum) const {
 			break;
 	}
 
-	ret = CharacterCommon::CreateVertex(this->enemiesInfo[enemyNum].topLeftXY, &CharacterCommon::GetChipXY, chip);
+	ret = CharacterCommon::CreateVertex(this->enemiesInfo[enemyIdx].topLeftXY, &CharacterCommon::GetChipXY, chip);
 	return ret;
 }
 
-void Enemy::TurnTo(POINT targetXY, int enemyNum) {
-	POINT enemyCenter = CharacterCommon::CalcCenter(GetEnemyXY(enemyNum));
+void Enemy::TurnTo(POINT targetXY, int enemyIdx) {
+	POINT enemyCenter = CharacterCommon::CalcCenter(GetEnemyXY(enemyIdx));
 	POINT diff;
 	diff.x = enemyCenter.x - targetXY.x;
 	diff.y = enemyCenter.y - targetXY.y;
 	if (fabs((double)diff.x) > fabs((double)diff.y)) {
 		if (diff.x > 0) {
-			this->enemiesInfo[enemyNum].headingDirection = AppCommon::Direction::LEFT;
+			this->enemiesInfo[enemyIdx].headingDirection = AppCommon::Direction::LEFT;
 		} else {
-			this->enemiesInfo[enemyNum].headingDirection = AppCommon::Direction::RIGHT;
+			this->enemiesInfo[enemyIdx].headingDirection = AppCommon::Direction::RIGHT;
 		}
 	} else {
 		if (diff.y > 0) {
-			this->enemiesInfo[enemyNum].headingDirection = AppCommon::Direction::TOP;
+			this->enemiesInfo[enemyIdx].headingDirection = AppCommon::Direction::TOP;
 		} else {
-			this->enemiesInfo[enemyNum].headingDirection = AppCommon::Direction::BOTTOM;
+			this->enemiesInfo[enemyIdx].headingDirection = AppCommon::Direction::BOTTOM;
 		}
 	}
 }

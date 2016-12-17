@@ -1,21 +1,22 @@
 ﻿#include "CharacterCommon.h"
 
+
 namespace BestStealReplica {
 namespace Character {
 
 /* Static Public Functions -------------------------------------------------------------------------- */
-void CharacterCommon::CreateChipTuTvs(int chipCount, int rowNum, int colNum, Vertices<FloatPoint> chips[]) {
+void CharacterCommon::CreateChipTuTvs(int chipCount, int rowIdx, int colIdx, Vertices<FloatPoint> chips[]) {
 	for (int i = 0; i < chipCount; ++i) {
-		chips[i] = CreateTuTv(rowNum, colNum + i);
+		chips[i] = CreateTuTv(rowIdx, colIdx + i);
 	}
 }
 
-Vertices<FloatPoint> CharacterCommon::CreateTuTv(int rowNum, int colNum) {
+Vertices<FloatPoint> CharacterCommon::CreateTuTv(int rowIdx, int colIdx) {
 	Vertices<FloatPoint> ret;
-	ret.topLeft.x = colNum / (float)CharacterCommon::CHIP_COUNT_PER_COL;
-	ret.topLeft.y = rowNum / (float)CharacterCommon::CHIP_COUNT_PER_ROW;
-	ret.bottomRight.x = (colNum + 1) / (float)CharacterCommon::CHIP_COUNT_PER_COL;
-	ret.bottomRight.y = (rowNum + 1) / (float)CharacterCommon::CHIP_COUNT_PER_ROW;
+	ret.topLeft.x = colIdx / (float)CharacterCommon::CHIP_COUNT_PER_COL;
+	ret.topLeft.y = rowIdx / (float)CharacterCommon::CHIP_COUNT_PER_ROW;
+	ret.bottomRight.x = (colIdx + 1) / (float)CharacterCommon::CHIP_COUNT_PER_COL;
+	ret.bottomRight.y = (rowIdx + 1) / (float)CharacterCommon::CHIP_COUNT_PER_ROW;
 	return ret;
 }
 

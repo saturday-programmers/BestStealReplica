@@ -5,8 +5,8 @@
 #include "Drawer.h"
 #include "../Drawing/IDRawable.h"
 
-#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)
 
+#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)
 
 namespace BestStealReplica {
 namespace Drawing {
@@ -26,6 +26,7 @@ std::vector<const IDrawable*> pDrawables;
 std::map<Drawing::TextureType, LPDIRECT3DTEXTURE9> textures;
 }
 
+
 /* Constants ---------------------------------------------------------------------------------------- */
 const TCHAR* Drawer::MAP_CHIP_FILE_PATH = TEXT("image\\mapchip.png");
 const TCHAR* Drawer::CHARACTER_FILE_PATH = TEXT("image\\character.png");
@@ -44,8 +45,8 @@ void Drawer::Create(HWND hWnd, IDirect3D9* pDirect3D, D3DPRESENT_PARAMETERS* pD3
 
 void Drawer::Release() {
 	pD3Device->Release();
-	for (auto itr = textures.begin(); itr != textures.end(); ++itr) {
-		itr->second->Release();
+	for (auto& texture : textures) {
+		texture.second->Release();
 	}
 }
 
@@ -59,7 +60,7 @@ bool Drawer::AddDrawable(const IDrawable& rDrawable) {
 	bool ret = true;
 	pDrawables.push_back(&rDrawable);
 	std::vector<Drawing::TextureType> requiredTextureTypes = rDrawable.GetTextureTypes();
-	for (auto tex : requiredTextureTypes) {
+	for (auto& tex : requiredTextureTypes) {
 		// ロードされていないテクスチャのみ処理
 		if (textures.count(tex) == 0) {
 			ret = CreateTexture(tex);
@@ -81,8 +82,8 @@ void Drawer::Draw() {
 
 	// 描画
 	BeginDraw();
-	for (auto contexts : contextTable) {
-		for (auto context : contexts) {
+	for (auto& contexts : contextTable) {
+		for (auto& context : contexts) {
 			Draw(context);
 		}
 	}
@@ -165,10 +166,10 @@ void Drawer::Draw(const DrawingContext& rContext) {
 	}
 
 	CUSTOMVERTEX customVertex[4];
-	for (int i = 0; i < 4; ++i) {
-		customVertex[i].z = 0.5f;
-		customVertex[i].rhw = 1.0f;
-		customVertex[i].color = D3DCOLOR_ARGB(rContext.alpha, 255, 255, 255);
+	for (auto& vertex : customVertex) {
+		vertex.z = 0.5f;
+		vertex.rhw = 1.0f;
+		vertex.color = D3DCOLOR_ARGB(rContext.alpha, 255, 255, 255);
 	}
 
 	customVertex[0].x = (float)rContext.vertices.topLeft.x;

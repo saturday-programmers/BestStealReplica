@@ -5,10 +5,7 @@ namespace BestStealReplica {
 namespace Map {
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-MapChipGate::MapChipGate(MapChipType chipType) : MapChip(chipType),
-	state(State::CLOSED),
-	openingCount(0)
-{}
+MapChipGate::MapChipGate(MapChipType chipType) : MapChip(chipType), state(State::CLOSED), openingCount(0) {}
 
 
 /* Getters / Setters -------------------------------------------------------------------------------- */

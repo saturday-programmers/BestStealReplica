@@ -54,7 +54,7 @@ MapChipType MapChip::GetChipType() const {
 	return this->chipType;
 }
 
-void MapChip::SetChipNumber() {
+void MapChip::AssignChipNumber() {
 	this->chipNumber = (int)this->chipType;
 
 	// テクスチャー上のマップチップの位置
@@ -82,9 +82,7 @@ Vertices<Drawing::DrawingVertex> MapChip::CreateVertex() const {
 
 
 /* Private Constructor / Destructor ----------------------------------------------------------------- */
-MapChip::MapChip(MapChipType chipType) {
-	this->chipType = chipType;
-}
+MapChip::MapChip(MapChipType chipType) : chipType(chipType) {}
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */

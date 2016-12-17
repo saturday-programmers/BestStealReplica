@@ -15,7 +15,7 @@ MapChipWall::MapChipWall() :
 
 
 /* Public Functions  -------------------------------------------------------------------------------- */
-void MapChipWall::SetChipNumber() {
+void MapChipWall::AssignChipNumber() {
 	// 線のパターンに合わせてチップ番号を指定
 	if (!this->needsTopLine && !this->needsRightLine && !this->needsBottomLine && !this->needsLeftLine) {
 		// 四方線がないチップはデフォルトのものを使用
