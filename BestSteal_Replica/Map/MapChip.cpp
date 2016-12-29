@@ -25,27 +25,21 @@ MapChip* MapChip::Create(MapChipType chipType) {
 	}
 }
 
-Vertices<FloatPoint> MapChip::GetTuTvs(int mapChipNumber) {
-	Vertices<FloatPoint> ret;
-
+void MapChip::ConvertChipNumberToTuTv(int mapChipNumber, Vertices<FloatPoint>* pRet) {
 	int chipPosX = mapChipNumber % CHIP_COUNT_PER_ROW;
 	int chipPosY = mapChipNumber / CHIP_COUNT_PER_ROW;
 
-	ret.topLeft.x = (float)chipPosX / (float)CHIP_COUNT_PER_ROW;
-	ret.topLeft.y = (float)chipPosY / (float)CHIP_COUNT_PER_COL;
-	ret.bottomRight.x = (float)(chipPosX + 1) / (float)CHIP_COUNT_PER_ROW;
-	ret.bottomRight.y = (float)(chipPosY + 1) / (float)CHIP_COUNT_PER_COL;
-
-	return ret;
+	pRet->topLeft.x = (float)chipPosX / (float)CHIP_COUNT_PER_ROW;
+	pRet->topLeft.y = (float)chipPosY / (float)CHIP_COUNT_PER_COL;
+	pRet->bottomRight.x = (float)(chipPosX + 1) / (float)CHIP_COUNT_PER_ROW;
+	pRet->bottomRight.y = (float)(chipPosY + 1) / (float)CHIP_COUNT_PER_COL;
 }
 
-Vertices<POINT> MapChip::GetXY(POINT topLeftXY) {
-	Vertices<POINT> ret;
-	ret.topLeft.x = topLeftXY.x;
-	ret.topLeft.y = topLeftXY.y;
-	ret.bottomRight.x = topLeftXY.x + MapChip::WIDTH;
-	ret.bottomRight.y = topLeftXY.y + MapChip::HEIGHT;
-	return ret;
+void MapChip::ConvertTopLeftXYToVertices(const POINT& rTopLeftXY, Vertices<POINT>* pRet) {
+	pRet->topLeft.x = rTopLeftXY.x;
+	pRet->topLeft.y = rTopLeftXY.y;
+	pRet->bottomRight.x = rTopLeftXY.x + MapChip::WIDTH;
+	pRet->bottomRight.y = rTopLeftXY.y + MapChip::HEIGHT;
 }
 
 
@@ -54,30 +48,37 @@ MapChipType MapChip::GetChipType() const {
 	return this->chipType;
 }
 
+void MapChip::GetTopLeftXY(POINT* pRet) const {
+	pRet->x = this->vertices.topLeft.x;
+	pRet->y = this->vertices.topLeft.y;
+}
+
+void MapChip::SetXY(const POINT& rTopLeftXY) {
+	this->vertices.topLeft.x = rTopLeftXY.x;
+	this->vertices.topLeft.y = rTopLeftXY.y;
+	this->vertices.bottomRight.x = rTopLeftXY.x + MapChip::WIDTH;
+	this->vertices.bottomRight.y = rTopLeftXY.y + MapChip::HEIGHT;
+}
+
+
+/* Public Functions --------------------------------------------------------------------------------- */
 void MapChip::AssignChipNumber() {
 	this->chipNumber = (int)this->chipType;
 
 	// テクスチャー上のマップチップの位置
-	SetTuTv();
+	ConfigureTuTv();
 }
 
-POINT MapChip::GetTopLeftXY() const {
-	POINT ret;
-	ret.x = this->vertices.topLeft.x;
-	ret.y = this->vertices.topLeft.y;
-	return ret;
-}
+void MapChip::CreateDrawingVertices(Vertices<Drawing::DrawingVertex>* pRet) const {
+	pRet->topLeft.x = this->vertices.topLeft.x;
+	pRet->topLeft.y = this->vertices.topLeft.y;
+	pRet->topLeft.tu = this->vertices.topLeft.tu;
+	pRet->topLeft.tv = this->vertices.topLeft.tv;
 
-void MapChip::SetXY(POINT topLeftXY) {
-	Vertices<POINT> xy = GetXY(topLeftXY);
-	this->vertices.topLeft.x = xy.topLeft.x;
-	this->vertices.topLeft.y = xy.topLeft.y;
-	this->vertices.bottomRight.x = xy.bottomRight.x;
-	this->vertices.bottomRight.y = xy.bottomRight.y;
-}
-
-Vertices<Drawing::DrawingVertex> MapChip::CreateVertex() const {
-	return this->vertices;
+	pRet->bottomRight.x = this->vertices.bottomRight.x;
+	pRet->bottomRight.y = this->vertices.bottomRight.y;
+	pRet->bottomRight.tu = this->vertices.bottomRight.tu;
+	pRet->bottomRight.tv = this->vertices.bottomRight.tv;
 }
 
 
@@ -85,9 +86,10 @@ Vertices<Drawing::DrawingVertex> MapChip::CreateVertex() const {
 MapChip::MapChip(MapChipType chipType) : chipType(chipType) {}
 
 
-/* Private Functions  ------------------------------------------------------------------------------- */
-void MapChip::SetTuTv() {
-	Vertices<FloatPoint> tutv = GetTuTvs(this->chipNumber);
+/* Private Functions -------------------------------------------------------------------------------- */
+void MapChip::ConfigureTuTv() {
+	Vertices<FloatPoint> tutv;
+	ConvertChipNumberToTuTv(this->chipNumber, &tutv);
 	this->vertices.topLeft.tu = tutv.topLeft.x;
 	this->vertices.topLeft.tv = tutv.topLeft.y;
 	this->vertices.bottomRight.tu = tutv.bottomRight.x;
