@@ -78,7 +78,7 @@ void MapChipWall::AssignChipNumber() {
 		}
 	}
 	// テクスチャー上のマップチップの位置
-	SetTuTv();
+	ConfigureTuTv();
 }
 
 void MapChipWall::SetNeedsTopLine() {

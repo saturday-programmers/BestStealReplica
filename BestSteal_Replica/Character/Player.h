@@ -23,26 +23,26 @@ public:
 
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
-	std::vector<Drawing::TextureType> GetTextureTypes() const;
-
 	bool IsStealing() const;
 	AppCommon::Direction GetHeadingDirection() const;
+	void SetDirection(AppCommon::Direction direction);
 
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const;
+	void ConfigureTextureTypes(std::vector<Drawing::TextureType>* pRet) const;
+	void CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pRet) const;
 
-	void SetDirection(AppCommon::Direction direction);
-	void Walk(POINT movingPoint);
+	void Walk(const POINT& rMovingPoint);
 	void Stay();
 	void StartStealing();
 	void KeepStealing();
-	void Move(POINT xy);
+	void Move(const POINT& rXY);
 	bool IsStayingNearlyWindowTop() const;
 	bool IsStayingNearlyWindowRight() const;
 	bool IsStayingNearlyWindowBottom() const;
 	bool IsStayingNearlyWindowLeft() const;
-	Vertices<POINT> GetPlayerXY() const;
+	void CalcPlayerXY(Vertices<POINT>* pRet) const;
+	void CalcCenterXY(POINT* pRet) const;
 	bool HasGateKey(AppCommon::GateKeyType key) const;
 	void GainGateKey(AppCommon::GateKeyType key);
 	void LoseGateKey(AppCommon::GateKeyType key);
@@ -98,9 +98,9 @@ private:
 
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void SetDefaultProperty();
-	Vertices<Drawing::DrawingVertex> CreateVertex() const;
-	Vertices<Drawing::DrawingVertex> GetVerticesOnStealing(int afterImageNum) const;
+	void ReturnPropertiesToDefault();
+	void CreateVertices(Vertices<Drawing::DrawingVertex>* pVertices) const;
+	void CalcVerticesOnStealing(int afterImageNum, Vertices<Drawing::DrawingVertex>* pVertices) const;
 	const int* GetHoldingGateKeyCnt(AppCommon::GateKeyType key) const;
 
 };

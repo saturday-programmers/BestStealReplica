@@ -12,11 +12,9 @@ namespace Drawing {
 
 class IDrawable {
 public:
-	/* Getters / Setters -------------------------------------------------------------------------------- */
-	virtual std::vector<TextureType> GetTextureTypes() const = 0;
-
 	/* Functions ---------------------------------------------------------------------------------------- */
-	virtual void CreateDrawingContexts(std::vector<DrawingContext>* pDrawingContexts) const = 0;
+	virtual void ConfigureTextureTypes(std::vector<Drawing::TextureType>* pRet) const = 0;
+	virtual void CreateDrawingContexts(std::vector<DrawingContext>* pRet) const = 0;
 };
 
 }

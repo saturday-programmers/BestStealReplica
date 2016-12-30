@@ -10,22 +10,21 @@
 namespace BestStealReplica {
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-SceneController::SceneController() : 
-	pStage(nullptr),
-	pStageController(new StageController()),
-	blackoutFrameCount(0) 
-{}
+SceneController::SceneController() : pStage(nullptr), pStageController(new StageController()), blackoutFrameCount(0) {}
 
 void SceneController::Release() {
+	if (this->pStage != nullptr) {
+		delete this->pStage;
+		this->pStage = nullptr;
+	}
 	delete this->pStageController;
-	delete this->pStage;
 }
 
 
 /* Public Functions  -------------------------------------------------------------------------------- */
 void SceneController::StartStage() {
 	this->pStage = new Stage::Stage1();
-	this->pStageController->LoadStage(*pStage);
+	this->pStageController->LoadStage(*this->pStage);
 	AppCommon::SetScene(AppCommon::SceneType::DRAWING_MAP);
 }
 

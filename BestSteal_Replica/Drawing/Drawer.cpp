@@ -20,16 +20,15 @@ struct CUSTOMVERTEX {
 	float           tu, tv;                 //テクスチャ座標
 };
 
+/* Constants ---------------------------------------------------------------------------------------- */
+const TCHAR* MAP_CHIP_FILE_PATH = TEXT("image\\mapchip.png");
+const TCHAR* CHARACTER_FILE_PATH = TEXT("image\\character.png");
+
 /* Static Variables --------------------------------------------------------------------------------- */
 IDirect3DDevice9* pD3Device = nullptr;
 std::vector<const IDrawable*> pDrawables;
 std::map<Drawing::TextureType, LPDIRECT3DTEXTURE9> textures;
 }
-
-
-/* Constants ---------------------------------------------------------------------------------------- */
-const TCHAR* Drawer::MAP_CHIP_FILE_PATH = TEXT("image\\mapchip.png");
-const TCHAR* Drawer::CHARACTER_FILE_PATH = TEXT("image\\character.png");
 
 
 /* Static Public Functions -------------------------------------------------------------------------- */
@@ -59,7 +58,10 @@ UINT16 Drawer::GetAlphaOnBlinking(int time) {
 bool Drawer::AddDrawable(const IDrawable& rDrawable) {
 	bool ret = true;
 	pDrawables.push_back(&rDrawable);
-	std::vector<Drawing::TextureType> requiredTextureTypes = rDrawable.GetTextureTypes();
+
+	// テクスチャ設定
+	std::vector<Drawing::TextureType> requiredTextureTypes;
+	rDrawable.ConfigureTextureTypes(&requiredTextureTypes);
 	for (auto& tex : requiredTextureTypes) {
 		// ロードされていないテクスチャのみ処理
 		if (textures.count(tex) == 0) {
@@ -158,9 +160,8 @@ void Drawer::BeginDraw() {
 }
 
 void Drawer::Draw(const DrawingContext& rContext) {
-	if ((rContext.vertices.topLeft.x < 0 && rContext.vertices.topLeft.y < 0 && rContext.vertices.bottomRight.x < 0 && rContext.vertices.bottomRight.y < 0)
-		|| (rContext.vertices.topLeft.x > AppCommon::GetWindowWidth() && rContext.vertices.topLeft.y > AppCommon::GetWindowHeight()
-		&& rContext.vertices.bottomRight.x > AppCommon::GetWindowWidth() && rContext.vertices.bottomRight.y > AppCommon::GetWindowHeight())) {
+	if (rContext.vertices.bottomRight.x < 0 || rContext.vertices.bottomRight.y < 0
+		|| rContext.vertices.topLeft.x > AppCommon::GetWindowWidth() || rContext.vertices.topLeft.y > AppCommon::GetWindowHeight()) {
 		// 描画範囲外
 		return;
 	}

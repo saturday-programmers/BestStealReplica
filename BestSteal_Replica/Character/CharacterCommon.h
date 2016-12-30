@@ -15,14 +15,16 @@ public:
 	static const int WIDTH = 80;
 
 	/* Static Functions --------------------------------------------------------------------------------- */
-	static void CharacterCommon::CreateChipTuTvs(int chipCount, int rowIdx, int colIdx, Vertices<FloatPoint> chips[]);
-	static Vertices<FloatPoint> CreateTuTv(int rowIdx, int colIdx);
+	static void CreateChipTuTvs(int chipCount, int rowIdx, int colIdx, Vertices<FloatPoint> pRetArr[]);
+	static void CreateTuTv(int rowIdx, int colIdx, Vertices<FloatPoint>* pRet);
 	static void CountUpAnimationCnt(int* pAnimationCnt, int chipCntPerDir);
 	static int GetAnimationNumber(int currentAnimationCnt);
-	static Vertices<Drawing::DrawingVertex> CreateVertex(POINT topLeftXY, Vertices<POINT>(*getXY)(POINT), Vertices<FloatPoint> chip);
-	static Vertices<POINT> GetChipXY(POINT topLeftXY);
-	static POINT CalcCenter(Vertices<POINT> xy);
-	static double CalcDistance(POINT xy1, POINT xy2);
+	static void CreateDrawingVertices(const POINT& rTopLeftXY, void(*convertTopLeftToVertices)(const POINT&, Vertices<POINT>*), const Vertices<FloatPoint>& rChip, Vertices<Drawing::DrawingVertex>* pRet);
+	static void ConvertTopLeftXYToVertices(const POINT& rTopLeftXY, Vertices<POINT>* pRet);
+	static void CalcCharacterXY(const POINT& rTopLeftXY, int width, int height, Vertices<POINT>* pRet);
+	static void CalcCenter(const Vertices<POINT>& rXY, POINT* pRet);
+	static double CalcDistance(const POINT& rXY1, const POINT& rXY2);
+	static bool IsOverlapping(const Vertices<POINT>& rXY1, const Vertices<POINT>& rXY2);
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */

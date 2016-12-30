@@ -26,10 +26,6 @@ public:
 	static void Blackout();
 
 private:
-	/* Constants ---------------------------------------------------------------------------------------- */
-	static const TCHAR* Drawer::MAP_CHIP_FILE_PATH;
-	static const TCHAR* Drawer::CHARACTER_FILE_PATH;
-
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	Drawer();
 

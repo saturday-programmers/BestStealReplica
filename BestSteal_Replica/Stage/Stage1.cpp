@@ -59,11 +59,9 @@ Map::MapChipType Stage1::GetMapChipType(int y, int x) const {
 	return mapChipTypes[y][x];
 }
 
-POINT Stage1::GetPlayerFirstChipPos() const {
-	POINT ret;
-	ret.x = 14;
-	ret.y = 20;
-	return ret;
+void Stage1::GetPlayerFirstChipPos(POINT* pRet) const {
+	pRet->x = 14;
+	pRet->y = 20;
 }
 
 std::vector<Enemy::EnemyInfo> Stage1::GetEnemiesInfo() const {

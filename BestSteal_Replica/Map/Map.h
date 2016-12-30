@@ -30,31 +30,30 @@ public:
 
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
-	std::vector<Drawing::TextureType> GetTextureTypes() const;
-
-	POINT GetTopLeftXYonChip(POINT mapChipPos) const;
-	MapChipType GetMapChipType(POINT mapChipPos) const;
+	MapChipType GetMapChipType(const POINT& rMapChipPos) const;
 
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const;
+	void ConfigureTextureTypes(std::vector<Drawing::TextureType>* pRet) const;
+	void CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pRet) const;
 
 	void Load(const Stage::IStage& rStage);
-	void Move(POINT xy);
+	void Move(const POINT& rXY);
 	void MoveToDefault();
-	bool IsOnRoad(Vertices<POINT> xy) const;
 	bool IsMovableX(int x) const;
 	bool IsMovableY(int y) const;
+	bool IsOnRoad(const Vertices<POINT>& rXY) const;
+	void ConvertMapChipPosToTopLeftXY(const POINT& rMapChipPos, POINT* pRet) const;
 	void KeepOpeningGates();
-	POINT GetFrontMapChipPos(Vertices<POINT> playerXY, AppCommon::Direction headingDirection) const;
-	bool StartOpeningGate(POINT mapChipPos);
-	bool IsGateOpened(POINT mapChipPos) const;
-	bool ExistsWallBetween(POINT xy1, POINT xy2) const;
+	void ConvertToCharacterFrontMapChipPos(const Vertices<POINT>& rPlayerXY, AppCommon::Direction headingDirection, POINT* pRet) const;
+	bool StartOpeningGate(const POINT& rMapChipPos);
+	bool IsGateOpened(const POINT& rMapChipPos) const;
+	bool ExistsWallBetween(const POINT& rXY1, const POINT& rXY2) const;
 	void OpenJewelryBox();
-	POINT ConvertToMapChipPos(POINT xy) const;
-	void AddStone(POINT topLeftXY, AppCommon::Direction direction);
+	void ConvertToMapChipPos(const POINT& rXY, POINT* pRet) const;
+	void AddStone(const POINT& rTopLeftXY, AppCommon::Direction direction);
 	void AnimateStones();
-	std::vector<Vertices<POINT>> GetDroppedStoneXYs() const;
+	void CalcDroppedStoneXYs(std::vector<Vertices<POINT>>* pRet) const;
 
 
 private:
@@ -73,10 +72,9 @@ private:
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void AssignChipNumber();
-	void SetChipXY();
-	bool IsOnRoad(POINT mapChipPos) const;
-	bool Map::IsMovable(int targetPoint, int topLeftPoint, int mapChipCount, int mapChipSize, int windowSize) const;
-
+	void ConfigureChipXY();
+	bool IsOnRoad(const POINT& rMapChipPos) const;
+	bool IsMovable(int targetPoint, int topLeftPoint, int mapChipCount, int mapChipSize, int windowSize) const;
 };
 
 }

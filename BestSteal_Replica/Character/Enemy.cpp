@@ -36,31 +36,13 @@ Enemy::Enemy(std::vector<EnemyInfo> enemiesInfo, std::vector<POINT> topLeftXYs, 
 	CharacterCommon::CreateChipTuTvs(Enemy::CHIP_COUNT_PER_DIRECTION, Enemy::ROW_NUM_OF_HEADING_BOTTOM, Enemy::COL_NUM_OF_HEADING_BOTTOM, this->headingBottomChips);
 	CharacterCommon::CreateChipTuTvs(Enemy::CHIP_COUNT_PER_DIRECTION, Enemy::ROW_NUM_OF_HEADING_LEFT, Enemy::COL_NUM_OF_HEADING_LEFT, this->headingLeftChips);
 
-	this->exclamationMarkChip = BestStealReplica::Map::MapChip::GetTuTvs(MAP_CHIP_NUMBER_OF_EXCL);
+	BestStealReplica::Map::MapChip::ConvertChipNumberToTuTv(MAP_CHIP_NUMBER_OF_EXCL, &exclamationMarkChip);
 }
 
 
 /* Getters / Setters -------------------------------------------------------------------------------- */
-std::vector<Drawing::TextureType> Enemy::GetTextureTypes() const {
-	std::vector<Drawing::TextureType> ret;
-	ret.push_back(Drawing::TextureType::CHARACTER);
-	ret.push_back(Drawing::TextureType::MAP);
-	return ret;
-}
-
 int Enemy::GetEnermyCount() const {
 	return this->enemiesInfo.size();
-}
-
-Vertices<POINT> Enemy::GetEnemyXY(int enemyIdx) const {
-	Vertices<POINT> ret = CharacterCommon::GetChipXY(this->enemiesInfo[enemyIdx].topLeftXY);
-	int xDiff = (CharacterCommon::WIDTH - Enemy::ENEMY_WIDTH) / 2;
-	int yDiff = (CharacterCommon::HEIGHT - Enemy::ENEMY_HEIGHT) / 2;
-	ret.topLeft.x += xDiff;
-	ret.topLeft.y += yDiff;
-	ret.bottomRight.x -= xDiff;
-	ret.bottomRight.y -= yDiff;
-	return ret;
 }
 
 AppCommon::Direction Enemy::GetHeadingDirection(int enemyIdx) const {
@@ -73,21 +55,25 @@ Enemy::State Enemy::GetState(int enemyIdx) const {
 
 
 /* Public Functions  -------------------------------------------------------------------------------- */
-void Enemy::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const {
+void Enemy::ConfigureTextureTypes(std::vector<Drawing::TextureType>* pRet) const {
+	pRet->push_back(Drawing::TextureType::CHARACTER);
+	pRet->push_back(Drawing::TextureType::MAP);
+}
+
+void Enemy::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pRet) const {
 	for (int enemyIdx = 0; enemyIdx < (int)this->enemiesInfo.size(); ++enemyIdx) {
 		Drawing::DrawingContext context;
 		context.textureType = Drawing::TextureType::CHARACTER;
+		CreateDrawingVertices(enemyIdx, &context.vertices);
 
 		if (this->enemiesInfo[enemyIdx].state == State::GOT_STOLEN) {
 			// 点滅
 			double rad = this->enemiesInfo[enemyIdx].restTimeForBackingToNormal * 18 * M_PI / 180;
 			context.alpha = 0xFF * (UINT16)abs(sin(rad));
 
-			context.vertices = CreateVertex(enemyIdx);
-			pDrawingContexts->push_back(context);
+			pRet->push_back(context);
 		} else {
-			context.vertices = CreateVertex(enemyIdx);
-			pDrawingContexts->push_back(context);
+			pRet->push_back(context);
 
 			if (this->enemiesInfo[enemyIdx].state == State::FOUND_PLAYER || this->enemiesInfo[enemyIdx].state == State::ATTACKING) {
 				// びっくりマーク表示
@@ -108,8 +94,8 @@ void Enemy::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawing
 				}
 				Drawing::DrawingContext context;
 				context.textureType = Drawing::TextureType::MAP;
-				context.vertices = CharacterCommon::CreateVertex(exclXY, &Map::MapChip::GetXY, this->exclamationMarkChip);
-				pDrawingContexts->push_back(context);
+				CharacterCommon::CreateDrawingVertices(exclXY, &Map::MapChip::ConvertTopLeftXYToVertices, this->exclamationMarkChip, &context.vertices);
+				pRet->push_back(context);
 			}
 		}
 	}
@@ -121,11 +107,21 @@ void Enemy::Stay() {
 	}
 }
 
-void Enemy::Move(POINT xy) {
+void Enemy::Move(const POINT& rXY) {
 	for (auto& enemy : this->enemiesInfo) {
-		enemy.topLeftXY.x += xy.x;
-		enemy.topLeftXY.y += xy.y;
+		enemy.topLeftXY.x += rXY.x;
+		enemy.topLeftXY.y += rXY.y;
 	}
+}
+
+void Enemy::CalcEnemyXY(int enemyIdx, Vertices<POINT>* pRet) const {
+	CharacterCommon::CalcCharacterXY(this->enemiesInfo[enemyIdx].topLeftXY, Enemy::ENEMY_WIDTH, Enemy::ENEMY_HEIGHT, pRet);
+}
+
+void Enemy::CalcCenterXY(int enemyIdx, POINT* pRet) const {
+	Vertices<POINT> enemyXY;
+	CalcEnemyXY(enemyIdx, &enemyXY);
+	CharacterCommon::CalcCenter(enemyXY, pRet);
 }
 
 void Enemy::ScoutStone(const std::vector<Vertices<POINT>>& rStoneXYs) {
@@ -135,10 +131,12 @@ void Enemy::ScoutStone(const std::vector<Vertices<POINT>>& rStoneXYs) {
 		}
 
 		bool hasFound = false;
-		POINT enemyCenter = CharacterCommon::CalcCenter(GetEnemyXY(enemyIdx));
+		POINT enemyCenter;
+		CalcCenterXY(enemyIdx, &enemyCenter);
 
 		for (int stoneIdx = 0; stoneIdx < (int)rStoneXYs.size(); ++stoneIdx) {
-			POINT stoneCenter = CharacterCommon::CalcCenter(rStoneXYs.at(stoneIdx));
+			POINT stoneCenter;
+			CharacterCommon::CalcCenter(rStoneXYs.at(stoneIdx), &stoneCenter);
 			double distance = CharacterCommon::CalcDistance(enemyCenter, stoneCenter);
 
 			if (distance <= this->scoutableRadius) {
@@ -159,19 +157,18 @@ void Enemy::ScoutStone(const std::vector<Vertices<POINT>>& rStoneXYs) {
 	}
 }
 
-void Enemy::ScoutPlayer(Vertices<POINT> playerXY, bool isPlayerWalking) {
-	POINT playerCenter = CharacterCommon::CalcCenter(playerXY);
-
+void Enemy::ScoutPlayer(const POINT& rPlayerCenter, bool isPlayerWalking) {
 	for (int enemyIdx = 0; enemyIdx < (int)this->enemiesInfo.size(); ++enemyIdx) {
-		POINT enemyCenter = CharacterCommon::CalcCenter(GetEnemyXY(enemyIdx));
-		double distance = CharacterCommon::CalcDistance(playerCenter, enemyCenter);
+		POINT enemyCenter;
+		CalcCenterXY(enemyIdx, &enemyCenter);
+		double distance = CharacterCommon::CalcDistance(rPlayerCenter, enemyCenter);
 
 		if (distance <= this->scoutableRadius && !isPlayerWalking) {
 			this->enemiesInfo[enemyIdx].state = State::FOUND_PLAYER;
 			this->enemiesInfo[enemyIdx].restTimeForCancelFinding = TIME_FOR_CANCELING_FINDING;
 
 			// プレイヤーの方を向く
-			TurnTo(playerCenter, enemyIdx);
+			TurnTo(rPlayerCenter, enemyIdx);
 		} else {
 			switch (this->enemiesInfo[enemyIdx].state) {
 				case State::FOUND_PLAYER:
@@ -197,7 +194,7 @@ void Enemy::ScoutPlayer(Vertices<POINT> playerXY, bool isPlayerWalking) {
 	}
 }
 
-AppCommon::GateKeyType Enemy::GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing) {
+AppCommon::GateKeyType Enemy::GetStolen(const Vertices<POINT>& rPlayerXY, bool isPlayerStealing) {
 	AppCommon::GateKeyType ret = AppCommon::GateKeyType::None;
 	for (int enemyIdx = 0; enemyIdx < (int)this->enemiesInfo.size(); ++enemyIdx) {
 		if (this->enemiesInfo[enemyIdx].state == State::GOT_STOLEN) {
@@ -211,12 +208,9 @@ AppCommon::GateKeyType Enemy::GetStolen(Vertices<POINT> playerXY, bool isPlayerS
 		}
 
 		if (isPlayerStealing) {
-			Vertices<POINT> enemyXY = GetEnemyXY(enemyIdx);
-			if (((playerXY.topLeft.x < enemyXY.bottomRight.x && playerXY.bottomRight.x > enemyXY.topLeft.x)
-				|| (enemyXY.topLeft.x < playerXY.bottomRight.x && enemyXY.bottomRight.x > playerXY.topLeft.x))
-				&& ((playerXY.topLeft.y < enemyXY.bottomRight.y && playerXY.bottomRight.y > enemyXY.topLeft.y)
-				|| (enemyXY.topLeft.y < playerXY.bottomRight.y && enemyXY.bottomRight.y > playerXY.topLeft.y))) {
-
+			Vertices<POINT> enemyXY;
+			CalcEnemyXY(enemyIdx, &enemyXY);
+			if (CharacterCommon::IsOverlapping(enemyXY, rPlayerXY)) {
 				// 盗み成功
 				this->enemiesInfo[enemyIdx].state = State::GOT_STOLEN;
 				this->enemiesInfo[enemyIdx].restTimeForBackingToNormal = Enemy::TIME_FOR_BACKING_TO_NORMAL;
@@ -262,24 +256,25 @@ void Enemy::Attack(int enemyIdx, bool canSeePlayer) {
 	}
 }
 
-bool Enemy::CanKillPlayer(Vertices<POINT> playerXY) const {
+bool Enemy::CanKillPlayer(const Vertices<POINT>& rPlayerXY) const {
 	bool ret = false;
 	for (int enemyIdx = 0; enemyIdx < (int)this->enemiesInfo.size(); enemyIdx++) {
 		if (this->enemiesInfo[enemyIdx].state == Enemy::State::GOT_STOLEN) {
 			continue;
 		}
 
-		Vertices<POINT> enemyXY = GetEnemyXY(enemyIdx);
-		if (enemyXY.topLeft.x <= playerXY.bottomRight.x && playerXY.topLeft.x <= enemyXY.bottomRight.x
-				&& enemyXY.topLeft.y <= playerXY.bottomRight.y && playerXY.topLeft.y <= enemyXY.bottomRight.y) {
-			ret = true;
+		Vertices<POINT> enemyXY;
+		CalcEnemyXY(enemyIdx, &enemyXY);
+
+		ret = CharacterCommon::IsOverlapping(enemyXY, rPlayerXY);
+		if (ret) {
 			break;
 		}
 	}
 	return ret;
 }
 
-void Enemy:: BackToDefaultPosition() {
+void Enemy::BackToDefaultPosition() {
 	for (auto& enemy : this->enemiesInfo) {
 		enemy.topLeftXY = enemy.defaultTopLeftXY;
 		enemy.headingDirection = enemy.defaultDirection;
@@ -289,9 +284,7 @@ void Enemy:: BackToDefaultPosition() {
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */
-Vertices<Drawing::DrawingVertex> Enemy::CreateVertex(int enemyIdx) const {
-	Vertices<Drawing::DrawingVertex> ret;
-
+void Enemy::CreateDrawingVertices(int enemyIdx, Vertices<Drawing::DrawingVertex>* pRet) const {
 	Vertices<FloatPoint> chip;
 	int animationNum = CharacterCommon::GetAnimationNumber(this->enemiesInfo[enemyIdx].currentAnimationCnt);
 	switch (this->enemiesInfo[enemyIdx].headingDirection) {
@@ -309,15 +302,16 @@ Vertices<Drawing::DrawingVertex> Enemy::CreateVertex(int enemyIdx) const {
 			break;
 	}
 
-	ret = CharacterCommon::CreateVertex(this->enemiesInfo[enemyIdx].topLeftXY, &CharacterCommon::GetChipXY, chip);
-	return ret;
+	CharacterCommon::CreateDrawingVertices(this->enemiesInfo[enemyIdx].topLeftXY, &CharacterCommon::ConvertTopLeftXYToVertices, chip, pRet);
 }
 
-void Enemy::TurnTo(POINT targetXY, int enemyIdx) {
-	POINT enemyCenter = CharacterCommon::CalcCenter(GetEnemyXY(enemyIdx));
+void Enemy::TurnTo(const POINT& rTargetXY, int enemyIdx) {
+	POINT enemyCenter;
+	CalcCenterXY(enemyIdx, &enemyCenter);
+
 	POINT diff;
-	diff.x = enemyCenter.x - targetXY.x;
-	diff.y = enemyCenter.y - targetXY.y;
+	diff.x = enemyCenter.x - rTargetXY.x;
+	diff.y = enemyCenter.y - rTargetXY.y;
 	if (fabs((double)diff.x) > fabs((double)diff.y)) {
 		if (diff.x > 0) {
 			this->enemiesInfo[enemyIdx].headingDirection = AppCommon::Direction::LEFT;

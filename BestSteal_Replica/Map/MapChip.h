@@ -21,15 +21,17 @@ public:
 
 	/* Static Functions --------------------------------------------------------------------------------- */
 	static MapChip* Create(MapChipType chipType);
-	static Vertices<FloatPoint> GetTuTvs(int mapChipNumber);
-	static Vertices<POINT> GetXY(POINT topLeftXY);
+	static void ConvertChipNumberToTuTv(int mapChipNumber, Vertices<FloatPoint>* pRet);
+	static void ConvertTopLeftXYToVertices(const POINT& rTopLeftXY, Vertices<POINT>* pRet);
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	MapChipType GetChipType() const;
+	void GetTopLeftXY(POINT* pRet) const;
+	void SetXY(const POINT& rTopLeftXY);
+
+	/* Functions ---------------------------------------------------------------------------------------- */
 	virtual void AssignChipNumber();
-	POINT GetTopLeftXY() const;
-	void SetXY(POINT topLeftXY);
-	Vertices<Drawing::DrawingVertex> CreateVertex() const;
+	void CreateDrawingVertices(Vertices<Drawing::DrawingVertex>* pRet) const;
 
 protected:
 	/* Structs ------------------------------------------------------------------------------------------ */
@@ -68,7 +70,7 @@ protected:
 	explicit MapChip(MapChipType chipType);
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void SetTuTv();
+	void ConfigureTuTv();
 };
 
 }

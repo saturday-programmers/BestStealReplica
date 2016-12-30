@@ -39,7 +39,7 @@ public:
 		int restTimeForCancelFinding;
 		int restTimeForBackingToNormal;
 
-		EnemyInfo();
+		EnemyInfo() = default;
 		EnemyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, AppCommon::GateKeyType holdingGateKey);
 	};
 
@@ -49,24 +49,24 @@ public:
 
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
-	std::vector<Drawing::TextureType> GetTextureTypes() const;
-
 	int GetEnermyCount() const;
-	Vertices<POINT> GetEnemyXY(int enemyIdx) const;
 	AppCommon::Direction GetHeadingDirection(int enemyIdx) const;
 	Enemy::State GetState(int enemyIdx) const;
 
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const;
+	void ConfigureTextureTypes(std::vector<Drawing::TextureType>* pRet) const;
+	void CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pRet) const;
 
 	void Stay();
-	void Move(POINT xy);
+	void Move(const POINT& rXY);
+	void CalcEnemyXY(int enemyIdx, Vertices<POINT>* pRet) const;
+	void CalcCenterXY(int enemyIdx, POINT* pRet) const;
 	void ScoutStone(const std::vector<Vertices<POINT>>& rStonesXY);
-	void ScoutPlayer(Vertices<POINT> playerXY, bool isPlayerWalking);
-	AppCommon::GateKeyType GetStolen(Vertices<POINT> playerXY, bool isPlayerStealing);
+	void ScoutPlayer(const POINT& rPlayerCenter, bool isPlayerWalking);
+	AppCommon::GateKeyType GetStolen(const Vertices<POINT>& rPlayerXY, bool isPlayerStealing);
 	void Attack(int enemyIdx, bool canSeePlayer);
-	bool CanKillPlayer(Vertices<POINT> playerXY) const;
+	bool CanKillPlayer(const Vertices<POINT>& rPlayerXY) const;
 	void BackToDefaultPosition();
 
 
@@ -102,8 +102,9 @@ private:
 
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	Vertices<Drawing::DrawingVertex> CreateVertex(int enemyIdx) const;
-	void TurnTo(POINT targetXY, int enemyIdx);
+	void CreateDrawingVertices(int enemyIdx, Vertices<Drawing::DrawingVertex>* pRet) const;
+	void TurnTo(const POINT& rTargetXY, int enemyIdx);
+
 };
 
 }

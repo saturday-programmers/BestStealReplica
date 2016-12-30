@@ -5,19 +5,17 @@ namespace BestStealReplica {
 namespace Character {
 
 /* Static Public Functions -------------------------------------------------------------------------- */
-void CharacterCommon::CreateChipTuTvs(int chipCount, int rowIdx, int colIdx, Vertices<FloatPoint> chips[]) {
+void CharacterCommon::CreateChipTuTvs(int chipCount, int rowIdx, int colIdx, Vertices<FloatPoint> pRetArr[]) {
 	for (int i = 0; i < chipCount; ++i) {
-		chips[i] = CreateTuTv(rowIdx, colIdx + i);
+		CreateTuTv(rowIdx, colIdx + i, pRetArr + i);
 	}
 }
 
-Vertices<FloatPoint> CharacterCommon::CreateTuTv(int rowIdx, int colIdx) {
-	Vertices<FloatPoint> ret;
-	ret.topLeft.x = colIdx / (float)CharacterCommon::CHIP_COUNT_PER_COL;
-	ret.topLeft.y = rowIdx / (float)CharacterCommon::CHIP_COUNT_PER_ROW;
-	ret.bottomRight.x = (colIdx + 1) / (float)CharacterCommon::CHIP_COUNT_PER_COL;
-	ret.bottomRight.y = (rowIdx + 1) / (float)CharacterCommon::CHIP_COUNT_PER_ROW;
-	return ret;
+void CharacterCommon::CreateTuTv(int rowIdx, int colIdx, Vertices<FloatPoint>* pRet) {
+	pRet->topLeft.x = colIdx / (float)CharacterCommon::CHIP_COUNT_PER_COL;
+	pRet->topLeft.y = rowIdx / (float)CharacterCommon::CHIP_COUNT_PER_ROW;
+	pRet->bottomRight.x = (colIdx + 1) / (float)CharacterCommon::CHIP_COUNT_PER_COL;
+	pRet->bottomRight.y = (rowIdx + 1) / (float)CharacterCommon::CHIP_COUNT_PER_ROW;
 }
 
 void CharacterCommon::CountUpAnimationCnt(int* pAnimationCnt, int chipCntPerDir) {
@@ -31,43 +29,51 @@ int CharacterCommon::GetAnimationNumber(int currentAnimationCnt) {
 	return currentAnimationCnt / AppCommon::FRAME_COUNT_PER_CUT;
 }
 
-Vertices<Drawing::DrawingVertex> CharacterCommon::CreateVertex(POINT topLeftXY, Vertices<POINT>(*getXY)(POINT), Vertices<FloatPoint> chip) {
-	Vertices<Drawing::DrawingVertex> ret;
-	Vertices<POINT> xy = getXY(topLeftXY);
+void CharacterCommon::CreateDrawingVertices(const POINT& rTopLeftXY, void(*convertTopLeftToVertices)(const POINT&, Vertices<POINT>*), const Vertices<FloatPoint>& rChip, Vertices<Drawing::DrawingVertex>* pRet) {
+	Vertices<POINT> xy;
+	convertTopLeftToVertices(rTopLeftXY, &xy);
 
-	ret.topLeft.x = xy.topLeft.x;
-	ret.topLeft.y = xy.topLeft.y;
-	ret.topLeft.tu = chip.topLeft.x;
-	ret.topLeft.tv = chip.topLeft.y;
+	pRet->topLeft.x = xy.topLeft.x;
+	pRet->topLeft.y = xy.topLeft.y;
+	pRet->topLeft.tu = rChip.topLeft.x;
+	pRet->topLeft.tv = rChip.topLeft.y;
 
-	ret.bottomRight.x = xy.bottomRight.x;
-	ret.bottomRight.y = xy.bottomRight.y;
-	ret.bottomRight.tu = chip.bottomRight.x;
-	ret.bottomRight.tv = chip.bottomRight.y;
-
-	return ret;
+	pRet->bottomRight.x = xy.bottomRight.x;
+	pRet->bottomRight.y = xy.bottomRight.y;
+	pRet->bottomRight.tu = rChip.bottomRight.x;
+	pRet->bottomRight.tv = rChip.bottomRight.y;
 }
 
-Vertices<POINT> CharacterCommon::GetChipXY(POINT topLeftXY) {
-	Vertices<POINT> ret;
-	ret.topLeft.x = topLeftXY.x;
-	ret.topLeft.y = topLeftXY.y;
-	ret.bottomRight.x = topLeftXY.x + CharacterCommon::WIDTH - 1;
-	ret.bottomRight.y = topLeftXY.y + CharacterCommon::HEIGHT - 1;
-	return ret;
+void CharacterCommon::ConvertTopLeftXYToVertices(const POINT& rTopLeftXY, Vertices<POINT>* pRet) {
+	pRet->topLeft.x = rTopLeftXY.x;
+	pRet->topLeft.y = rTopLeftXY.y;
+	pRet->bottomRight.x = rTopLeftXY.x + CharacterCommon::WIDTH - 1;
+	pRet->bottomRight.y = rTopLeftXY.y + CharacterCommon::HEIGHT - 1;
 }
 
-POINT CharacterCommon::CalcCenter(Vertices<POINT> xy) {
-	POINT ret;
-	ret.x = xy.topLeft.x + (xy.bottomRight.x - xy.topLeft.x) / 2;
-	ret.y = xy.topLeft.y + (xy.bottomRight.y - xy.topLeft.y) / 2;
-	return ret;
+void CharacterCommon::CalcCharacterXY(const POINT& rTopLeftXY, int width, int height, Vertices<POINT>* pRet) {
+	ConvertTopLeftXYToVertices(rTopLeftXY, pRet);
+	int xDiff = (CharacterCommon::WIDTH - width) / 2;
+	int yDiff = (CharacterCommon::HEIGHT - height) / 2;
+	pRet->topLeft.x += xDiff;
+	pRet->topLeft.y += yDiff;
+	pRet->bottomRight.x -= xDiff;
+	pRet->bottomRight.y -= yDiff;
 }
 
-double CharacterCommon::CalcDistance(POINT xy1, POINT xy2) {
-	return sqrt(pow(xy1.x - xy2.x, 2.0) + pow(xy1.y - xy2.y, 2.0));
+void CharacterCommon::CalcCenter(const Vertices<POINT>& rXY, POINT* pRet) {
+	pRet->x = rXY.topLeft.x + (rXY.bottomRight.x - rXY.topLeft.x) / 2;
+	pRet->y = rXY.topLeft.y + (rXY.bottomRight.y - rXY.topLeft.y) / 2;
 }
 
+double CharacterCommon::CalcDistance(const POINT& rXY1, const POINT& rXY2) {
+	return sqrt(pow(rXY1.x - rXY2.x, 2.0) + pow(rXY1.y - rXY2.y, 2.0));
+}
+
+bool CharacterCommon::IsOverlapping(const Vertices<POINT>& rXY1, const Vertices<POINT>& rXY2) {
+	return (rXY1.topLeft.x < rXY2.bottomRight.x && rXY2.topLeft.x < rXY1.bottomRight.x
+		&& rXY1.topLeft.y < rXY2.bottomRight.y && rXY2.topLeft.y < rXY1.bottomRight.y);
+}
 
 }
 }

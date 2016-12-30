@@ -9,8 +9,6 @@ static AppCommon::SceneType scene;
 }
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-FloatPoint::FloatPoint() {}
-
 FloatPoint::FloatPoint(float x, float y) : x(x), y(y) {}
 
 

@@ -20,7 +20,7 @@ struct FloatPoint {
 	float x;
 	float y;
 
-	FloatPoint();
+	FloatPoint() = default;
 	FloatPoint(float x, float y);
 };
 

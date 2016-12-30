@@ -13,7 +13,7 @@ public:
 	int GetYChipCount() const;
 	int GetXChipCount() const;
 	Map::MapChipType GetMapChipType(int y, int x) const;
-	POINT GetPlayerFirstChipPos() const;
+	void GetPlayerFirstChipPos(POINT* pRet) const;
 	std::vector<Character::Enemy::EnemyInfo> GetEnemiesInfo() const;
 	int GetEnemyScoutableRadius() const;
 	int GetMaxStoneCount() const;
