@@ -38,22 +38,22 @@ public:
 	void CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pRet) const;
 
 	void Load(const Stage::IStage& rStage);
-	void Move(const POINT& rXY);
+	void Move(const POINT& rPixel);
 	void MoveToDefault();
 	bool IsMovableX(int x) const;
 	bool IsMovableY(int y) const;
-	bool IsOnRoad(const Vertices<POINT>& rXY) const;
-	void ConvertMapChipPosToTopLeftXY(const POINT& rMapChipPos, POINT* pRet) const;
+	bool IsOnRoad(const Rectangle<POINT>& rRect) const;
+	void ConvertMapChipPosToTopLeftPoint(const POINT& rCharacterRect, POINT* pRet) const;
 	void KeepOpeningGates();
-	void ConvertToCharacterFrontMapChipPos(const Vertices<POINT>& rPlayerXY, AppCommon::Direction headingDirection, POINT* pRet) const;
+	void ConvertToCharacterFrontMapChipPos(const Rectangle<POINT>& rCharacterRect, AppCommon::Direction headingDirection, POINT* pRet) const;
 	bool StartOpeningGate(const POINT& rMapChipPos);
 	bool IsGateOpened(const POINT& rMapChipPos) const;
-	bool ExistsWallBetween(const POINT& rXY1, const POINT& rXY2) const;
+	bool ExistsWallBetween(const POINT& rPoint1, const POINT& rPoint2) const;
 	void OpenJewelryBox();
-	void ConvertToMapChipPos(const POINT& rXY, POINT* pRet) const;
-	void AddStone(const POINT& rTopLeftXY, AppCommon::Direction direction);
+	void ConvertToMapChipPos(const POINT& rPoint, POINT* pRet) const;
+	void AddStone(const POINT& rTopLeftPoint, AppCommon::Direction direction);
 	void AnimateStones();
-	void CalcDroppedStoneXYs(std::vector<Vertices<POINT>>* pRet) const;
+	void CalcDroppedStonesRect(std::vector<Rectangle<POINT>>* pRet) const;
 
 
 private:
@@ -62,8 +62,8 @@ private:
 
 
 	/* Variables ---------------------------------------------------------------------------------------- */
-	POINT defaultTopLeft;
-	POINT topLeft;
+	POINT defaultTopLeftPoint;
+	POINT topLeftPoint;
 	DataTable<MapChip*> pMapData;
 	std::vector<MapChipGate*> pGateMapChips;
 	MapChipJewelry* pJewelryMapChip;
@@ -72,7 +72,7 @@ private:
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void AssignChipNumber();
-	void ConfigureChipXY();
+	void ConfigureChipPoint();
 	bool IsOnRoad(const POINT& rMapChipPos) const;
 	bool IsMovable(int targetPoint, int topLeftPoint, int mapChipCount, int mapChipSize, int windowSize) const;
 };

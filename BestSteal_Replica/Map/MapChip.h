@@ -21,17 +21,17 @@ public:
 
 	/* Static Functions --------------------------------------------------------------------------------- */
 	static MapChip* Create(MapChipType chipType);
-	static void ConvertChipNumberToTuTv(int mapChipNumber, Vertices<FloatPoint>* pRet);
-	static void ConvertTopLeftXYToVertices(const POINT& rTopLeftXY, Vertices<POINT>* pRet);
+	static void ConvertChipNumberToTexRect(int mapChipNumber, Rectangle<FloatPoint>* pRet);
+	static void ConvertTopLeftPointToRect(const POINT& rTopLeftPoint, Rectangle<POINT>* pRet);
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	MapChipType GetChipType() const;
-	void GetTopLeftXY(POINT* pRet) const;
-	void SetXY(const POINT& rTopLeftXY);
+	void GetTopLeftPoint(POINT* pRet) const;
+	void SetTopLeftPoint(const POINT& rTopLeftPoint);
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	virtual void AssignChipNumber();
-	void CreateDrawingVertices(Vertices<Drawing::DrawingVertex>* pRet) const;
+	void CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) const;
 
 protected:
 	/* Structs ------------------------------------------------------------------------------------------ */
@@ -64,13 +64,13 @@ protected:
 	/* Variables ---------------------------------------------------------------------------------------- */
 	MapChipType chipType;
 	int chipNumber;
-	Vertices<Drawing::DrawingVertex> vertices;
+	Rectangle<Drawing::DrawingVertex> drawingVertexRect;
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	explicit MapChip(MapChipType chipType);
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void ConfigureTuTv();
+	void ConfigureTexRect();
 };
 
 }

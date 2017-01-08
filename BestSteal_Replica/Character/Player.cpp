@@ -6,20 +6,21 @@ namespace BestStealReplica {
 namespace Character {
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-Player::Player(POINT topLeftXY) :
-	defaultTopLeftXY(topLeftXY),
-	holdingSilverGateKeyCount(0),
-	holdingGoldGateKeyCount(0)
-{
-	CharacterCommon::CreateChipTuTvs(Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_TOP, Player::COL_NUM_OF_HEADING_TOP, this->headingTopChips);
-	CharacterCommon::CreateChipTuTvs(Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_RIGHT, Player::COL_NUM_OF_HEADING_RIGHT, this->headingRightChips);
-	CharacterCommon::CreateChipTuTvs(Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_BOTTOM, Player::COL_NUM_OF_HEADING_BOTTOM, this->headingBottomChips);
-	CharacterCommon::CreateChipTuTvs(Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_LEFT, Player::COL_NUM_OF_HEADING_LEFT, this->headingLeftChips);
+Player::Player(const POINT& rTopLeftPoint) : holdingSilverGateKeyCount(0), holdingGoldGateKeyCount(0) {
+	this->defaultTopLeftPoint.x = rTopLeftPoint.x;
+	this->defaultTopLeftPoint.y = rTopLeftPoint.y;
+	this->topLeftPoint.x = rTopLeftPoint.x;
+	this->topLeftPoint.y = rTopLeftPoint.y;
 
-	CharacterCommon::CreateTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_TOP, &this->StealingTopChip);
-	CharacterCommon::CreateTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_RIGHT, &this->StealingRightChip);
-	CharacterCommon::CreateTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_BOTTOM, &this->StealingBottomChip);
-	CharacterCommon::CreateTuTv(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_LEFT, &this->StealingLeftChip);
+	CharacterCommon::CreateTexRect(Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_TOP, Player::COL_NUM_OF_HEADING_TOP, this->texRectOfHeadingTopChips);
+	CharacterCommon::CreateTexRect(Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_RIGHT, Player::COL_NUM_OF_HEADING_RIGHT, this->texRectOfHeadingRightChips);
+	CharacterCommon::CreateTexRect(Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_BOTTOM, Player::COL_NUM_OF_HEADING_BOTTOM, this->texRectOfHeadingBottomChips);
+	CharacterCommon::CreateTexRect(Player::CHIP_COUNT_PER_DIRECTION, Player::ROW_NUM_OF_HEADING_LEFT, Player::COL_NUM_OF_HEADING_LEFT, this->texRectOfHeadingLeftChips);
+
+	CharacterCommon::CreateTexRect(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_TOP, &this->texRectOfStealingTopChip);
+	CharacterCommon::CreateTexRect(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_RIGHT, &this->texRectOfStealingRightChip);
+	CharacterCommon::CreateTexRect(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_BOTTOM, &this->texRectOfStealingBottomChip);
+	CharacterCommon::CreateTexRect(Player::ROW_NUM_OF_STEALING, Player::COL_NUM_OF_STEALING_LEFT, &this->texRectOfStealingLeftChip);
 
 	ReturnPropertiesToDefault();
 }
@@ -50,13 +51,13 @@ void Player::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pRet) c
 		for (int i = this->currentKeepingStealingNum; i > 0; --i) {
 			Drawing::DrawingContext context;
 			context.textureType = Drawing::TextureType::CHARACTER;
-			CalcVerticesOnStealing(i - 1, &context.vertices);
+			CreateDrawingVertexRectOnStealing(i - 1, &context.rect);
 			pRet->push_back(context);
 		}
 	} else {
 		Drawing::DrawingContext context;
 		context.textureType = Drawing::TextureType::CHARACTER;
-		CreateVertices(&context.vertices);
+		CreateDrawingVertexRect(&context.rect);
 		pRet->push_back(context);
 	}
 }
@@ -66,8 +67,8 @@ void Player::Walk(const POINT& rMovingPoint) {
 		return;
 	}
 
-	this->topLeftXY.x += rMovingPoint.x;
-	this->topLeftXY.y += rMovingPoint.y;
+	this->topLeftPoint.x += rMovingPoint.x;
+	this->topLeftPoint.y += rMovingPoint.y;
 	
 	if (this->hasDirectionChanged) {
 		// 向きが変わったらアニメーション番号を最初に戻す
@@ -97,16 +98,16 @@ void Player::KeepStealing() {
 	} else {
 		switch (this->headingDirection) {
 			case AppCommon::Direction::TOP:
-				this->topLeftXY.y -= Player::MOVING_PIXEL_ON_STEALING;
+				this->topLeftPoint.y -= Player::MOVING_PIXEL_ON_STEALING;
 				break;
 			case AppCommon::Direction::RIGHT:
-				this->topLeftXY.x += Player::MOVING_PIXEL_ON_STEALING;
+				this->topLeftPoint.x += Player::MOVING_PIXEL_ON_STEALING;
 				break;
 			case AppCommon::Direction::BOTTOM:
-				this->topLeftXY.y += Player::MOVING_PIXEL_ON_STEALING;
+				this->topLeftPoint.y += Player::MOVING_PIXEL_ON_STEALING;
 				break;
 			case AppCommon::Direction::LEFT:
-				this->topLeftXY.x -= Player::MOVING_PIXEL_ON_STEALING;
+				this->topLeftPoint.x -= Player::MOVING_PIXEL_ON_STEALING;
 				break;
 			default:
 				break;
@@ -114,35 +115,35 @@ void Player::KeepStealing() {
 	}
 }
 
-void Player::Move(const POINT& rXY) {
-	this->topLeftXY.x += rXY.x;
-	this->topLeftXY.y += rXY.y;
+void Player::Move(const POINT& rPixel) {
+	this->topLeftPoint.x += rPixel.x;
+	this->topLeftPoint.y += rPixel.y;
 }
 
 bool Player::IsStayingNearlyWindowTop() const {
-	return (this->topLeftXY.y < Player::MAP_BUFFER);
+	return (this->topLeftPoint.y < Player::MAP_BUFFER);
 }
 
 bool Player::IsStayingNearlyWindowRight() const {
-	return (this->topLeftXY.x + CharacterCommon::WIDTH + Player::MAP_BUFFER >= AppCommon::GetWindowWidth());
+	return (this->topLeftPoint.x + CharacterCommon::WIDTH + Player::MAP_BUFFER >= AppCommon::GetWindowWidth());
 }
 
 bool Player::IsStayingNearlyWindowBottom() const {
-	return (this->topLeftXY.y + CharacterCommon::HEIGHT + Player::MAP_BUFFER >= AppCommon::GetWindowHeight());
+	return (this->topLeftPoint.y + CharacterCommon::HEIGHT + Player::MAP_BUFFER >= AppCommon::GetWindowHeight());
 }
 
 bool Player::IsStayingNearlyWindowLeft() const {
-	return (this->topLeftXY.x < Player::MAP_BUFFER);
+	return (this->topLeftPoint.x < Player::MAP_BUFFER);
 }
 
-void Player::CalcPlayerXY(Vertices<POINT>* pRet) const {
-	CharacterCommon::CalcCharacterXY(this->topLeftXY, Player::PLAYER_WIDTH, Player::PLAYER_HEIGHT, pRet);
+void Player::CalcPlayerRect(Rectangle<POINT>* pRet) const {
+	CharacterCommon::CalcCharacterRect(this->topLeftPoint, Player::PLAYER_WIDTH, Player::PLAYER_HEIGHT, pRet);
 }
 
-void Player::CalcCenterXY(POINT* pRet) const {
-	Vertices<POINT> playerXY;
-	CalcPlayerXY(&playerXY);
-	CharacterCommon::CalcCenter(playerXY, pRet);
+void Player::CalcCenter(POINT* pRet) const {
+	Rectangle<POINT> playerRect;
+	CalcPlayerRect(&playerRect);
+	CharacterCommon::CalcCenter(playerRect, pRet);
 }
 
 bool Player::HasGateKey(AppCommon::GateKeyType gateKey) const {
@@ -173,64 +174,65 @@ void Player::GetKilled() {
 void Player::ReturnPropertiesToDefault() {
 	this->currentAnimationCnt = 0;
 	this->headingDirection = AppCommon::Direction::BOTTOM;
-	this->topLeftXY = defaultTopLeftXY;
+	this->topLeftPoint = defaultTopLeftPoint;
 	this->isStealing = false;
 	this->currentKeepingStealingNum = 0;
 	this->hasDirectionChanged = false;
 }
 
-void Player::CreateVertices(Vertices<Drawing::DrawingVertex>* pRet) const {
-	Vertices<FloatPoint> chip;
+void Player::CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) const {
+	Rectangle<FloatPoint> chip;
 	int animationNum = CharacterCommon::GetAnimationNumber(this->currentAnimationCnt);
 	switch (this->headingDirection) {
 		case AppCommon::Direction::TOP:
-			chip = this->headingTopChips[animationNum];
+			chip = this->texRectOfHeadingTopChips[animationNum];
 			break;
 		case AppCommon::Direction::RIGHT:
-			chip = this->headingRightChips[animationNum];
+			chip = this->texRectOfHeadingRightChips[animationNum];
 			break;
 		case AppCommon::Direction::BOTTOM:
-			chip = this->headingBottomChips[animationNum];
+			chip = this->texRectOfHeadingBottomChips[animationNum];
 			break;
 		case AppCommon::Direction::LEFT:
-			chip = this->headingLeftChips[animationNum];
+			chip = this->texRectOfHeadingLeftChips[animationNum];
 			break;
 	}
 
-	CharacterCommon::CreateDrawingVertices(this->topLeftXY, &CharacterCommon::ConvertTopLeftXYToVertices, chip, pRet);
+	CharacterCommon::CreateDrawingVertexRect(this->topLeftPoint, &CharacterCommon::ConvertTopLeftPointToRect, chip, pRet);
 }
 
 /**
  * 盗み処理中の画像情報を取得する 
  *
- * @param afterImageNum 残像番号
+ * @param [in] afterImageNum 残像番号
+ * @param [out] pRet 盗み処理中の頂点情報を格納して返却
  */
-void Player::CalcVerticesOnStealing(int afterImageNum, Vertices<Drawing::DrawingVertex>* pRet) const {
-	POINT topLeftXY;
-	Vertices<FloatPoint> chip;
+void Player::CreateDrawingVertexRectOnStealing(int afterImageNum, Rectangle<Drawing::DrawingVertex>* pRet) const {
+	POINT topLeftPoint;
+	Rectangle<FloatPoint> chipTexRect;
 	switch (this->headingDirection) {
 		case AppCommon::Direction::TOP:
-			topLeftXY.x = this->topLeftXY.x;
-			topLeftXY.y = this->topLeftXY.y + Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
-			chip = this->StealingTopChip;
+			topLeftPoint.x = this->topLeftPoint.x;
+			topLeftPoint.y = this->topLeftPoint.y + Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
+			chipTexRect = this->texRectOfStealingTopChip;
 			break;
 		case AppCommon::Direction::RIGHT:
-			topLeftXY.x = this->topLeftXY.x - Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
-			topLeftXY.y = this->topLeftXY.y;
-			chip = this->StealingRightChip;
+			topLeftPoint.x = this->topLeftPoint.x - Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
+			topLeftPoint.y = this->topLeftPoint.y;
+			chipTexRect = this->texRectOfStealingRightChip;
 			break;
 		case AppCommon::Direction::BOTTOM:
-			topLeftXY.x = this->topLeftXY.x;
-			topLeftXY.y = this->topLeftXY.y - Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
-			chip = this->StealingBottomChip;
+			topLeftPoint.x = this->topLeftPoint.x;
+			topLeftPoint.y = this->topLeftPoint.y - Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
+			chipTexRect = this->texRectOfStealingBottomChip;
 			break;
 		case AppCommon::Direction::LEFT:
-			topLeftXY.x = this->topLeftXY.x + Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
-			topLeftXY.y = this->topLeftXY.y;
-			chip = this->StealingLeftChip;
+			topLeftPoint.x = this->topLeftPoint.x + Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
+			topLeftPoint.y = this->topLeftPoint.y;
+			chipTexRect = this->texRectOfStealingLeftChip;
 			break;
 	}
-	CharacterCommon::CreateDrawingVertices(topLeftXY, &CharacterCommon::ConvertTopLeftXYToVertices, chip, pRet);
+	CharacterCommon::CreateDrawingVertexRect(topLeftPoint, &CharacterCommon::ConvertTopLeftPointToRect, chipTexRect, pRet);
 }
 
 const int* Player::GetHoldingGateKeyCnt(AppCommon::GateKeyType gateKey) const {

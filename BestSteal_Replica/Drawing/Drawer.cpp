@@ -160,41 +160,41 @@ void Drawer::BeginDraw() {
 }
 
 void Drawer::Draw(const DrawingContext& rContext) {
-	if (rContext.vertices.bottomRight.x < 0 || rContext.vertices.bottomRight.y < 0
-		|| rContext.vertices.topLeft.x > AppCommon::GetWindowWidth() || rContext.vertices.topLeft.y > AppCommon::GetWindowHeight()) {
+	if (rContext.rect.bottomRight.x < 0 || rContext.rect.bottomRight.y < 0
+		|| rContext.rect.topLeft.x > AppCommon::GetWindowWidth() || rContext.rect.topLeft.y > AppCommon::GetWindowHeight()) {
 		// 描画範囲外
 		return;
 	}
 
-	CUSTOMVERTEX customVertex[4];
-	for (auto& vertex : customVertex) {
+	CUSTOMVERTEX customVertexArr[4];
+	for (auto& vertex : customVertexArr) {
 		vertex.z = 0.5f;
 		vertex.rhw = 1.0f;
 		vertex.color = D3DCOLOR_ARGB(rContext.alpha, 255, 255, 255);
 	}
 
-	customVertex[0].x = (float)rContext.vertices.topLeft.x;
-	customVertex[0].y = (float)rContext.vertices.topLeft.y;
-	customVertex[0].tu = rContext.vertices.topLeft.tu;
-	customVertex[0].tv = rContext.vertices.topLeft.tv;
+	customVertexArr[0].x = (float)rContext.rect.topLeft.x;
+	customVertexArr[0].y = (float)rContext.rect.topLeft.y;
+	customVertexArr[0].tu = rContext.rect.topLeft.tu;
+	customVertexArr[0].tv = rContext.rect.topLeft.tv;
 
-	customVertex[1].x = (float)rContext.vertices.bottomRight.x;
-	customVertex[1].y = (float)rContext.vertices.topLeft.y;
-	customVertex[1].tu = rContext.vertices.bottomRight.tu;
-	customVertex[1].tv = rContext.vertices.topLeft.tv;
+	customVertexArr[1].x = (float)rContext.rect.bottomRight.x;
+	customVertexArr[1].y = (float)rContext.rect.topLeft.y;
+	customVertexArr[1].tu = rContext.rect.bottomRight.tu;
+	customVertexArr[1].tv = rContext.rect.topLeft.tv;
 
-	customVertex[2].x = (float)rContext.vertices.bottomRight.x;
-	customVertex[2].y = (float)rContext.vertices.bottomRight.y;
-	customVertex[2].tu = rContext.vertices.bottomRight.tu;
-	customVertex[2].tv = rContext.vertices.bottomRight.tv;
+	customVertexArr[2].x = (float)rContext.rect.bottomRight.x;
+	customVertexArr[2].y = (float)rContext.rect.bottomRight.y;
+	customVertexArr[2].tu = rContext.rect.bottomRight.tu;
+	customVertexArr[2].tv = rContext.rect.bottomRight.tv;
 
-	customVertex[3].x = (float)rContext.vertices.topLeft.x;
-	customVertex[3].y = (float)rContext.vertices.bottomRight.y;
-	customVertex[3].tu = rContext.vertices.topLeft.tu;
-	customVertex[3].tv = rContext.vertices.bottomRight.tv;
+	customVertexArr[3].x = (float)rContext.rect.topLeft.x;
+	customVertexArr[3].y = (float)rContext.rect.bottomRight.y;
+	customVertexArr[3].tu = rContext.rect.topLeft.tu;
+	customVertexArr[3].tv = rContext.rect.bottomRight.tv;
 
 	pD3Device->SetTexture(0, textures.at(rContext.textureType));
-	pD3Device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, customVertex, sizeof(CUSTOMVERTEX));
+	pD3Device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, customVertexArr, sizeof(CUSTOMVERTEX));
 }
 
 void Drawer::EndDraw() {

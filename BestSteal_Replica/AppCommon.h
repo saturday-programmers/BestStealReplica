@@ -24,7 +24,7 @@ struct FloatPoint {
 	FloatPoint(float x, float y);
 };
 
-template<typename T> struct Vertices {
+template<typename T> struct Rectangle {
 	T topLeft;
 	T bottomRight;
 };

@@ -33,20 +33,21 @@ void StageController::LoadStage(const Stage::IStage& rStage) {
 	// プレイヤー情報
 	POINT playerChipPos;
 	this->pStage->GetPlayerFirstChipPos(&playerChipPos);
-	POINT playerTopLeftXY;
-	this->pMap->ConvertMapChipPosToTopLeftXY(playerChipPos, &playerTopLeftXY);
-	this->pPlayer = new Player(playerTopLeftXY);
+	POINT playerTopLeftPoint;
+	this->pMap->ConvertMapChipPosToTopLeftPoint(playerChipPos, &playerTopLeftPoint);
+	this->pPlayer = new Player(playerTopLeftPoint);
 	Drawing::Drawer::AddDrawable(*this->pPlayer);
 
 	// 敵情報
-	std::vector<Enemy::EnemyInfo> enemiesInfo = this->pStage->GetEnemiesInfo();
-	std::vector<POINT> enemiesXY;
+	std::vector<Enemy::EnemyInfo> enemiesInfo;
+	this->pStage->GetEnemiesInfo(&enemiesInfo);
+	std::vector<POINT> enemiesTopLeftPoint;
 	for (auto& enemy : enemiesInfo) {
-		POINT enemyTopLeftXY;
-		this->pMap->ConvertMapChipPosToTopLeftXY(enemy.chipPos, &enemyTopLeftXY);
-		enemiesXY.push_back(enemyTopLeftXY);
+		POINT topLeftPoint;
+		this->pMap->ConvertMapChipPosToTopLeftPoint(enemy.chipPos, &topLeftPoint);
+		enemiesTopLeftPoint.push_back(topLeftPoint);
 	}
-	this->pEnemy = new Enemy(enemiesInfo, enemiesXY, this->pStage->GetEnemyScoutableRadius());
+	this->pEnemy = new Enemy(enemiesInfo, enemiesTopLeftPoint, this->pStage->GetEnemyScoutableRadius());
 	Drawing::Drawer::AddDrawable(*this->pEnemy);
 }
 
@@ -54,9 +55,9 @@ void StageController::Control(AppCommon::Key key) {
 	StageController::Handling handling = ConvertKeyToHandling(key);
 
 	// プレイヤー死亡
-	Vertices<POINT> playerXY;
-	this->pPlayer->CalcPlayerXY(&playerXY);
-	if (this->pEnemy->CanKillPlayer(playerXY)) {
+	Rectangle<POINT> playerRect;
+	this->pPlayer->CalcPlayerRect(&playerRect);
+	if (this->pEnemy->CanKillPlayer(playerRect)) {
 		RevertStage();
 		AppCommon::SetScene(AppCommon::SceneType::BLACKOUT);
 		return;
@@ -108,13 +109,13 @@ int StageController::ControlPlayer(Handling* pHandling) {
 		pHandling->handlingType = Handling::HandlingType::NONE;
 	}
 
-	Vertices<POINT> playerXY;
-	this->pPlayer->CalcPlayerXY(&playerXY);
+	Rectangle<POINT> playerRect;
+	this->pPlayer->CalcPlayerRect(&playerRect);
 
 	if (pHandling->handlingType == Handling::HandlingType::STEAL_OR_OPEN) {
 		// プレイヤーの目の前のマップチップ取得
 		POINT frontMapChipPos;
-		this->pMap->ConvertToCharacterFrontMapChipPos(playerXY, this->pPlayer->GetHeadingDirection(), &frontMapChipPos);
+		this->pMap->ConvertToCharacterFrontMapChipPos(playerRect, this->pPlayer->GetHeadingDirection(), &frontMapChipPos);
 		bool canStartStealing = true;
 		Map::MapChipType mapChipType = this->pMap->GetMapChipType(frontMapChipPos);
 		switch (mapChipType) {
@@ -147,7 +148,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 		}
 	} else if (pHandling->handlingType == Handling::HandlingType::THROW && pHandling->handlingType != this->lastTimeHandling.handlingType) {
 		// 石を投げる
-		this->pMap->AddStone(playerXY.topLeft, this->pPlayer->GetHeadingDirection());
+		this->pMap->AddStone(playerRect.topLeft, this->pPlayer->GetHeadingDirection());
 	}
 
 	// 盗むアクション継続
@@ -226,12 +227,12 @@ int StageController::ControlPlayer(Handling* pHandling) {
 			reversePoint.y = -1 * (movingPoint.y / movingPixel);
 		}
 
-		this->pPlayer->CalcPlayerXY(&playerXY);
-		while (!this->pMap->IsOnRoad(playerXY) && movingPixel > 0) {
+		this->pPlayer->CalcPlayerRect(&playerRect);
+		while (!this->pMap->IsOnRoad(playerRect) && movingPixel > 0) {
 			// 移動不可能な場所に移動した場合は元の位置に戻す
 			this->pPlayer->Move(reversePoint);
 			--movingPixel;
-			this->pPlayer->CalcPlayerXY(&playerXY);
+			this->pPlayer->CalcPlayerRect(&playerRect);
 		}
 	}
 
@@ -250,66 +251,66 @@ int StageController::ControlPlayer(Handling* pHandling) {
 void StageController::ControlEnemy(int playerMovingPixel, const Handling& rHandling) {
 	this->pEnemy->Stay();
 
-	Vertices<POINT> playerXY;
-	this->pPlayer->CalcPlayerXY(&playerXY);
+	Rectangle<POINT> playerRect;
+	this->pPlayer->CalcPlayerRect(&playerRect);
 
 	// 盗まれる処理
-	AppCommon::GateKeyType gateKeyType = this->pEnemy->GetStolen(playerXY, this->pPlayer->IsStealing());
+	AppCommon::GateKeyType gateKeyType = this->pEnemy->GetStolen(playerRect, this->pPlayer->IsStealing());
 	if (gateKeyType != AppCommon::GateKeyType::None) {
 		this->pPlayer->GainGateKey(gateKeyType);
 	}
 
 	// プレイヤーを発見したか
-	POINT centerPlayer;
-	pPlayer->CalcCenterXY(&centerPlayer);
-	this->pEnemy->ScoutPlayer(centerPlayer, rHandling.isWalking);
+	POINT playerCenterPoint;
+	this->pPlayer->CalcCenter(&playerCenterPoint);
+	this->pEnemy->ScoutPlayer(playerCenterPoint, rHandling.isWalking);
 
 	// 突進可能か
 	POINT playerPos;
-	this->pMap->ConvertToMapChipPos(centerPlayer, &playerPos);
+	this->pMap->ConvertToMapChipPos(playerCenterPoint, &playerPos);
 	for (int enemyIdx = 0; enemyIdx < this->pEnemy->GetEnermyCount(); ++enemyIdx) {
 		if (this->pEnemy->GetState(enemyIdx) == Enemy::State::GOT_STOLEN) {
 			continue;
 		}
 
 		// プレイヤーとの距離チェック
-		POINT centerEnemy;
-		pEnemy->CalcCenterXY(enemyIdx, &centerEnemy);
+		POINT enemyCenterPoint;
+		pEnemy->CalcCenter(enemyIdx, &enemyCenterPoint);
 		POINT enemyPos;
-		this->pMap->ConvertToMapChipPos(centerEnemy, &enemyPos);
+		this->pMap->ConvertToMapChipPos(enemyCenterPoint, &enemyPos);
 		bool canSeePlayer = false;
 		int distance;
 		switch (this->pEnemy->GetHeadingDirection(enemyIdx)) {
 			case AppCommon::Direction::TOP:
 				canSeePlayer = (enemyPos.x == playerPos.x && enemyPos.y >= playerPos.y);
-				distance = centerEnemy.y - centerPlayer.y;
+				distance = enemyCenterPoint.y - playerCenterPoint.y;
 				break;
 			case AppCommon::Direction::RIGHT:
 				canSeePlayer = (enemyPos.y== playerPos.y && enemyPos.x <= playerPos.x);
-				distance = centerPlayer.x - centerEnemy.x;
+				distance = playerCenterPoint.x - enemyCenterPoint.x;
 				break;
 			case AppCommon::Direction::BOTTOM:
 				canSeePlayer = (enemyPos.x == playerPos.x && enemyPos.y <= playerPos.y);
-				distance = centerPlayer.y - centerEnemy.y;
+				distance = playerCenterPoint.y - enemyCenterPoint.y;
 				break;
 			case AppCommon::Direction::LEFT:
 				canSeePlayer = (enemyPos.y == playerPos.y && enemyPos.x >= playerPos.x);
-				distance = centerEnemy.x - centerPlayer.x;
+				distance = enemyCenterPoint.x - playerCenterPoint.x;
 				break;
 		}
 		canSeePlayer = canSeePlayer && distance <= this->pStage->GetEnemyScoutableRadius();
 
 		// プレイヤーとの間に壁があるか
-		canSeePlayer = canSeePlayer && !this->pMap->ExistsWallBetween(centerEnemy, centerPlayer);
+		canSeePlayer = canSeePlayer && !this->pMap->ExistsWallBetween(enemyCenterPoint, playerCenterPoint);
 
 		// 突進
 		this->pEnemy->Attack(enemyIdx, canSeePlayer);
 	}
 
 	// 石を発見したか
-	std::vector<Vertices<POINT>> stoneXYs;
-	this->pMap->CalcDroppedStoneXYs(&stoneXYs);
-	this->pEnemy->ScoutStone(stoneXYs);
+	std::vector<Rectangle<POINT>> stonesRect;
+	this->pMap->CalcDroppedStonesRect(&stonesRect);
+	this->pEnemy->ScoutStone(stonesRect);
 }
 
 void StageController::ControlMap(int playerMovingPixel) {
@@ -326,34 +327,34 @@ void StageController::ControlMap(int playerMovingPixel) {
 }
 
 void StageController::MoveMap(int playerMovingPixel) {
-	POINT mapMovingPoint;
-	mapMovingPoint.x = 0;
-	mapMovingPoint.y = 0;
+	POINT mapMovingPixel;
+	mapMovingPixel.x = 0;
+	mapMovingPixel.y = 0;
 
 	// 一旦移動させてみる
 	if (this->pPlayer->IsStayingNearlyWindowTop()) {
-		mapMovingPoint.y = playerMovingPixel;
+		mapMovingPixel.y = playerMovingPixel;
 	} else if (this->pPlayer->IsStayingNearlyWindowBottom()) {
-		mapMovingPoint.y = playerMovingPixel * -1;
+		mapMovingPixel.y = playerMovingPixel * -1;
 	}
 	if (this->pPlayer->IsStayingNearlyWindowRight()) {
-		mapMovingPoint.x = playerMovingPixel * -1;
+		mapMovingPixel.x = playerMovingPixel * -1;
 	} else if (this->pPlayer->IsStayingNearlyWindowLeft()) {
-		mapMovingPoint.x = playerMovingPixel;
+		mapMovingPixel.x = playerMovingPixel;
 	}
 
 	// マップ外が表示されてしまう場合は元に戻す
-	if (!this->pMap->IsMovableX(mapMovingPoint.x)) {
-		mapMovingPoint.x = 0;
+	if (!this->pMap->IsMovableX(mapMovingPixel.x)) {
+		mapMovingPixel.x = 0;
 	}
-	if (!this->pMap->IsMovableY(mapMovingPoint.y)) {
-		mapMovingPoint.y = 0;
+	if (!this->pMap->IsMovableY(mapMovingPixel.y)) {
+		mapMovingPixel.y = 0;
 	}
 
-	if (mapMovingPoint.x != 0 || mapMovingPoint.y != 0) {
-		this->pMap->Move(mapMovingPoint);
-		this->pPlayer->Move(mapMovingPoint);
-		this->pEnemy->Move(mapMovingPoint);
+	if (mapMovingPixel.x != 0 || mapMovingPixel.y != 0) {
+		this->pMap->Move(mapMovingPixel);
+		this->pPlayer->Move(mapMovingPixel);
+		this->pEnemy->Move(mapMovingPixel);
 	}
 }
 

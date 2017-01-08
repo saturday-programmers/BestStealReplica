@@ -38,7 +38,7 @@ void MapChipGate::OpenGate() {
 		default:
 			break;
 	}
-	ConfigureTuTv();
+	ConfigureTexRect();
 }
 
 }

@@ -16,8 +16,8 @@ namespace Map {
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
 Map::Map() {
-	this->topLeft.x = 0;
-	this->topLeft.y = 0;
+	this->topLeftPoint.x = 0;
+	this->topLeftPoint.y = 0;
 }
 
 Map::~Map() {
@@ -48,7 +48,7 @@ void Map::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pRet) cons
 	for (auto& pRow : this->pMapData) {
 		for (auto& pCell : pRow) {
 			Drawing::DrawingContext context;
-			pCell->CreateDrawingVertices(&context.vertices);
+			pCell->CreateDrawingVertexRect(&context.rect);
 			context.textureType = Drawing::TextureType::MAP;
 			pRet->push_back(context);
 		}
@@ -87,83 +87,83 @@ void Map::Load(const Stage::IStage& rStage) {
 	// プレイヤーが画面中央になる場合の座標を計算
 	POINT playerChipPos;
 	rStage.GetPlayerFirstChipPos(&playerChipPos);
-	POINT centerXY;
-	centerXY.x = AppCommon::GetWindowWidth() / 2;
-	centerXY.y = AppCommon::GetWindowHeight() / 2;
-	this->topLeft.x = centerXY.x - (playerChipPos.x * MapChip::WIDTH);
-	this->topLeft.y = centerXY.y - (playerChipPos.y * MapChip::HEIGHT);
+	POINT center;
+	center.x = AppCommon::GetWindowWidth() / 2;
+	center.y = AppCommon::GetWindowHeight() / 2;
+	this->topLeftPoint.x = center.x - (playerChipPos.x * MapChip::WIDTH);
+	this->topLeftPoint.y = center.y - (playerChipPos.y * MapChip::HEIGHT);
 
 	// 左上が余白になる場合は余白が0になるように調整
-	if (this->topLeft.x > 0) {
-		this->topLeft.x = 0;
+	if (this->topLeftPoint.x > 0) {
+		this->topLeftPoint.x = 0;
 	}
-	if (this->topLeft.y > 0) {
-		this->topLeft.y = 0;
+	if (this->topLeftPoint.y > 0) {
+		this->topLeftPoint.y = 0;
 	}
 
 	// 右下が余白になる場合は余白が0になるように調整
 	POINT minTopLeft;
 	minTopLeft.x = AppCommon::GetWindowWidth() - (xChipCount * MapChip::WIDTH);
 	minTopLeft.y = AppCommon::GetWindowHeight() - (yChipCount * MapChip::HEIGHT);
-	if (this->topLeft.x < minTopLeft.x) {
-		this->topLeft.x = minTopLeft.x;
+	if (this->topLeftPoint.x < minTopLeft.x) {
+		this->topLeftPoint.x = minTopLeft.x;
 	}
-	if (this->topLeft.y < minTopLeft.y) {
-		this->topLeft.y = minTopLeft.y;
+	if (this->topLeftPoint.y < minTopLeft.y) {
+		this->topLeftPoint.y = minTopLeft.y;
 	}
-	this->defaultTopLeft = this->topLeft;
+	this->defaultTopLeftPoint = this->topLeftPoint;
 
 	AssignChipNumber();
 
-	ConfigureChipXY();
+	ConfigureChipPoint();
 }
 
-void Map::Move(const POINT& rXY) {
-	this->topLeft.x += rXY.x;
-	this->topLeft.y += rXY.y;
-	ConfigureChipXY();
+void Map::Move(const POINT& rPixel) {
+	this->topLeftPoint.x += rPixel.x;
+	this->topLeftPoint.y += rPixel.y;
+	ConfigureChipPoint();
 
-	std::for_each(this->pStones.begin(), this->pStones.end(), [rXY](Stone* pStone) -> void { pStone->Move(rXY); });
+	std::for_each(this->pStones.begin(), this->pStones.end(), [rPixel](Stone* pStone) -> void { pStone->Move(rPixel); });
 }
 
 void Map::MoveToDefault() {
-	this->topLeft = this->defaultTopLeft;
-	ConfigureChipXY();
+	this->topLeftPoint = this->defaultTopLeftPoint;
+	ConfigureChipPoint();
 }
 
-bool Map::IsMovableX(int x) const {
-	return IsMovable(x, this->topLeft.x, (int)this->pMapData[0].size(), MapChip::WIDTH, AppCommon::GetWindowWidth());
+bool Map::IsMovableX(int pixel) const {
+	return IsMovable(pixel, this->topLeftPoint.x, (int)this->pMapData[0].size(), MapChip::WIDTH, AppCommon::GetWindowWidth());
 }
 
-bool Map::IsMovableY(int y) const {
-	return IsMovable(y, this->topLeft.y, (int)this->pMapData.size(), MapChip::HEIGHT, AppCommon::GetWindowHeight());
+bool Map::IsMovableY(int pixel) const {
+	return IsMovable(pixel, this->topLeftPoint.y, (int)this->pMapData.size(), MapChip::HEIGHT, AppCommon::GetWindowHeight());
 }
 
-bool Map::IsOnRoad(const Vertices<POINT>& rXY) const {
+bool Map::IsOnRoad(const Rectangle<POINT>& rRect) const {
 	// 4頂点のチップ位置を取得
 	POINT topLeftChipPos;
-	ConvertToMapChipPos(rXY.topLeft, &topLeftChipPos);
+	ConvertToMapChipPos(rRect.topLeft, &topLeftChipPos);
 
-	POINT topRightXY;
-	topRightXY.x = rXY.bottomRight.x;
-	topRightXY.y = rXY.topLeft.y;
+	POINT topRightPoint;
+	topRightPoint.x = rRect.bottomRight.x;
+	topRightPoint.y = rRect.topLeft.y;
 	POINT topRightChipPos;
-	ConvertToMapChipPos(topRightXY, &topRightChipPos);
+	ConvertToMapChipPos(topRightPoint, &topRightChipPos);
 
 	POINT bottomRightChipPos;
-	ConvertToMapChipPos(rXY.bottomRight, &bottomRightChipPos);
+	ConvertToMapChipPos(rRect.bottomRight, &bottomRightChipPos);
 
-	POINT bottomLeftXY;
-	bottomLeftXY.x = rXY.topLeft.x;
-	bottomLeftXY.y = rXY.bottomRight.y;
+	POINT bottomLeftPoint;
+	bottomLeftPoint.x = rRect.topLeft.x;
+	bottomLeftPoint.y = rRect.bottomRight.y;
 	POINT bottomLeftChipPos;
-	ConvertToMapChipPos(bottomLeftXY, &bottomLeftChipPos);
+	ConvertToMapChipPos(bottomLeftPoint, &bottomLeftChipPos);
 
 	return IsOnRoad(topLeftChipPos) && IsOnRoad(topRightChipPos) && IsOnRoad(bottomRightChipPos) && IsOnRoad(bottomLeftChipPos);
 }
 
-void Map::ConvertMapChipPosToTopLeftXY(const POINT& rMapChipPos, POINT* pRet) const {
-	this->pMapData[rMapChipPos.y][rMapChipPos.x]->GetTopLeftXY(pRet);
+void Map::ConvertMapChipPosToTopLeftPoint(const POINT& rMapChipPos, POINT* pRet) const {
+	this->pMapData[rMapChipPos.y][rMapChipPos.x]->GetTopLeftPoint(pRet);
 }
 
 void Map::KeepOpeningGates() {
@@ -180,12 +180,18 @@ void Map::KeepOpeningGates() {
 	}
 }
 
-void Map::ConvertToCharacterFrontMapChipPos(const Vertices<POINT>& rPlayerXY, AppCommon::Direction headingDirection, POINT* pRet) const {
-	// プレイヤーの目の前のマップチップ取得
-	POINT centerXY;
-	centerXY.x = (rPlayerXY.bottomRight.x + rPlayerXY.topLeft.x) / 2;
-	centerXY.y = (rPlayerXY.bottomRight.y + rPlayerXY.topLeft.y) / 2;
-	ConvertToMapChipPos(centerXY, pRet);
+/**
+ * キャラクターの目の前のマップチップ取得
+ * 
+ * @param[in] rCharacterRect キャラクターの位置（Pixel）
+ * @param[in] headingDirection キャラクターの向き
+ * @param[out] pRet キャラクターの目の前のマップチップの行列番号を格納して返却
+ */
+void Map::ConvertToCharacterFrontMapChipPos(const Rectangle<POINT>& rCharacterRect, AppCommon::Direction headingDirection, POINT* pRet) const {
+	POINT characterCenter;
+	characterCenter.x = (rCharacterRect.bottomRight.x + rCharacterRect.topLeft.x) / 2;
+	characterCenter.y = (rCharacterRect.bottomRight.y + rCharacterRect.topLeft.y) / 2;
+	ConvertToMapChipPos(characterCenter, pRet);
 
 	switch (headingDirection) {
 		case AppCommon::Direction::TOP:
@@ -248,19 +254,19 @@ bool Map::IsGateOpened(const POINT& rMapChipPos) const {
 	return ret;
 }
 
-bool Map::ExistsWallBetween(const POINT& rXY1, const POINT& rXY2) const {
+bool Map::ExistsWallBetween(const POINT& rPoint1, const POINT& rPoint2) const {
 	bool ret = false;
-	POINT p1;
-	ConvertToMapChipPos(rXY1, &p1);
-	POINT p2;
-	ConvertToMapChipPos(rXY2, &p2);
+	POINT pos1;
+	ConvertToMapChipPos(rPoint1, &pos1);
+	POINT pos2;
+	ConvertToMapChipPos(rPoint2, &pos2);
 
-	if (p1.x != p2.x && p1.y != p2.y) {
+	if (pos1.x != pos2.x && pos1.y != pos2.y) {
 		return true;
 	}
 
-	POINT checkPos = p1;
-	while (p1.x == p2.x ? checkPos.y != p2.y : checkPos.x != p2.x) {
+	POINT checkPos = pos1;
+	while (pos1.x == pos2.x ? checkPos.y != pos2.y : checkPos.x != pos2.x) {
 		switch (this->pMapData[checkPos.y][checkPos.x]->GetChipType()) {
 			case MapChipType::WALL:
 			case MapChipType::WALL_SIDE:
@@ -280,14 +286,14 @@ bool Map::ExistsWallBetween(const POINT& rXY1, const POINT& rXY2) const {
 			break;
 		}
 
-		if (p1.x == p2.x) {
-			if (p1.y < p2.y) {
+		if (pos1.x == pos2.x) {
+			if (pos1.y < pos2.y) {
 				++checkPos.y;
 			} else {
 				--checkPos.y;
 			}
 		} else {
-			if (p1.x < p2.x) {
+			if (pos1.x < pos2.x) {
 				++checkPos.x;
 			} else {
 				--checkPos.x;
@@ -301,22 +307,22 @@ void Map::OpenJewelryBox() {
 	this->pJewelryMapChip->OpenBox();
 }
 
-void Map::ConvertToMapChipPos(const POINT& rXY, POINT* pRet) const {
-	if (rXY.x < this->topLeft.x) {
+void Map::ConvertToMapChipPos(const POINT& rPoint, POINT* pRet) const {
+	if (rPoint.x < this->topLeftPoint.x) {
 		pRet->x = -1;
 	} else {
-		pRet->x = (rXY.x - this->topLeft.x) / MapChip::WIDTH;
+		pRet->x = (rPoint.x - this->topLeftPoint.x) / MapChip::WIDTH;
 	}
 
-	if (rXY.y < this->topLeft.y) {
+	if (rPoint.y < this->topLeftPoint.y) {
 		pRet->y = -1;
 	} else {
-		pRet->y = (rXY.y - this->topLeft.y) / MapChip::HEIGHT;
+		pRet->y = (rPoint.y - this->topLeftPoint.y) / MapChip::HEIGHT;
 	}
 }
 
-void Map::AddStone(const POINT& rTopLeftXY, AppCommon::Direction direction) {
-	this->pStones.push_back(new Stone(rTopLeftXY, direction));
+void Map::AddStone(const POINT& rTopLeftPoint, AppCommon::Direction direction) {
+	this->pStones.push_back(new Stone(rTopLeftPoint, direction));
 }
 
 void Map::AnimateStones() {
@@ -324,16 +330,16 @@ void Map::AnimateStones() {
 		this->pStones[i]->KeepBeingThrown();
 		
 		if (this->pStones[i]->Exists()) {
-			Vertices<POINT> nextXYOnGround;
-			this->pStones[i]->CalcXYsOnGround(&nextXYOnGround);
-			if (!IsOnRoad(nextXYOnGround)) {
+			Rectangle<POINT> nextRectOnGround;
+			this->pStones[i]->CalcRectOnGround(&nextRectOnGround);
+			if (!IsOnRoad(nextRectOnGround)) {
 				// 移動先の地面が道でない場合は戻す				
 				this->pStones[i]->SetDropped();
 				bool isOnRoad = false;
 				while (!isOnRoad) {
 					this->pStones[i]->BackOnePixel();
-					this->pStones[i]->CalcXYsOnGround(&nextXYOnGround);
-					isOnRoad = IsOnRoad(nextXYOnGround);
+					this->pStones[i]->CalcRectOnGround(&nextRectOnGround);
+					isOnRoad = IsOnRoad(nextRectOnGround);
 				}
 			}
 		} else {
@@ -345,14 +351,14 @@ void Map::AnimateStones() {
 	}
 }
 
-void Map::CalcDroppedStoneXYs(std::vector<Vertices<POINT>>* pRet) const {
+void Map::CalcDroppedStonesRect(std::vector<Rectangle<POINT>>* pRet) const {
 	for (auto& pStone : this->pStones) {
 		switch (pStone->GetState()) {
 			case Stone::State::DROPPED:
 			case Stone::State::DISAPPEARING:
-				Vertices<POINT> xy;
-				pStone->CalcXYsOnGround(&xy);
-				pRet->push_back(xy);
+				Rectangle<POINT> rect;
+				pStone->CalcRectOnGround(&rect);
+				pRet->push_back(rect);
 				break;
 			default:
 				break;
@@ -407,13 +413,13 @@ void Map::AssignChipNumber() {
 	}
 }
 
-void Map::ConfigureChipXY() {
+void Map::ConfigureChipPoint() {
 	POINT point;
 	for (int rowIdx = 0; rowIdx < (int)this->pMapData.size(); ++rowIdx) {
 		for (int colIdx = 0; colIdx < (int)this->pMapData[rowIdx].size(); ++colIdx) {
-			point.x = this->topLeft.x + (colIdx * MapChip::WIDTH);
-			point.y = this->topLeft.y + (rowIdx * MapChip::HEIGHT);
-			this->pMapData[rowIdx][colIdx]->SetXY(point);
+			point.x = this->topLeftPoint.x + (colIdx * MapChip::WIDTH);
+			point.y = this->topLeftPoint.y + (rowIdx * MapChip::HEIGHT);
+			this->pMapData[rowIdx][colIdx]->SetTopLeftPoint(point);
 		}
 	}
 }

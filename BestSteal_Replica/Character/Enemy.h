@@ -29,8 +29,8 @@ public:
 	/* Structs ------------------------------------------------------------------------------------------ */
 	struct EnemyInfo {
 		POINT chipPos;
-		POINT topLeftXY;
-		POINT defaultTopLeftXY;
+		POINT topLeftPoint;
+		POINT defaultTopLeftPoint;
 		AppCommon::Direction defaultDirection;
 		AppCommon::Direction headingDirection;
 		AppCommon::GateKeyType holdingGateKey;
@@ -45,7 +45,7 @@ public:
 
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Enemy(std::vector<EnemyInfo> enemiesInfo, std::vector<POINT> topLeftXYs, int scoutableRadius);
+	Enemy(const std::vector<EnemyInfo>& rEnemiesInfo, const std::vector<POINT>& rTopLeftPoints, int scoutableRadius);
 
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
@@ -59,14 +59,14 @@ public:
 	void CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pRet) const;
 
 	void Stay();
-	void Move(const POINT& rXY);
-	void CalcEnemyXY(int enemyIdx, Vertices<POINT>* pRet) const;
-	void CalcCenterXY(int enemyIdx, POINT* pRet) const;
-	void ScoutStone(const std::vector<Vertices<POINT>>& rStonesXY);
+	void Move(const POINT& rPixel);
+	void CalcEnemyRect(int enemyIdx, Rectangle<POINT>* pRet) const;
+	void CalcCenter(int enemyIdx, POINT* pRet) const;
+	void ScoutStone(const std::vector<Rectangle<POINT>>& rStonesRect);
 	void ScoutPlayer(const POINT& rPlayerCenter, bool isPlayerWalking);
-	AppCommon::GateKeyType GetStolen(const Vertices<POINT>& rPlayerXY, bool isPlayerStealing);
+	AppCommon::GateKeyType GetStolen(const Rectangle<POINT>& rPlayerRect, bool isPlayerStealing);
 	void Attack(int enemyIdx, bool canSeePlayer);
-	bool CanKillPlayer(const Vertices<POINT>& rPlayerXY) const;
+	bool CanKillPlayer(const Rectangle<POINT>& rPlayerRect) const;
 	void BackToDefaultPosition();
 
 
@@ -91,19 +91,19 @@ private:
 
 
 	/* Variables ---------------------------------------------------------------------------------------- */
-	Vertices<FloatPoint> headingBottomChips[Enemy::CHIP_COUNT_PER_DIRECTION];
-	Vertices<FloatPoint> headingTopChips[Enemy::CHIP_COUNT_PER_DIRECTION];
-	Vertices<FloatPoint> headingLeftChips[Enemy::CHIP_COUNT_PER_DIRECTION];
-	Vertices<FloatPoint> headingRightChips[Enemy::CHIP_COUNT_PER_DIRECTION];
-	Vertices<FloatPoint> exclamationMarkChip;
+	Rectangle<FloatPoint> texRectOfHeadingBottomChips[Enemy::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<FloatPoint> texRectOfHeadingTopChips[Enemy::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<FloatPoint> texRectOfHeadingLeftChips[Enemy::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<FloatPoint> texRectOfHeadingRightChips[Enemy::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<FloatPoint> texRectOfExclamationMarkChip;
 
 	std::vector<EnemyInfo> enemiesInfo;
 	int scoutableRadius;
 
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void CreateDrawingVertices(int enemyIdx, Vertices<Drawing::DrawingVertex>* pRet) const;
-	void TurnTo(const POINT& rTargetXY, int enemyIdx);
+	void CreateDrawingVertexRect(int enemyIdx, Rectangle<Drawing::DrawingVertex>* pRet) const;
+	void TurnTo(const POINT& rTargetPoint, int enemyIdx);
 
 };
 

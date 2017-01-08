@@ -21,18 +21,18 @@ public:
 	};
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Stone(const POINT& rTopLeftXY, AppCommon::Direction direction);
+	Stone(const POINT& rTopLeftPoint, AppCommon::Direction direction);
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
-	void SetTopLeftXY(const POINT& rXY);
+	void SetTopLeftPoint(const POINT& rPoint);
 	State GetState() const;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void Stone::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const;
 	void KeepBeingThrown();
 	bool Exists() const;
-	void Move(const POINT& rXY);
-	void CalcXYsOnGround(Vertices<POINT>* pRet) const;
+	void Move(const POINT& rPixel);
+	void CalcRectOnGround(Rectangle<POINT>* pRet) const;
 	void SetDropped();
 	void BackOnePixel();
 
@@ -50,17 +50,17 @@ private:
 	static const int GRAVITY = 2;
 
 	/* Variables ---------------------------------------------------------------------------------------- */
-	POINT defaultTopLeftXY;
-	POINT topLeftXY;
+	POINT defaultTopLeftPoint;
+	POINT topLeftPoint;
 	AppCommon::Direction direction;
-	Vertices<FloatPoint> tutv;
+	Rectangle<FloatPoint> texRect;
 	int thrownElapsedCount;
 	Stone::State state;
 	int restTime;
-	POINT topLeftXYOnGnd;
+	POINT topLeftPointOnGnd;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void Stone::CreateDrawingVertices(Vertices<Drawing::DrawingVertex>* pRet) const;
+	void Stone::CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) const;
 };
 
 }
