@@ -19,7 +19,7 @@ public:
 
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Player(POINT topLeftXY);
+	Player(const POINT& rTopLeftPoint);
 
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
@@ -36,13 +36,13 @@ public:
 	void Stay();
 	void StartStealing();
 	void KeepStealing();
-	void Move(const POINT& rXY);
+	void Move(const POINT& rPixel);
 	bool IsStayingNearlyWindowTop() const;
 	bool IsStayingNearlyWindowRight() const;
 	bool IsStayingNearlyWindowBottom() const;
 	bool IsStayingNearlyWindowLeft() const;
-	void CalcPlayerXY(Vertices<POINT>* pRet) const;
-	void CalcCenterXY(POINT* pRet) const;
+	void CalcPlayerRect(Rectangle<POINT>* pRet) const;
+	void CalcCenter(POINT* pRet) const;
 	bool HasGateKey(AppCommon::GateKeyType key) const;
 	void GainGateKey(AppCommon::GateKeyType key);
 	void LoseGateKey(AppCommon::GateKeyType key);
@@ -78,8 +78,8 @@ private:
 
 	/* Variables ---------------------------------------------------------------------------------------- */
 	int currentAnimationCnt;
-	POINT topLeftXY;
-	POINT defaultTopLeftXY;
+	POINT topLeftPoint;
+	POINT defaultTopLeftPoint;
 	int currentKeepingStealingNum;
 	bool hasDirectionChanged;
 	bool isStealing;
@@ -87,20 +87,20 @@ private:
 	int holdingGoldGateKeyCount;
 	int holdingSilverGateKeyCount;
 
-	Vertices<FloatPoint> headingBottomChips[Player::CHIP_COUNT_PER_DIRECTION];
-	Vertices<FloatPoint> headingTopChips[Player::CHIP_COUNT_PER_DIRECTION];
-	Vertices<FloatPoint> headingLeftChips[Player::CHIP_COUNT_PER_DIRECTION];
-	Vertices<FloatPoint> headingRightChips[Player::CHIP_COUNT_PER_DIRECTION];
-	Vertices<FloatPoint> StealingBottomChip;
-	Vertices<FloatPoint> StealingTopChip;
-	Vertices<FloatPoint> StealingLeftChip;
-	Vertices<FloatPoint> StealingRightChip;
+	Rectangle<FloatPoint> texRectOfHeadingBottomChips[Player::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<FloatPoint> texRectOfHeadingTopChips[Player::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<FloatPoint> texRectOfHeadingLeftChips[Player::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<FloatPoint> texRectOfHeadingRightChips[Player::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<FloatPoint> texRectOfStealingBottomChip;
+	Rectangle<FloatPoint> texRectOfStealingTopChip;
+	Rectangle<FloatPoint> texRectOfStealingLeftChip;
+	Rectangle<FloatPoint> texRectOfStealingRightChip;
 
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void ReturnPropertiesToDefault();
-	void CreateVertices(Vertices<Drawing::DrawingVertex>* pVertices) const;
-	void CalcVerticesOnStealing(int afterImageNum, Vertices<Drawing::DrawingVertex>* pVertices) const;
+	void CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) const;
+	void CreateDrawingVertexRectOnStealing(int afterImageNum, Rectangle<Drawing::DrawingVertex>* pRet) const;
 	const int* GetHoldingGateKeyCnt(AppCommon::GateKeyType key) const;
 
 };

@@ -64,8 +64,10 @@ void Stage1::GetPlayerFirstChipPos(POINT* pRet) const {
 	pRet->y = 20;
 }
 
-std::vector<Enemy::EnemyInfo> Stage1::GetEnemiesInfo() const {
-	return enemiesInfo;
+void Stage1::GetEnemiesInfo(std::vector<Enemy::EnemyInfo>* pRet) const {
+	for (auto& enemy : enemiesInfo) {
+		pRet->push_back(enemy);
+	}
 }
 
 int Stage1::GetEnemyScoutableRadius() const {

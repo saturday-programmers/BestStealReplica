@@ -23,7 +23,7 @@ enum TextureType {
 
 /* Structs ------------------------------------------------------------------------------------------ */
 struct DrawingContext {
-	Vertices<DrawingVertex> vertices;
+	Rectangle<DrawingVertex> rect;
 	TextureType textureType;
 	UINT16 alpha = 0xFF;
 };

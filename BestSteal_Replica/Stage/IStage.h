@@ -18,7 +18,7 @@ public:
 	virtual int GetXChipCount() const = 0;
 	virtual Map::MapChipType GetMapChipType(int y, int x) const = 0;
 	virtual void GetPlayerFirstChipPos(POINT* pRet) const = 0;
-	virtual std::vector<Character::Enemy::EnemyInfo> GetEnemiesInfo() const = 0;
+	virtual void GetEnemiesInfo(std::vector<Character::Enemy::EnemyInfo>* pRet) const = 0;
 	virtual int GetEnemyScoutableRadius() const = 0;
 	virtual int GetMaxStoneCount() const = 0;
 };

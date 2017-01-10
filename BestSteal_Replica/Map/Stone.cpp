@@ -10,31 +10,31 @@ namespace Map {
 
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-Stone::Stone(const POINT& rTopLeftXY, AppCommon::Direction direction) : direction(direction), thrownElapsedCount(0), state(Stone::State::BEING_THROWN) {
-	this->defaultTopLeftXY.x = rTopLeftXY.x;
-	this->defaultTopLeftXY.y = rTopLeftXY.y;
+Stone::Stone(const POINT& rTopLeftPoint, AppCommon::Direction direction) : direction(direction), thrownElapsedCount(0), state(Stone::State::BEING_THROWN) {
+	this->defaultTopLeftPoint.x = rTopLeftPoint.x;
+	this->defaultTopLeftPoint.y = rTopLeftPoint.y;
 
-	MapChip::ConvertChipNumberToTuTv(Stone::MAP_CHIP_NUMBER, &this->tutv);
+	MapChip::ConvertChipNumberToTexRect(Stone::MAP_CHIP_NUMBER, &this->texRect);
 	// 枠線をなくすために一回り小さくする
-	this->tutv.topLeft.x += 0.01f;
-	this->tutv.topLeft.y += 0.01f;
-	this->tutv.bottomRight.x -= 0.01f;
-	this->tutv.bottomRight.y -= 0.01f;
+	this->texRect.topLeft.x += 0.01f;
+	this->texRect.topLeft.y += 0.01f;
+	this->texRect.bottomRight.x -= 0.01f;
+	this->texRect.bottomRight.y -= 0.01f;
 }
 
 
 /* Getters / Setters -------------------------------------------------------------------------------- */	
-void Stone::SetTopLeftXY(const POINT& rXY) {
-	this->topLeftXY.x = rXY.x;
-	this->topLeftXY.y = rXY.y;
+void Stone::SetTopLeftPoint(const POINT& rPoint) {
+	this->topLeftPoint.x = rPoint.x;
+	this->topLeftPoint.y = rPoint.y;
 	switch (this->direction) {
 		case AppCommon::Direction::TOP:
 		case AppCommon::Direction::BOTTOM:
-			this->topLeftXYOnGnd.y = rXY.y;
+			this->topLeftPointOnGnd.y = rPoint.y;
 			break;
 		case AppCommon::Direction::RIGHT:
 		case AppCommon::Direction::LEFT:
-			this->topLeftXYOnGnd.x = rXY.x;
+			this->topLeftPointOnGnd.x = rPoint.x;
 	}
 }
 
@@ -47,7 +47,7 @@ Stone::State Stone::GetState() const {
 void Stone::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const {
 	Drawing::DrawingContext context;
 	context.textureType = Drawing::TextureType::MAP;
-	CreateDrawingVertices(&context.vertices);
+	CreateDrawingVertexRect(&context.rect);
 	switch (this->state) {
 		case Stone::State::BEING_THROWN:
 		case Stone::State::DROPPED:
@@ -76,8 +76,8 @@ void Stone::KeepBeingThrown() {
 	switch (this->state) {
 		case Stone::State::BEING_THROWN:
 			if (thrownElapsedCount == 0) {
-				this->topLeftXY = this->defaultTopLeftXY;
-				this->topLeftXYOnGnd = this->defaultTopLeftXY;
+				this->topLeftPoint = this->defaultTopLeftPoint;
+				this->topLeftPointOnGnd = this->defaultTopLeftPoint;
 			} else {
 				int velocity = Stone::INITIAL_VELOCITY;
 				int g = Stone::GRAVITY;
@@ -87,29 +87,29 @@ void Stone::KeepBeingThrown() {
 				switch (this->direction) {
 					case AppCommon::Direction::TOP:
 					{
-						this->topLeftXYOnGnd.y = this->defaultTopLeftXY.y - distance;
+						this->topLeftPointOnGnd.y = this->defaultTopLeftPoint.y - distance;
 						float r = 100.0f / distance;	// 100:カメラからスクリーンへの距離
 						// 透視図の計算 y’ = d / y * zをアレンジ
-						this->topLeftXY.y = this->topLeftXYOnGnd.y - (int)(r * height);
+						this->topLeftPoint.y = this->topLeftPointOnGnd.y - (int)(r * height);
 						break;
 					}
 					case AppCommon::Direction::RIGHT:
-						this->topLeftXY.x = this->defaultTopLeftXY.x + distance;
-						this->topLeftXY.y = this->defaultTopLeftXY.y - height;
-						this->topLeftXYOnGnd.x = this->topLeftXY.x;
+						this->topLeftPoint.x = this->defaultTopLeftPoint.x + distance;
+						this->topLeftPoint.y = this->defaultTopLeftPoint.y - height;
+						this->topLeftPointOnGnd.x = this->topLeftPoint.x;
 						break;
 					case AppCommon::Direction::BOTTOM:
 					{
-						this->topLeftXYOnGnd.y = this->defaultTopLeftXY.y + distance;
+						this->topLeftPointOnGnd.y = this->defaultTopLeftPoint.y + distance;
 						float r = 50.0f / distance;	// 50:カメラからスクリーンへの距離
 						// 透視図の計算 y’ = d / y * zをアレンジ
-						this->topLeftXY.y = this->topLeftXYOnGnd.y - (int)(r * height);
+						this->topLeftPoint.y = this->topLeftPointOnGnd.y - (int)(r * height);
 						break;
 					}
 					case AppCommon::Direction::LEFT:
-						this->topLeftXY.x = this->defaultTopLeftXY.x - distance;
-						this->topLeftXY.y = this->defaultTopLeftXY.y - height;
-						this->topLeftXYOnGnd.x = this->topLeftXY.x;
+						this->topLeftPoint.x = this->defaultTopLeftPoint.x - distance;
+						this->topLeftPoint.y = this->defaultTopLeftPoint.y - height;
+						this->topLeftPointOnGnd.x = this->topLeftPoint.x;
 						break;
 				}
 
@@ -142,19 +142,19 @@ bool Stone::Exists() const {
 	return (this->state != Stone::State::DiSAPPEARED);
 }
 
-void Stone::Move(const POINT& rXY) {
-	this->topLeftXY.x += rXY.x;
-	this->topLeftXY.y += rXY.y;
+void Stone::Move(const POINT& rPixel) {
+	this->topLeftPoint.x += rPixel.x;
+	this->topLeftPoint.y += rPixel.y;
 }
 
-void Stone::CalcXYsOnGround(Vertices<POINT>* pRet) const {
-	pRet->topLeft = this->topLeftXYOnGnd;
+void Stone::CalcRectOnGround(Rectangle<POINT>* pRet) const {
+	pRet->topLeft = this->topLeftPointOnGnd;
 	pRet->bottomRight.x = pRet->topLeft.x + Stone::WIDTH;
 	pRet->bottomRight.y = pRet->topLeft.y + Stone::HEIGHT;
 }
 
 void Stone::SetDropped() {
-	this->topLeftXY = topLeftXYOnGnd;
+	this->topLeftPoint = topLeftPointOnGnd;
 	this->state = Stone::State::DROPPED;
 	this->restTime = Stone::STAYING_DURATION;
 }
@@ -162,37 +162,37 @@ void Stone::SetDropped() {
 void Stone::BackOnePixel() {
 	switch (this->direction) {
 		case AppCommon::TOP:
-			this->topLeftXY.y += 1;
+			this->topLeftPoint.y += 1;
 			break;
 		case AppCommon::Direction::RIGHT:
-			this->topLeftXY.x -= 1;
+			this->topLeftPoint.x -= 1;
 			break;
 		case AppCommon::Direction::BOTTOM:
-			this->topLeftXY.y -= 1;
+			this->topLeftPoint.y -= 1;
 			break;
 		case AppCommon::Direction::LEFT:
-			this->topLeftXY.x += 1;
+			this->topLeftPoint.x += 1;
 			break;
 	}
-	this->topLeftXYOnGnd = this->topLeftXY;
+	this->topLeftPointOnGnd = this->topLeftPoint;
 }
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */
-void Stone::CreateDrawingVertices(Vertices<Drawing::DrawingVertex>* pRet) const {
-	Drawing::DrawingVertex* pVerticesArr[] = { &pRet->topLeft, &pRet->bottomRight };
-	FloatPoint tutv[] = { this->tutv.topLeft, this->tutv.bottomRight };
+void Stone::CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) const {
+	Drawing::DrawingVertex* pRetArr[] = { &pRet->topLeft, &pRet->bottomRight };
+	FloatPoint texPointArr[] = { this->texRect.topLeft, this->texRect.bottomRight };
 
-	POINT bottomRightXY;
-	bottomRightXY.x = this->topLeftXY.x + Stone::WIDTH;
-	bottomRightXY.y = this->topLeftXY.y + Stone::HEIGHT;
-	POINT xyArr[] = { this->topLeftXY, bottomRightXY };
+	POINT bottomRightPoint;
+	bottomRightPoint.x = this->topLeftPoint.x + Stone::WIDTH;
+	bottomRightPoint.y = this->topLeftPoint.y + Stone::HEIGHT;
+	POINT pointArr[] = { this->topLeftPoint, bottomRightPoint };
 
 	for (int i = 0; i < 2; ++i) {
-		pVerticesArr[i]->x = xyArr[i].x;
-		pVerticesArr[i]->y = xyArr[i].y;
-		pVerticesArr[i]->tu = tutv[i].x;
-		pVerticesArr[i]->tv = tutv[i].y;
+		pRetArr[i]->x = pointArr[i].x;
+		pRetArr[i]->y = pointArr[i].y;
+		pRetArr[i]->tu = texPointArr[i].x;
+		pRetArr[i]->tv = texPointArr[i].y;
 	}
 }
 

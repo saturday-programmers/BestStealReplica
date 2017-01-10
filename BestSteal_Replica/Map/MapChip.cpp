@@ -25,7 +25,7 @@ MapChip* MapChip::Create(MapChipType chipType) {
 	}
 }
 
-void MapChip::ConvertChipNumberToTuTv(int mapChipNumber, Vertices<FloatPoint>* pRet) {
+void MapChip::ConvertChipNumberToTexRect(int mapChipNumber, Rectangle<FloatPoint>* pRet) {
 	int chipPosX = mapChipNumber % CHIP_COUNT_PER_ROW;
 	int chipPosY = mapChipNumber / CHIP_COUNT_PER_ROW;
 
@@ -35,11 +35,11 @@ void MapChip::ConvertChipNumberToTuTv(int mapChipNumber, Vertices<FloatPoint>* p
 	pRet->bottomRight.y = (float)(chipPosY + 1) / (float)CHIP_COUNT_PER_COL;
 }
 
-void MapChip::ConvertTopLeftXYToVertices(const POINT& rTopLeftXY, Vertices<POINT>* pRet) {
-	pRet->topLeft.x = rTopLeftXY.x;
-	pRet->topLeft.y = rTopLeftXY.y;
-	pRet->bottomRight.x = rTopLeftXY.x + MapChip::WIDTH;
-	pRet->bottomRight.y = rTopLeftXY.y + MapChip::HEIGHT;
+void MapChip::ConvertTopLeftPointToRect(const POINT& rTopLeftPoint, Rectangle<POINT>* pRet) {
+	pRet->topLeft.x = rTopLeftPoint.x;
+	pRet->topLeft.y = rTopLeftPoint.y;
+	pRet->bottomRight.x = rTopLeftPoint.x + MapChip::WIDTH;
+	pRet->bottomRight.y = rTopLeftPoint.y + MapChip::HEIGHT;
 }
 
 
@@ -48,16 +48,16 @@ MapChipType MapChip::GetChipType() const {
 	return this->chipType;
 }
 
-void MapChip::GetTopLeftXY(POINT* pRet) const {
-	pRet->x = this->vertices.topLeft.x;
-	pRet->y = this->vertices.topLeft.y;
+void MapChip::GetTopLeftPoint(POINT* pRet) const {
+	pRet->x = this->drawingVertexRect.topLeft.x;
+	pRet->y = this->drawingVertexRect.topLeft.y;
 }
 
-void MapChip::SetXY(const POINT& rTopLeftXY) {
-	this->vertices.topLeft.x = rTopLeftXY.x;
-	this->vertices.topLeft.y = rTopLeftXY.y;
-	this->vertices.bottomRight.x = rTopLeftXY.x + MapChip::WIDTH;
-	this->vertices.bottomRight.y = rTopLeftXY.y + MapChip::HEIGHT;
+void MapChip::SetTopLeftPoint(const POINT& rTopLeftPoint) {
+	this->drawingVertexRect.topLeft.x = rTopLeftPoint.x;
+	this->drawingVertexRect.topLeft.y = rTopLeftPoint.y;
+	this->drawingVertexRect.bottomRight.x = rTopLeftPoint.x + MapChip::WIDTH;
+	this->drawingVertexRect.bottomRight.y = rTopLeftPoint.y + MapChip::HEIGHT;
 }
 
 
@@ -66,19 +66,19 @@ void MapChip::AssignChipNumber() {
 	this->chipNumber = (int)this->chipType;
 
 	// テクスチャー上のマップチップの位置
-	ConfigureTuTv();
+	ConfigureTexRect();
 }
 
-void MapChip::CreateDrawingVertices(Vertices<Drawing::DrawingVertex>* pRet) const {
-	pRet->topLeft.x = this->vertices.topLeft.x;
-	pRet->topLeft.y = this->vertices.topLeft.y;
-	pRet->topLeft.tu = this->vertices.topLeft.tu;
-	pRet->topLeft.tv = this->vertices.topLeft.tv;
+void MapChip::CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) const {
+	pRet->topLeft.x = this->drawingVertexRect.topLeft.x;
+	pRet->topLeft.y = this->drawingVertexRect.topLeft.y;
+	pRet->topLeft.tu = this->drawingVertexRect.topLeft.tu;
+	pRet->topLeft.tv = this->drawingVertexRect.topLeft.tv;
 
-	pRet->bottomRight.x = this->vertices.bottomRight.x;
-	pRet->bottomRight.y = this->vertices.bottomRight.y;
-	pRet->bottomRight.tu = this->vertices.bottomRight.tu;
-	pRet->bottomRight.tv = this->vertices.bottomRight.tv;
+	pRet->bottomRight.x = this->drawingVertexRect.bottomRight.x;
+	pRet->bottomRight.y = this->drawingVertexRect.bottomRight.y;
+	pRet->bottomRight.tu = this->drawingVertexRect.bottomRight.tu;
+	pRet->bottomRight.tv = this->drawingVertexRect.bottomRight.tv;
 }
 
 
@@ -87,13 +87,13 @@ MapChip::MapChip(MapChipType chipType) : chipType(chipType) {}
 
 
 /* Private Functions -------------------------------------------------------------------------------- */
-void MapChip::ConfigureTuTv() {
-	Vertices<FloatPoint> tutv;
-	ConvertChipNumberToTuTv(this->chipNumber, &tutv);
-	this->vertices.topLeft.tu = tutv.topLeft.x;
-	this->vertices.topLeft.tv = tutv.topLeft.y;
-	this->vertices.bottomRight.tu = tutv.bottomRight.x;
-	this->vertices.bottomRight.tv = tutv.bottomRight.y;
+void MapChip::ConfigureTexRect() {
+	Rectangle<FloatPoint> texRect;
+	ConvertChipNumberToTexRect(this->chipNumber, &texRect);
+	this->drawingVertexRect.topLeft.tu = texRect.topLeft.x;
+	this->drawingVertexRect.topLeft.tv = texRect.topLeft.y;
+	this->drawingVertexRect.bottomRight.tu = texRect.bottomRight.x;
+	this->drawingVertexRect.bottomRight.tv = texRect.bottomRight.y;
 }
 
 }

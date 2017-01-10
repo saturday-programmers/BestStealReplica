@@ -19,7 +19,7 @@ void MapChipJewelry::OpenBox() {
 	if (this->state == MapChipJewelry::State::CLOSED) {
 		++this->chipNumber;
 		this->state = MapChipJewelry::State::OPENED;
-		ConfigureTuTv();
+		ConfigureTexRect();
 	}
 }
 
