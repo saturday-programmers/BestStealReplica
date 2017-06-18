@@ -46,6 +46,7 @@ public:
 		bool shift = false;
 	};
 
+
 	/* Enums -------------------------------------------------------------------------------------------- */
 	enum SceneType {
 		DRAWING_MAP,
@@ -65,10 +66,12 @@ public:
 		Gold
 	};
 
+
 	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int WINDOW_DEFAULT_HEIGHT = 630;
 	static const int WINDOW_DEFAULT_WIDTH = 1120;
 	static const int FRAME_COUNT_PER_CUT = 10;
+
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	static int GetWindowHeight();
@@ -78,9 +81,10 @@ public:
 	static AppCommon::SceneType GetScene();
 	static void SetScene(AppCommon::SceneType argScene);
 
+
 private:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	AppCommon();
+	AppCommon() = delete;
 };
 
 }

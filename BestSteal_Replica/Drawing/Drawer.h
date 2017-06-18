@@ -27,14 +27,13 @@ public:
 
 private:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Drawer();
+	Drawer() = delete;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	static bool CreateTexture(TextureType textureType);
 	static void BeginDraw();
 	static void Draw(const DrawingContext& rContext);
 	static void EndDraw();
-
 };
 
 }
