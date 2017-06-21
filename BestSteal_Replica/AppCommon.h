@@ -80,7 +80,7 @@ public:
 
 private:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	AppCommon();
+	AppCommon() = delete;
 };
 
 }

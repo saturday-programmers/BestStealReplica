@@ -19,7 +19,7 @@ public:
 
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Player(const POINT& rTopLeftPoint);
+	explicit Player(const POINT& rTopLeftPoint);
 
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */

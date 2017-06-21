@@ -32,7 +32,7 @@ private:
 	static const int CHIP_COUNT_PER_COL = 6;
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	CharacterCommon();
+	CharacterCommon() = delete;
 };
 
 }
