@@ -27,7 +27,7 @@ public:
 
 private:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
-	Drawer();
+	Drawer() = delete;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	static bool CreateTexture(TextureType textureType);
