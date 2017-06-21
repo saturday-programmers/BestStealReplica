@@ -35,15 +35,19 @@ public:
 
 		HandlingType handlingType = HandlingType::NONE;
 		bool isWalking = false;
+
+		Handling() = default;
+		Handling(const Handling&) = delete;
 	};
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	StageController();
+	StageController(const StageController&) = delete;
 	~StageController();
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void LoadStage(const Stage::IStage& rStage);
-	void Control(AppCommon::Key key);
+	void Control(const AppCommon::Key& rKey);
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */
@@ -58,12 +62,13 @@ private:
 	StageController::Handling lastTimeHandling;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	StageController::Handling ConvertKeyToHandling(AppCommon::Key key) const;
+	void ConvertKeyToHandling(const AppCommon::Key& rKey, StageController::Handling* pRet) const;
 	int ControlPlayer(StageController::Handling* pHandling);
 	void ControlEnemy(int playerMovingPixel, const StageController::Handling& rHandling);
 	void ControlMap(int playerMovingPixel);
 	void MoveMap(int playerMovingPixel);
 	void RevertStage();
+
 };
 
 }

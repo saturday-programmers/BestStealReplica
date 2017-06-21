@@ -13,6 +13,7 @@ class MapChipWall : public MapChip {
 public:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	MapChipWall();
+	MapChipWall(const MapChipWall&) = delete;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void AssignChipNumber();
@@ -27,6 +28,7 @@ private:
 	bool needsRightLine;
 	bool needsBottomLine;
 	bool needsLeftLine;
+
 };
 
 }

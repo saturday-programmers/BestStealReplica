@@ -22,11 +22,15 @@ struct FloatPoint {
 
 	FloatPoint() = default;
 	FloatPoint(float x, float y);
+	FloatPoint(const FloatPoint&) = delete;
 };
 
 template<typename T> struct Rectangle {
 	T topLeft;
 	T bottomRight;
+
+	Rectangle() = default;
+	Rectangle(const Rectangle&) = default;
 };
 
 template<typename T>
@@ -44,7 +48,11 @@ public:
 		bool z = false;
 		bool x = false;
 		bool shift = false;
+
+		Key() = default;
+		Key(const Key&) = delete;
 	};
+
 
 	/* Enums -------------------------------------------------------------------------------------------- */
 	enum SceneType {
@@ -65,10 +73,12 @@ public:
 		Gold
 	};
 
+
 	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int WINDOW_DEFAULT_HEIGHT = 630;
 	static const int WINDOW_DEFAULT_WIDTH = 1120;
 	static const int FRAME_COUNT_PER_CUT = 10;
+
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	static int GetWindowHeight();
@@ -78,9 +88,12 @@ public:
 	static AppCommon::SceneType GetScene();
 	static void SetScene(AppCommon::SceneType argScene);
 
+
 private:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	AppCommon() = delete;
+	AppCommon(const AppCommon&) = delete;
+
 };
 
 }

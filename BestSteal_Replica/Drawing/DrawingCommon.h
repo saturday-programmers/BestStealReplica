@@ -13,6 +13,9 @@ struct DrawingVertex {
 	int y;
 	float tu;
 	float tv;
+
+	DrawingVertex() = default;
+	DrawingVertex(const DrawingVertex&) = default;
 };
 
 /* Enums -------------------------------------------------------------------------------------------- */
@@ -26,6 +29,9 @@ struct DrawingContext {
 	Rectangle<DrawingVertex> rect;
 	TextureType textureType;
 	UINT16 alpha = 0xFF;
+
+	DrawingContext() = default;
+	DrawingContext(const DrawingContext&) = default;
 };
 
 }

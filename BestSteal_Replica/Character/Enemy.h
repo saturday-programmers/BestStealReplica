@@ -41,11 +41,13 @@ public:
 
 		EnemyInfo() = default;
 		EnemyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, AppCommon::GateKeyType holdingGateKey);
+		EnemyInfo(const EnemyInfo&) = default;
 	};
 
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	Enemy(const std::vector<EnemyInfo>& rEnemiesInfo, const std::vector<POINT>& rTopLeftPoints, int scoutableRadius);
+	Enemy(const Enemy&) = delete;
 
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */

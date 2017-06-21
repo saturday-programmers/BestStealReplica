@@ -51,8 +51,9 @@ void StageController::LoadStage(const Stage::IStage& rStage) {
 	Drawing::Drawer::AddDrawable(*this->pEnemy);
 }
 
-void StageController::Control(AppCommon::Key key) {
-	StageController::Handling handling = ConvertKeyToHandling(key);
+void StageController::Control(const AppCommon::Key& rkey) {
+	StageController::Handling handling;
+	ConvertKeyToHandling(rkey, &handling);
 
 	// プレイヤー死亡
 	Rectangle<POINT> playerRect;
@@ -77,29 +78,27 @@ void StageController::Control(AppCommon::Key key) {
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */
-StageController::Handling StageController::ConvertKeyToHandling(AppCommon::Key key) const {
-	StageController::Handling ret;
-	if (key.z) {
-		ret.handlingType = StageController::Handling::HandlingType::STEAL_OR_OPEN;
-	} else if (key.x) {
-		ret.handlingType = StageController::Handling::HandlingType::THROW;
+void StageController::ConvertKeyToHandling(const AppCommon::Key& rKey, StageController::Handling* pRet) const {
+	if (rKey.z) {
+		pRet->handlingType = StageController::Handling::HandlingType::STEAL_OR_OPEN;
+	} else if (rKey.x) {
+		pRet->handlingType = StageController::Handling::HandlingType::THROW;
 	} else {
-		if (key.up) {
-			ret.handlingType = StageController::Handling::HandlingType::UP;
-		} else if (key.right) {
-			ret.handlingType = StageController::Handling::HandlingType::RIGHT;
-		} else if (key.down) {
-			ret.handlingType = StageController::Handling::HandlingType::DOWN;
-		} else if (key.left) {
-			ret.handlingType = StageController::Handling::HandlingType::LEFT;
+		if (rKey.up) {
+			pRet->handlingType = StageController::Handling::HandlingType::UP;
+		} else if (rKey.right) {
+			pRet->handlingType = StageController::Handling::HandlingType::RIGHT;
+		} else if (rKey.down) {
+			pRet->handlingType = StageController::Handling::HandlingType::DOWN;
+		} else if (rKey.left) {
+			pRet->handlingType = StageController::Handling::HandlingType::LEFT;
 		} 
-		if (ret.handlingType != StageController::Handling::HandlingType::NONE) {
-			if (key.shift) {
-				ret.isWalking = true;
+		if (pRet->handlingType != StageController::Handling::HandlingType::NONE) {
+			if (rKey.shift) {
+				pRet->isWalking = true;
 			}
 		}
 	}
-	return ret;
 }
 
 int StageController::ControlPlayer(Handling* pHandling) {

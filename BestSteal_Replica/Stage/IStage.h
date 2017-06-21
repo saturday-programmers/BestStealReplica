@@ -13,6 +13,10 @@ namespace Stage {
 
 class IStage {
 public:
+	/* Constructor / Destructor ------------------------------------------------------------------------- */
+	IStage() = default;
+	IStage(const IStage&) = delete;
+
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	virtual int GetYChipCount() const = 0;
 	virtual int GetXChipCount() const = 0;
@@ -21,6 +25,7 @@ public:
 	virtual void GetEnemiesInfo(std::vector<Character::Enemy::EnemyInfo>* pRet) const = 0;
 	virtual int GetEnemyScoutableRadius() const = 0;
 	virtual int GetMaxStoneCount() const = 0;
+
 };
 
 }

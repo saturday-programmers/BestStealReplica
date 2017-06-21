@@ -22,6 +22,7 @@ public:
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	Stone(const POINT& rTopLeftPoint, AppCommon::Direction direction);
+	Stone(const Stone&) = delete;
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	void SetTopLeftPoint(const POINT& rPoint);
@@ -61,6 +62,7 @@ private:
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void Stone::CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) const;
+
 };
 
 }

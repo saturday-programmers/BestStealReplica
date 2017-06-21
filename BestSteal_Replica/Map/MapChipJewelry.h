@@ -19,6 +19,7 @@ public:
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	MapChipJewelry();
+	MapChipJewelry(const MapChipJewelry&) = delete;
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	MapChipJewelry::State GetState() const;
@@ -29,6 +30,7 @@ public:
 private:
 	/* Variables ---------------------------------------------------------------------------------------- */
 	MapChipJewelry::State state;
+
 };
 
 }

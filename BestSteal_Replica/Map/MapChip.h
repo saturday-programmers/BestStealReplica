@@ -55,6 +55,9 @@ protected:
 		static const int WALL_WITHOUT_LEFT_LINE = 17;
 
 		static const int WALL_WITH_SURROUNDED_LINE = 35;
+
+		ChipNumber() = delete;
+		ChipNumber(const ChipNumber&) = delete;
 	};
 
 	/* Constants ---------------------------------------------------------------------------------------- */
@@ -68,9 +71,11 @@ protected:
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	explicit MapChip(MapChipType chipType);
+	MapChip(const MapChip&) = delete;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void ConfigureTexRect();
+
 };
 
 }
