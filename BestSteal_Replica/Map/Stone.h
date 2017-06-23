@@ -1,10 +1,8 @@
 ﻿#ifndef STONE_H_
 #define STONE_H_
 
-#include <windows.h>
-
-#include "../AppCommon.h"
-#include "../Drawing/DrawingCommon.h"
+#include "AppCommon.h"
+#include "Drawing/DrawingCommon.h"
 
 
 namespace BestStealReplica {
@@ -57,7 +55,7 @@ private:
 	POINT defaultTopLeftPoint;
 	POINT topLeftPoint;
 	AppCommon::Direction direction;
-	Rectangle<FloatPoint> texRect;
+	Rectangle<Point<float>> texRect;
 	int thrownElapsedCount;
 	Stone::State state;
 	int restTime;

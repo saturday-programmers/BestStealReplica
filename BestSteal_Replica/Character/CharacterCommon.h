@@ -1,8 +1,8 @@
 ﻿#ifndef CHARACTER_COMMON_H_
 #define CHARACTER_COMMON_H_
 
-#include "../AppCommon.h"
-#include "../Drawing/DrawingCommon.h"
+#include "AppCommon.h"
+#include "Drawing/DrawingCommon.h"
 
 
 namespace BestStealReplica {
@@ -15,11 +15,11 @@ public:
 	static const int WIDTH = 80;
 
 	/* Static Functions --------------------------------------------------------------------------------- */
-	static void CreateTexRect(int chipCount, int rowIdx, int colIdx, Rectangle<FloatPoint> pRetArr[]);
-	static void CreateTexRect(int rowIdx, int colIdx, Rectangle<FloatPoint>* pRet);
+	static void CreateTexRect(int chipCount, int rowIdx, int colIdx, Rectangle<Point<float>> pRetArr[]);
+	static void CreateTexRect(int rowIdx, int colIdx, Rectangle<Point<float>>* pRet);
 	static void CountUpAnimationCnt(int* pAnimationCnt, int chipCntPerDir);
 	static int GetAnimationNumber(int currentAnimationCnt);
-	static void CreateDrawingVertexRect(const POINT& rTopLeftPoint, void(*convertTopLeftToRect)(const POINT&, Rectangle<POINT>*), const Rectangle<FloatPoint>& rChip, Rectangle<Drawing::DrawingVertex>* pRet);
+	static void CreateDrawingVertexRect(const POINT& rTopLeftPoint, void(*convertTopLeftToRect)(const POINT&, Rectangle<POINT>*), const Rectangle<Point<float>>& rChip, Rectangle<Drawing::DrawingVertex>* pRet);
 	static void ConvertTopLeftPointToRect(const POINT& rTopLeftPoint, Rectangle<POINT>* pRet);
 	static void CalcCharacterRect(const POINT& rTopLeftPoint, int width, int height, Rectangle<POINT>* pRet);
 	static void CalcCenter(const Rectangle<POINT>& rRect, POINT* pRet);

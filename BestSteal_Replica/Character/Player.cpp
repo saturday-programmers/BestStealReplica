@@ -1,5 +1,5 @@
 ﻿#include "Player.h"
-#include "../Drawing/Drawer.h"
+#include "Drawing/Drawer.h"
 
 
 namespace BestStealReplica {
@@ -181,7 +181,7 @@ void Player::ReturnPropertiesToDefault() {
 }
 
 void Player::CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) const {
-	Rectangle<FloatPoint> chip;
+	Rectangle<Point<float>> chip;
 	int animationNum = CharacterCommon::GetAnimationNumber(this->currentAnimationCnt);
 	switch (this->headingDirection) {
 		case AppCommon::Direction::TOP:
@@ -208,31 +208,31 @@ void Player::CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) co
  * @param [out] pRet 盗み処理中の頂点情報を格納して返却
  */
 void Player::CreateDrawingVertexRectOnStealing(int afterImageNum, Rectangle<Drawing::DrawingVertex>* pRet) const {
-	POINT topLeftPoint;
-	Rectangle<FloatPoint> chipTexRect;
+	POINT afterImageTopLeftPoint;
+	Rectangle<Point<float>> chipTexRect;
 	switch (this->headingDirection) {
 		case AppCommon::Direction::TOP:
-			topLeftPoint.x = this->topLeftPoint.x;
-			topLeftPoint.y = this->topLeftPoint.y + Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
+			afterImageTopLeftPoint.x = this->topLeftPoint.x;
+			afterImageTopLeftPoint.y = this->topLeftPoint.y + Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
 			chipTexRect = this->texRectOfStealingTopChip;
 			break;
 		case AppCommon::Direction::RIGHT:
-			topLeftPoint.x = this->topLeftPoint.x - Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
-			topLeftPoint.y = this->topLeftPoint.y;
+			afterImageTopLeftPoint.x = this->topLeftPoint.x - Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
+			afterImageTopLeftPoint.y = this->topLeftPoint.y;
 			chipTexRect = this->texRectOfStealingRightChip;
 			break;
 		case AppCommon::Direction::BOTTOM:
-			topLeftPoint.x = this->topLeftPoint.x;
-			topLeftPoint.y = this->topLeftPoint.y - Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
+			afterImageTopLeftPoint.x = this->topLeftPoint.x;
+			afterImageTopLeftPoint.y = this->topLeftPoint.y - Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
 			chipTexRect = this->texRectOfStealingBottomChip;
 			break;
 		case AppCommon::Direction::LEFT:
-			topLeftPoint.x = this->topLeftPoint.x + Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
-			topLeftPoint.y = this->topLeftPoint.y;
+			afterImageTopLeftPoint.x = this->topLeftPoint.x + Player::MOVING_PIXEL_ON_STEALING * afterImageNum;
+			afterImageTopLeftPoint.y = this->topLeftPoint.y;
 			chipTexRect = this->texRectOfStealingLeftChip;
 			break;
 	}
-	CharacterCommon::CreateDrawingVertexRect(topLeftPoint, &CharacterCommon::ConvertTopLeftPointToRect, chipTexRect, pRet);
+	CharacterCommon::CreateDrawingVertexRect(afterImageTopLeftPoint, &CharacterCommon::ConvertTopLeftPointToRect, chipTexRect, pRet);
 }
 
 const int* Player::GetHoldingGateKeyCnt(AppCommon::GateKeyType gateKey) const {

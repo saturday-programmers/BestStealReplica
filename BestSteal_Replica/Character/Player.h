@@ -1,10 +1,8 @@
 ﻿#ifndef PLAYER_H_
 #define PLAYER_H_
 
-#include <windows.h>
-
-#include "../Character/CharacterCommon.h"
-#include "../Drawing/IDrawable.h"
+#include "Character/CharacterCommon.h"
+#include "Drawing/IDrawable.h"
 
 
 namespace BestStealReplica {
@@ -92,14 +90,14 @@ private:
 	int holdingGoldGateKeyCount;
 	int holdingSilverGateKeyCount;
 
-	Rectangle<FloatPoint> texRectOfHeadingBottomChips[Player::CHIP_COUNT_PER_DIRECTION];
-	Rectangle<FloatPoint> texRectOfHeadingTopChips[Player::CHIP_COUNT_PER_DIRECTION];
-	Rectangle<FloatPoint> texRectOfHeadingLeftChips[Player::CHIP_COUNT_PER_DIRECTION];
-	Rectangle<FloatPoint> texRectOfHeadingRightChips[Player::CHIP_COUNT_PER_DIRECTION];
-	Rectangle<FloatPoint> texRectOfStealingBottomChip;
-	Rectangle<FloatPoint> texRectOfStealingTopChip;
-	Rectangle<FloatPoint> texRectOfStealingLeftChip;
-	Rectangle<FloatPoint> texRectOfStealingRightChip;
+	Rectangle<Point<float>> texRectOfHeadingBottomChips[Player::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<Point<float>> texRectOfHeadingTopChips[Player::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<Point<float>> texRectOfHeadingLeftChips[Player::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<Point<float>> texRectOfHeadingRightChips[Player::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<Point<float>> texRectOfStealingBottomChip;
+	Rectangle<Point<float>> texRectOfStealingTopChip;
+	Rectangle<Point<float>> texRectOfStealingLeftChip;
+	Rectangle<Point<float>> texRectOfStealingRightChip;
 
 
 	/* Functions ---------------------------------------------------------------------------------------- */

@@ -1,5 +1,4 @@
-﻿#include <windows.h>
-#include <mmsystem.h >
+﻿#include <mmsystem.h>
 #include <d3d9.h>
 
 #define DIRECTINPUT_VERSION 0x0800
@@ -26,7 +25,7 @@ static void WINAPI DI_Term();
 }
 
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow) {
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/) {
 	using namespace BestStealReplica;
 
 	::_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);

@@ -1,10 +1,8 @@
 ﻿#ifndef IDRAWABLE_H_
 #define IDRAWABLE_H_
 
-#include <vector>
-
-#include "../AppCommon.h"
-#include "../Drawing/DrawingCommon.h"
+#include "AppCommon.h"
+#include "Drawing/DrawingCommon.h"
 
 
 namespace BestStealReplica {
@@ -15,6 +13,7 @@ public:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	IDrawable() = default;
 	IDrawable(const IDrawable&) = delete;
+	virtual ~IDrawable() = default;
 
 	/* Operator Overloads ------------------------------------------------------------------------------- */
 	IDrawable& operator=(const IDrawable&) = delete;

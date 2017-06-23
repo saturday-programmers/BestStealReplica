@@ -1,11 +1,8 @@
 ﻿#ifndef ENEMY_H_
 #define ENEMY_H_
 
-#include <vector>
-#include <windows.h>
-
-#include "../Character/CharacterCommon.h"
-#include "../Drawing/IDrawable.h" 
+#include "Character/CharacterCommon.h"
+#include "Drawing/IDrawable.h" 
 
 
 namespace BestStealReplica {
@@ -28,7 +25,7 @@ public:
 
 	/* Structs ------------------------------------------------------------------------------------------ */
 	struct EnemyInfo {
-		POINT chipPos;
+		Point<UINT16> chipPos;
 		POINT topLeftPoint;
 		POINT defaultTopLeftPoint;
 		AppCommon::Direction defaultDirection;
@@ -40,7 +37,7 @@ public:
 		int restTimeForBackingToNormal;
 
 		EnemyInfo() = default;
-		EnemyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, AppCommon::GateKeyType holdingGateKey);
+		EnemyInfo(UINT16 chipPosX, UINT16 chipPosY, AppCommon::Direction defaultDirection, AppCommon::GateKeyType holdingGateKey);
 		EnemyInfo(const EnemyInfo&) = default;
 	};
 
@@ -51,9 +48,9 @@ public:
 
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
-	int GetEnermyCount() const;
-	AppCommon::Direction GetHeadingDirection(int enemyIdx) const;
-	Enemy::State GetState(int enemyIdx) const;
+	UINT8 GetEnermyCount() const;
+	AppCommon::Direction GetHeadingDirection(UINT8 enemyIdx) const;
+	Enemy::State GetState(UINT8 enemyIdx) const;
 
 
 	/* Operator Overloads ------------------------------------------------------------------------------- */
@@ -66,12 +63,12 @@ public:
 
 	void Stay();
 	void Move(const POINT& rPixel);
-	void CalcEnemyRect(int enemyIdx, Rectangle<POINT>* pRet) const;
-	void CalcCenter(int enemyIdx, POINT* pRet) const;
+	void CalcEnemyRect(UINT8 enemyIdx, Rectangle<POINT>* pRet) const;
+	void CalcCenter(UINT8 enemyIdx, POINT* pRet) const;
 	void ScoutStone(const std::vector<Rectangle<POINT>>& rStonesRect);
 	void ScoutPlayer(const POINT& rPlayerCenter, bool isPlayerWalking);
 	AppCommon::GateKeyType GetStolen(const Rectangle<POINT>& rPlayerRect, bool isPlayerStealing);
-	void Attack(int enemyIdx, bool canSeePlayer);
+	void Attack(UINT8 enemyIdx, bool canSeePlayer);
 	bool CanKillPlayer(const Rectangle<POINT>& rPlayerRect) const;
 	void BackToDefaultPosition();
 
@@ -97,19 +94,19 @@ private:
 
 
 	/* Variables ---------------------------------------------------------------------------------------- */
-	Rectangle<FloatPoint> texRectOfHeadingBottomChips[Enemy::CHIP_COUNT_PER_DIRECTION];
-	Rectangle<FloatPoint> texRectOfHeadingTopChips[Enemy::CHIP_COUNT_PER_DIRECTION];
-	Rectangle<FloatPoint> texRectOfHeadingLeftChips[Enemy::CHIP_COUNT_PER_DIRECTION];
-	Rectangle<FloatPoint> texRectOfHeadingRightChips[Enemy::CHIP_COUNT_PER_DIRECTION];
-	Rectangle<FloatPoint> texRectOfExclamationMarkChip;
+	Rectangle<Point<float>> texRectOfHeadingBottomChips[Enemy::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<Point<float>> texRectOfHeadingTopChips[Enemy::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<Point<float>> texRectOfHeadingLeftChips[Enemy::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<Point<float>> texRectOfHeadingRightChips[Enemy::CHIP_COUNT_PER_DIRECTION];
+	Rectangle<Point<float>> texRectOfExclamationMarkChip;
 
 	std::vector<EnemyInfo> enemiesInfo;
 	int scoutableRadius;
 
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void CreateDrawingVertexRect(int enemyIdx, Rectangle<Drawing::DrawingVertex>* pRet) const;
-	void TurnTo(const POINT& rTargetPoint, int enemyIdx);
+	void CreateDrawingVertexRect(UINT8 enemyIdx, Rectangle<Drawing::DrawingVertex>* pRet) const;
+	void TurnTo(const POINT& rTargetPoint, UINT8 enemyIdx);
 
 };
 

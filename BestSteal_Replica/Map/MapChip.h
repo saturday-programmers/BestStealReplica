@@ -1,11 +1,9 @@
 ﻿#ifndef MAP_CHIP_H_
 #define MAP_CHIP_H_
 
-#include <windows.h>
-
-#include "../AppCommon.h"
-#include "../Map/MapCommon.h"
-#include "../Drawing/DrawingCommon.h"
+#include "AppCommon.h"
+#include "Map/MapCommon.h"
+#include "Drawing/DrawingCommon.h"
 
 
 namespace BestStealReplica {
@@ -21,7 +19,7 @@ public:
 
 	/* Static Functions --------------------------------------------------------------------------------- */
 	static MapChip* Create(MapChipType chipType);
-	static void ConvertChipNumberToTexRect(int mapChipNumber, Rectangle<FloatPoint>* pRet);
+	static void ConvertChipNumberToTexRect(int mapChipNumber, Rectangle<Point<float>>* pRet);
 	static void ConvertTopLeftPointToRect(const POINT& rTopLeftPoint, Rectangle<POINT>* pRet);
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */

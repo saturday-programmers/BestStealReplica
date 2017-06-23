@@ -25,7 +25,7 @@ public:
 	/**
 	 * キー操作コマンドを示す構造体
 	 * 
-	 * 当構造体はコピー可能
+	 * 当構造体はコピー可能とする。
 	 */
 	struct Handling {
 		enum HandlingType {
@@ -69,7 +69,7 @@ private:
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void ConvertKeyToHandling(const AppCommon::Key& rKey, StageController::Handling* pRet) const;
 	int ControlPlayer(StageController::Handling* pHandling);
-	void ControlEnemy(int playerMovingPixel, const StageController::Handling& rHandling);
+	void ControlEnemy(const StageController::Handling& rHandling);
 	void ControlMap(int playerMovingPixel);
 	void MoveMap(int playerMovingPixel);
 	void RevertStage();

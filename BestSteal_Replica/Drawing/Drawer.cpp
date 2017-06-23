@@ -3,7 +3,7 @@
 #include <d3dx9tex.h>
 
 #include "Drawer.h"
-#include "../Drawing/IDRawable.h"
+#include "Drawing/IDRawable.h"
 
 
 #define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)
@@ -83,7 +83,7 @@ void Drawer::Draw() {
 	// 描画データ生成
 	DataTable<DrawingContext> contextTable;
 	contextTable.resize(pDrawables.size());
-	for (int i = 0; i < (int)pDrawables.size(); ++i) {
+	for (UINT16 i = 0; i < pDrawables.size(); ++i) {
 		pDrawables[i]->CreateDrawingContexts(&contextTable[i]);
 	}
 

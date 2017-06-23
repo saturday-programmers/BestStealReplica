@@ -9,7 +9,8 @@ static AppCommon::SceneType scene;
 }
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-FloatPoint::FloatPoint(float x, float y) : x(x), y(y) {}
+template<typename T>
+Point<T>::Point(T x, T y) : x(x), y(y) {}
 
 
 /* Getters / Setters -------------------------------------------------------------------------------- */

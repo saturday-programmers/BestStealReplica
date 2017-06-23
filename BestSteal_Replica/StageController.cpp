@@ -1,6 +1,4 @@
-﻿#include <vector>
-
-#include "StageController.h"
+﻿#include "StageController.h"
 #include "Stage/Stage1.h"
 #include "Drawing/Drawer.h"
 #include "Map/Map.h"
@@ -31,7 +29,7 @@ void StageController::LoadStage(const Stage::IStage& rStage) {
 	this->pMap->Load(*this->pStage);
 
 	// プレイヤー情報
-	POINT playerChipPos;
+	Point<UINT16> playerChipPos;
 	this->pStage->GetPlayerFirstChipPos(&playerChipPos);
 	POINT playerTopLeftPoint;
 	this->pMap->ConvertMapChipPosToTopLeftPoint(playerChipPos, &playerTopLeftPoint);
@@ -68,7 +66,7 @@ void StageController::Control(const AppCommon::Key& rkey) {
 	int movingPixel = ControlPlayer(&handling);
 
 	// 敵アニメージョン
-	ControlEnemy(movingPixel, handling);
+	ControlEnemy(handling);
 
 	// マップアニメーション
 	ControlMap(movingPixel);
@@ -113,7 +111,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 
 	if (pHandling->handlingType == Handling::HandlingType::STEAL_OR_OPEN) {
 		// プレイヤーの目の前のマップチップ取得
-		POINT frontMapChipPos;
+		Point<UINT16> frontMapChipPos;
 		this->pMap->ConvertToCharacterFrontMapChipPos(playerRect, this->pPlayer->GetHeadingDirection(), &frontMapChipPos);
 		bool canStartStealing = true;
 		Map::MapChipType mapChipType = this->pMap->GetMapChipType(frontMapChipPos);
@@ -247,7 +245,7 @@ int StageController::ControlPlayer(Handling* pHandling) {
 	return movingPixel;
 }
 
-void StageController::ControlEnemy(int playerMovingPixel, const Handling& rHandling) {
+void StageController::ControlEnemy(const Handling& rHandling) {
 	this->pEnemy->Stay();
 
 	Rectangle<POINT> playerRect;
@@ -265,9 +263,9 @@ void StageController::ControlEnemy(int playerMovingPixel, const Handling& rHandl
 	this->pEnemy->ScoutPlayer(playerCenterPoint, rHandling.isWalking);
 
 	// 突進可能か
-	POINT playerPos;
+	Point<UINT16> playerPos;
 	this->pMap->ConvertToMapChipPos(playerCenterPoint, &playerPos);
-	for (int enemyIdx = 0; enemyIdx < this->pEnemy->GetEnermyCount(); ++enemyIdx) {
+	for (UINT8 enemyIdx = 0; enemyIdx < this->pEnemy->GetEnermyCount(); ++enemyIdx) {
 		if (this->pEnemy->GetState(enemyIdx) == Enemy::State::GOT_STOLEN) {
 			continue;
 		}
@@ -275,10 +273,10 @@ void StageController::ControlEnemy(int playerMovingPixel, const Handling& rHandl
 		// プレイヤーとの距離チェック
 		POINT enemyCenterPoint;
 		pEnemy->CalcCenter(enemyIdx, &enemyCenterPoint);
-		POINT enemyPos;
+		Point<UINT16> enemyPos;
 		this->pMap->ConvertToMapChipPos(enemyCenterPoint, &enemyPos);
 		bool canSeePlayer = false;
-		int distance;
+		int distance = 0;
 		switch (this->pEnemy->GetHeadingDirection(enemyIdx)) {
 			case AppCommon::Direction::TOP:
 				canSeePlayer = (enemyPos.x == playerPos.x && enemyPos.y >= playerPos.y);
