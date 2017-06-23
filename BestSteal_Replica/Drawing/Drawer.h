@@ -25,9 +25,13 @@ public:
 	static void Draw();
 	static void Blackout();
 
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	Drawer& operator=(const Drawer&) = delete;
+
 private:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	Drawer() = delete;
+	Drawer(const Drawer&) = delete;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	static bool CreateTexture(TextureType textureType);

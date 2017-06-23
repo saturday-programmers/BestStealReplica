@@ -21,7 +21,11 @@ class SceneController {
 public:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	SceneController();
+	SceneController(const SceneController&) = delete;
 	void Release();
+
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	SceneController& operator=(const SceneController&) = delete;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void StartStage();
@@ -34,7 +38,8 @@ private:
 	int blackoutFrameCount;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	AppCommon::Key ProcessKBInput(LPDIRECTINPUTDEVICE8 pDIDevice) const;
+	void ProcessKBInput(const LPDIRECTINPUTDEVICE8 pDIDevice, AppCommon::Key* pRet) const;
+
 };
 
 }

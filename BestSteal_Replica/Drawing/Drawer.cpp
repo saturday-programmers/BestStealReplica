@@ -18,11 +18,16 @@ struct CUSTOMVERTEX {
 	float           rhw;                    //頂点変換値
 	DWORD           color;                  //頂点カラー
 	float           tu, tv;                 //テクスチャ座標
+
+	CUSTOMVERTEX() = default;
+	CUSTOMVERTEX(const CUSTOMVERTEX&) = delete;
 };
+
 
 /* Constants ---------------------------------------------------------------------------------------- */
 const TCHAR* MAP_CHIP_FILE_PATH = TEXT("image\\mapchip.png");
 const TCHAR* CHARACTER_FILE_PATH = TEXT("image\\character.png");
+
 
 /* Static Variables --------------------------------------------------------------------------------- */
 IDirect3DDevice9* pD3Device = nullptr;

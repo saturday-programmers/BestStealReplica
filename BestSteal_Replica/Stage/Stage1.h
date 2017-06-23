@@ -9,6 +9,10 @@ namespace Stage {
 class Stage1 : public IStage {
 
 public:
+	/* Constructor / Destructor ------------------------------------------------------------------------- */
+	Stage1() = default;
+	Stage1(const Stage1&) = delete;
+
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	int GetYChipCount() const;
 	int GetXChipCount() const;
@@ -18,9 +22,13 @@ public:
 	int GetEnemyScoutableRadius() const;
 	int GetMaxStoneCount() const;
 
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	Stage1& operator=(const Stage1&) = delete;
+
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int MAX_STONE_COUNT = 3;
+
 };
 
 }

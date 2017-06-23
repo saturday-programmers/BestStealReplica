@@ -19,9 +19,13 @@ public:
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	MapChipJewelry();
+	MapChipJewelry(const MapChipJewelry&) = delete;
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	MapChipJewelry::State GetState() const;
+
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	MapChipJewelry& operator=(const MapChipJewelry&) = delete;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void OpenBox();
@@ -29,6 +33,7 @@ public:
 private:
 	/* Variables ---------------------------------------------------------------------------------------- */
 	MapChipJewelry::State state;
+
 };
 
 }

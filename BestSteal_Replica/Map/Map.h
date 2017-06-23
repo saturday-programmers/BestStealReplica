@@ -26,11 +26,16 @@ class Map : public Drawing::IDrawable {
 public:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	Map();
+	Map(const Map&) = delete;
 	~Map();
 
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	MapChipType GetMapChipType(const POINT& rMapChipPos) const;
+
+
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	Map& operator=(const Map&) = delete;
 
 
 	/* Functions ---------------------------------------------------------------------------------------- */
@@ -75,6 +80,7 @@ private:
 	void ConfigureChipPoint();
 	bool IsOnRoad(const POINT& rMapChipPos) const;
 	bool IsMovable(int targetPoint, int topLeftPoint, int mapChipCount, int mapChipSize, int windowSize) const;
+
 };
 
 }

@@ -181,7 +181,7 @@ void Stone::BackOnePixel() {
 /* Private Functions  ------------------------------------------------------------------------------- */
 void Stone::CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) const {
 	Drawing::DrawingVertex* pRetArr[] = { &pRet->topLeft, &pRet->bottomRight };
-	FloatPoint texPointArr[] = { this->texRect.topLeft, this->texRect.bottomRight };
+	const FloatPoint* pTexPointArr[] = { &this->texRect.topLeft, &this->texRect.bottomRight };
 
 	POINT bottomRightPoint;
 	bottomRightPoint.x = this->topLeftPoint.x + Stone::WIDTH;
@@ -191,8 +191,8 @@ void Stone::CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) con
 	for (int i = 0; i < 2; ++i) {
 		pRetArr[i]->x = pointArr[i].x;
 		pRetArr[i]->y = pointArr[i].y;
-		pRetArr[i]->tu = texPointArr[i].x;
-		pRetArr[i]->tv = texPointArr[i].y;
+		pRetArr[i]->tu = pTexPointArr[i]->x;
+		pRetArr[i]->tv = pTexPointArr[i]->y;
 	}
 }
 

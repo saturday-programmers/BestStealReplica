@@ -24,6 +24,10 @@ public:
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	explicit MapChipGate(MapChipType chipType);
+	MapChipGate(const MapChipGate&) = delete;
+
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	MapChipGate& operator=(const MapChipGate&) = delete;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void StartOpeningGate();
@@ -36,6 +40,7 @@ private:
 	/* Variables ---------------------------------------------------------------------------------------- */
 	State state;
 	int openingCount;
+
 };
 
 }

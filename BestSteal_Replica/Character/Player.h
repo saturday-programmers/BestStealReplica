@@ -20,12 +20,17 @@ public:
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	explicit Player(const POINT& rTopLeftPoint);
+	Player(const Player&) = delete;
 
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	bool IsStealing() const;
 	AppCommon::Direction GetHeadingDirection() const;
 	void SetDirection(AppCommon::Direction direction);
+
+
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	Player& operator=(const Player&) = delete;
 
 
 	/* Functions ---------------------------------------------------------------------------------------- */

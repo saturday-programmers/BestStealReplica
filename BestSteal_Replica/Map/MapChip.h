@@ -29,6 +29,9 @@ public:
 	void GetTopLeftPoint(POINT* pRet) const;
 	void SetTopLeftPoint(const POINT& rTopLeftPoint);
 
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	MapChip& operator=(const MapChip&) = delete;
+
 	/* Functions ---------------------------------------------------------------------------------------- */
 	virtual void AssignChipNumber();
 	void CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) const;
@@ -55,6 +58,9 @@ protected:
 		static const int WALL_WITHOUT_LEFT_LINE = 17;
 
 		static const int WALL_WITH_SURROUNDED_LINE = 35;
+
+		ChipNumber() = delete;
+		ChipNumber(const ChipNumber&) = delete;
 	};
 
 	/* Constants ---------------------------------------------------------------------------------------- */
@@ -68,9 +74,11 @@ protected:
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	explicit MapChip(MapChipType chipType);
+	MapChip(const MapChip&) = delete;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void ConfigureTexRect();
+
 };
 
 }
