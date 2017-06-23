@@ -25,7 +25,10 @@ public:
 	static void CalcCenter(const Rectangle<POINT>& rRect, POINT* pRet);
 	static double CalcDistance(const POINT& rPoint1, const POINT& rPoint2);
 	static bool IsOverlapping(const Rectangle<POINT>& rRect1, const Rectangle<POINT>& rRect2);
-	
+
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	CharacterCommon& operator=(const CharacterCommon&) = delete;
+
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int CHIP_COUNT_PER_ROW = 6;

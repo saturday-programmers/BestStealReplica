@@ -22,6 +22,9 @@ public:
 	int GetEnemyScoutableRadius() const;
 	int GetMaxStoneCount() const;
 
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	Stage1& operator=(const Stage1&) = delete;
+
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */
 	static const int MAX_STONE_COUNT = 3;

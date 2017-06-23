@@ -51,6 +51,8 @@ public:
 
 		Key() = default;
 		Key(const Key&) = delete;
+
+		Key& operator=(const Key&) = delete;
 	};
 
 
@@ -87,6 +89,10 @@ public:
 	static void SetWindowWidth(int width);
 	static AppCommon::SceneType GetScene();
 	static void SetScene(AppCommon::SceneType argScene);
+
+
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	AppCommon& operator=(const AppCommon&) = delete;
 
 
 private:

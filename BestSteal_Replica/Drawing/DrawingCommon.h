@@ -16,6 +16,8 @@ struct DrawingVertex {
 
 	DrawingVertex() = default;
 	DrawingVertex(const DrawingVertex&) = default;
+
+	DrawingVertex& operator=(const DrawingVertex&) = delete;
 };
 
 /* Enums -------------------------------------------------------------------------------------------- */
@@ -32,6 +34,8 @@ struct DrawingContext {
 
 	DrawingContext() = default;
 	DrawingContext(const DrawingContext&) = default;
+
+	DrawingContext& operator=(const DrawingContext&) = delete;
 };
 
 }

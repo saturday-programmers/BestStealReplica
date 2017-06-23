@@ -56,6 +56,10 @@ public:
 	Enemy::State GetState(int enemyIdx) const;
 
 
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	Enemy& operator=(const Enemy&) = delete;
+
+
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void ConfigureTextureTypes(std::vector<Drawing::TextureType>* pRet) const;
 	void CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pRet) const;

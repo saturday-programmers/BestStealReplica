@@ -29,6 +29,9 @@ public:
 	void GetTopLeftPoint(POINT* pRet) const;
 	void SetTopLeftPoint(const POINT& rTopLeftPoint);
 
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	MapChip& operator=(const MapChip&) = delete;
+
 	/* Functions ---------------------------------------------------------------------------------------- */
 	virtual void AssignChipNumber();
 	void CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) const;

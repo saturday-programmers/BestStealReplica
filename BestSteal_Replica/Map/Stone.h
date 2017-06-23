@@ -28,6 +28,9 @@ public:
 	void SetTopLeftPoint(const POINT& rPoint);
 	State GetState() const;
 
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	Stone& operator=(const Stone&) = delete;
+
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void Stone::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const;
 	void KeepBeingThrown();

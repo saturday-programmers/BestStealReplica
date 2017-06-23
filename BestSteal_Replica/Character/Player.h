@@ -29,6 +29,10 @@ public:
 	void SetDirection(AppCommon::Direction direction);
 
 
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	Player& operator=(const Player&) = delete;
+
+
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void ConfigureTextureTypes(std::vector<Drawing::TextureType>* pRet) const;
 	void CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pRet) const;

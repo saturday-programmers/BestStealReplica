@@ -24,6 +24,9 @@ public:
 	SceneController(const SceneController&) = delete;
 	void Release();
 
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	SceneController& operator=(const SceneController&) = delete;
+
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void StartStage();
 	void Control(LPDIRECTINPUTDEVICE8 pDIDevice);

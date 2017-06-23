@@ -24,6 +24,9 @@ public:
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	MapChipJewelry::State GetState() const;
 
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	MapChipJewelry& operator=(const MapChipJewelry&) = delete;
+
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void OpenBox();
 

@@ -15,6 +15,9 @@ public:
 	MapChipWall();
 	MapChipWall(const MapChipWall&) = delete;
 
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	MapChipWall& operator=(const MapChipWall&) = delete;
+
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void AssignChipNumber();
 	void SetNeedsTopLine();

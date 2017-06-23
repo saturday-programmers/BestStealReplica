@@ -25,6 +25,9 @@ public:
 	static void Draw();
 	static void Blackout();
 
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	Drawer& operator=(const Drawer&) = delete;
+
 private:
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	Drawer() = delete;

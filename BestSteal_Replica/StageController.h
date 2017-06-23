@@ -22,6 +22,11 @@ class Drawer;
 class StageController {
 public:
 	/* Structs ------------------------------------------------------------------------------------------ */
+	/**
+	 * キー操作コマンドを示す構造体
+	 * 
+	 * 当構造体はコピー可能
+	 */
 	struct Handling {
 		enum HandlingType {
 			NONE,
@@ -35,15 +40,15 @@ public:
 
 		HandlingType handlingType = HandlingType::NONE;
 		bool isWalking = false;
-
-		Handling() = default;
-		Handling(const Handling&) = delete;
 	};
 
 	/* Constructor / Destructor ------------------------------------------------------------------------- */
 	StageController();
 	StageController(const StageController&) = delete;
 	~StageController();
+
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	StageController& operator=(const StageController&) = delete;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
 	void LoadStage(const Stage::IStage& rStage);

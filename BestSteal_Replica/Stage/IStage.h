@@ -17,6 +17,9 @@ public:
 	IStage() = default;
 	IStage(const IStage&) = delete;
 
+	/* Operator Overloads ------------------------------------------------------------------------------- */
+	IStage& operator=(const IStage&) = delete;
+
 	/* Getters / Setters -------------------------------------------------------------------------------- */
 	virtual int GetYChipCount() const = 0;
 	virtual int GetXChipCount() const = 0;
