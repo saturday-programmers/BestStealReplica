@@ -21,7 +21,7 @@ struct DrawingVertex {
 };
 
 /* Enums -------------------------------------------------------------------------------------------- */
-enum TextureType {
+enum struct TextureType {
 	MAP,
 	CHARACTER
 };

@@ -5,7 +5,7 @@
 namespace BestStealReplica {
 namespace Map {
 
-enum MapChipType {
+enum struct MapChipType {
 	NONE = 99,
 	ROAD = 0,
 	WALL = 34,

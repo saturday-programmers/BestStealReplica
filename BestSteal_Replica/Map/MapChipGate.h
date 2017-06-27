@@ -10,7 +10,7 @@ namespace Map {
 class MapChipGate : public MapChip {
 public:
 	/* Enums -------------------------------------------------------------------------------------------- */
-	enum State {
+	enum struct State {
 		CLOSED,
 		START_OPENING,
 		OPENING,

@@ -435,7 +435,7 @@ bool Map::IsOnRoad(const Point<UINT16>& rMapChipPos) const {
 			return false;
 		case MapChipType::GATE:
 		case MapChipType::GOLD_GATE:
-			if (((MapChipGate*)this->pMapData[rMapChipPos.y][rMapChipPos.x])->GetState() != MapChipGate::OPENED) {
+			if (((MapChipGate*)this->pMapData[rMapChipPos.y][rMapChipPos.x])->GetState() != MapChipGate::State::OPENED) {
 				return false;
 			}
 			break;
