@@ -13,7 +13,7 @@ namespace Character {
 class Enemy : public Drawing::IDrawable {
 public:
 	/* Enums -------------------------------------------------------------------------------------------- */
-	enum State {
+	enum struct State {
 		NORMAL,
 		FOUND_STONE,
 		FOUND_PLAYER,

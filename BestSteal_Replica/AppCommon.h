@@ -51,19 +51,19 @@ public:
 
 
 	/* Enums -------------------------------------------------------------------------------------------- */
-	enum SceneType {
+	enum struct SceneType {
 		DRAWING_MAP,
 		BLACKOUT
 	};
 
-	enum Direction {
+	enum struct Direction {
 		TOP,
 		RIGHT,
 		BOTTOM,
 		LEFT
 	};
 
-	enum GateKeyType {
+	enum struct GateKeyType {
 		None,
 		Silver,
 		Gold

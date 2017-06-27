@@ -11,7 +11,7 @@ namespace Map {
 class Stone {
 public:
 	/* Enums -------------------------------------------------------------------------------------------- */
-	enum State {
+	enum struct State {
 		BEING_THROWN,
 		DROPPED,
 		DISAPPEARING,

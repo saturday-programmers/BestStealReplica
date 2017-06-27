@@ -28,7 +28,7 @@ public:
 	 * 当構造体はコピー可能とする。
 	 */
 	struct Handling {
-		enum HandlingType {
+		enum struct HandlingType {
 			NONE,
 			UP,
 			DOWN,

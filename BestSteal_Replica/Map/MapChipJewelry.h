@@ -10,7 +10,7 @@ namespace Map {
 class MapChipJewelry : public MapChip {
 public:
 	/* Enums -------------------------------------------------------------------------------------------- */
-	enum State {
+	enum struct State {
 		CLOSED,
 		OPENED
 	};

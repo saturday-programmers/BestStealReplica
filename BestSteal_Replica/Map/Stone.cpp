@@ -161,7 +161,7 @@ void Stone::SetDropped() {
 
 void Stone::BackOnePixel() {
 	switch (this->direction) {
-		case AppCommon::TOP:
+		case AppCommon::Direction::TOP:
 			this->topLeftPoint.y += 1;
 			break;
 		case AppCommon::Direction::RIGHT:
