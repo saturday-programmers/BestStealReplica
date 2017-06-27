@@ -1,13 +1,11 @@
 ﻿#ifndef DRAWER_H_
 #define DRAWER_H_
 
-#include <vector>
-#include <map>
 #include <d3d9.h>
 #include <d3dx9.h>
 
-#include "../AppCommon.h"
-#include "../Drawing/DrawingCommon.h"
+#include "AppCommon.h"
+#include "Drawing/DrawingCommon.h"
 
 
 namespace BestStealReplica {

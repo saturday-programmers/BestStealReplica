@@ -1,8 +1,8 @@
 ﻿#include <math.h>
 
 #include "Stone.h"
-#include "../Drawing/Drawer.h"
-#include "../Map/MapChip.h"
+#include "Drawing/Drawer.h"
+#include "Map/MapChip.h"
 
 
 namespace BestStealReplica {
@@ -79,8 +79,6 @@ void Stone::KeepBeingThrown() {
 				this->topLeftPoint = this->defaultTopLeftPoint;
 				this->topLeftPointOnGnd = this->defaultTopLeftPoint;
 			} else {
-				int velocity = Stone::INITIAL_VELOCITY;
-				int g = Stone::GRAVITY;
 				int distance = Stone::INITIAL_VELOCITY * this->thrownElapsedCount;
 				int height = Stone::INITIAL_VELOCITY * this->thrownElapsedCount - (Stone::GRAVITY * (int)pow(double(this->thrownElapsedCount), 2) / 2);
 
@@ -135,6 +133,8 @@ void Stone::KeepBeingThrown() {
 				this->state = Stone::State::DiSAPPEARED;
 			}
 			break;
+		default:
+			break;
 	}
 }
 
@@ -181,7 +181,7 @@ void Stone::BackOnePixel() {
 /* Private Functions  ------------------------------------------------------------------------------- */
 void Stone::CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) const {
 	Drawing::DrawingVertex* pRetArr[] = { &pRet->topLeft, &pRet->bottomRight };
-	const FloatPoint* pTexPointArr[] = { &this->texRect.topLeft, &this->texRect.bottomRight };
+	const Point<float>* pTexPointArr[] = { &this->texRect.topLeft, &this->texRect.bottomRight };
 
 	POINT bottomRightPoint;
 	bottomRightPoint.x = this->topLeftPoint.x + Stone::WIDTH;

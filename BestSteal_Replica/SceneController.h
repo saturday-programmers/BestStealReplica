@@ -3,6 +3,7 @@
 
 #include "AppCommon.h"
 
+
 //LPDIRECTINPUTDEVICE8;
 typedef struct IDirectInputDevice8 *LPDIRECTINPUTDEVICE8;
 

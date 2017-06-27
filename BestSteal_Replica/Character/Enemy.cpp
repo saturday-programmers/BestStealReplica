@@ -2,15 +2,15 @@
 #include <math.h>
 
 #include "Enemy.h"
-#include "../Drawing/Drawer.h"
-#include "../Map/MapChip.h"
+#include "Drawing/Drawer.h"
+#include "Map/MapChip.h"
 
 
 namespace BestStealReplica {
 namespace Character {
 
 /* Structs ------------------------------------------------------------------------------------------ */
-Enemy::EnemyInfo::EnemyInfo(int chipPosX, int chipPosY, AppCommon::Direction defaultDirection, AppCommon::GateKeyType holdingGateKey) :
+Enemy::EnemyInfo::EnemyInfo(UINT16 chipPosX, UINT16 chipPosY, AppCommon::Direction defaultDirection, AppCommon::GateKeyType holdingGateKey) :
 	defaultDirection(defaultDirection),
 	headingDirection(defaultDirection),
 	holdingGateKey(holdingGateKey),
@@ -25,7 +25,7 @@ Enemy::EnemyInfo::EnemyInfo(int chipPosX, int chipPosY, AppCommon::Direction def
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
 Enemy::Enemy(const std::vector<EnemyInfo>& rEnemiesInfo, const std::vector<POINT>& rTopLeftPoints, int scoutableRadius) : scoutableRadius(scoutableRadius) {	
-	for (int i = 0; i < (int)rEnemiesInfo.size(); ++i) {
+	for (UINT8 i = 0; i < rEnemiesInfo.size(); ++i) {
 		this->enemiesInfo.push_back(rEnemiesInfo[i]);
 		this->enemiesInfo.back().topLeftPoint = rTopLeftPoints[i];
 		this->enemiesInfo.back().defaultTopLeftPoint = rTopLeftPoints[i];
@@ -41,15 +41,15 @@ Enemy::Enemy(const std::vector<EnemyInfo>& rEnemiesInfo, const std::vector<POINT
 
 
 /* Getters / Setters -------------------------------------------------------------------------------- */
-int Enemy::GetEnermyCount() const {
-	return this->enemiesInfo.size();
+UINT8 Enemy::GetEnermyCount() const {
+	return (UINT8)this->enemiesInfo.size();
 }
 
-AppCommon::Direction Enemy::GetHeadingDirection(int enemyIdx) const {
+AppCommon::Direction Enemy::GetHeadingDirection(UINT8 enemyIdx) const {
 	return this->enemiesInfo[enemyIdx].headingDirection;
 }
 
-Enemy::State Enemy::GetState(int enemyIdx) const {
+Enemy::State Enemy::GetState(UINT8 enemyIdx) const {
 	return this->enemiesInfo[enemyIdx].state;
 }
 
@@ -61,7 +61,7 @@ void Enemy::ConfigureTextureTypes(std::vector<Drawing::TextureType>* pRet) const
 }
 
 void Enemy::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pRet) const {
-	for (int enemyIdx = 0; enemyIdx < (int)this->enemiesInfo.size(); ++enemyIdx) {
+	for (UINT8 enemyIdx = 0; enemyIdx < this->enemiesInfo.size(); ++enemyIdx) {
 		Drawing::DrawingContext context;
 		context.textureType = Drawing::TextureType::CHARACTER;
 		CreateDrawingVertexRect(enemyIdx, &context.rect);
@@ -69,7 +69,7 @@ void Enemy::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pRet) co
 		if (this->enemiesInfo[enemyIdx].state == State::GOT_STOLEN) {
 			// 点滅
 			double rad = this->enemiesInfo[enemyIdx].restTimeForBackingToNormal * 18 * M_PI / 180;
-			context.alpha = 0xFF * (UINT16)abs(sin(rad));
+			context.alpha = 0xffU * static_cast<UINT16>(abs(sin(rad)));
 
 			pRet->push_back(context);
 		} else {
@@ -92,10 +92,10 @@ void Enemy::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pRet) co
 					exclTopLeft.x = enemyTopLeft.x + Map::MapChip::WIDTH;
 					exclTopLeft.y = enemyTopLeft.y;
 				}
-				Drawing::DrawingContext context;
-				context.textureType = Drawing::TextureType::MAP;
-				CharacterCommon::CreateDrawingVertexRect(exclTopLeft, &Map::MapChip::ConvertTopLeftPointToRect, this->texRectOfExclamationMarkChip, &context.rect);
-				pRet->push_back(context);
+				Drawing::DrawingContext exclContext;
+				exclContext.textureType = Drawing::TextureType::MAP;
+				CharacterCommon::CreateDrawingVertexRect(exclTopLeft, &Map::MapChip::ConvertTopLeftPointToRect, this->texRectOfExclamationMarkChip, &exclContext.rect);
+				pRet->push_back(exclContext);
 			}
 		}
 	}
@@ -114,18 +114,18 @@ void Enemy::Move(const POINT& rPixel) {
 	}
 }
 
-void Enemy::CalcEnemyRect(int enemyIdx, Rectangle<POINT>* pRet) const {
+void Enemy::CalcEnemyRect(UINT8 enemyIdx, Rectangle<POINT>* pRet) const {
 	CharacterCommon::CalcCharacterRect(this->enemiesInfo[enemyIdx].topLeftPoint, Enemy::ENEMY_WIDTH, Enemy::ENEMY_HEIGHT, pRet);
 }
 
-void Enemy::CalcCenter(int enemyIdx, POINT* pRet) const {
+void Enemy::CalcCenter(UINT8 enemyIdx, POINT* pRet) const {
 	Rectangle<POINT> enemyRect;
 	CalcEnemyRect(enemyIdx, &enemyRect);
 	CharacterCommon::CalcCenter(enemyRect, pRet);
 }
 
 void Enemy::ScoutStone(const std::vector<Rectangle<POINT>>& rStonesRect) {
-	for (int enemyIdx = 0; enemyIdx < (int)this->enemiesInfo.size(); ++enemyIdx) {
+	for (UINT8 enemyIdx = 0; enemyIdx < this->enemiesInfo.size(); ++enemyIdx) {
 		if (this->enemiesInfo[enemyIdx].state == Enemy::State::ATTACKING || this->enemiesInfo[enemyIdx].state == Enemy::State::GOT_STOLEN) {
 			return;
 		}
@@ -134,7 +134,7 @@ void Enemy::ScoutStone(const std::vector<Rectangle<POINT>>& rStonesRect) {
 		POINT enemyCenter;
 		CalcCenter(enemyIdx, &enemyCenter);
 
-		for (int stoneIdx = 0; stoneIdx < (int)rStonesRect.size(); ++stoneIdx) {
+		for (UINT8 stoneIdx = 0; stoneIdx < rStonesRect.size(); ++stoneIdx) {
 			POINT stoneCenter;
 			CharacterCommon::CalcCenter(rStonesRect[stoneIdx], &stoneCenter);
 			double distance = CharacterCommon::CalcDistance(enemyCenter, stoneCenter);
@@ -158,7 +158,7 @@ void Enemy::ScoutStone(const std::vector<Rectangle<POINT>>& rStonesRect) {
 }
 
 void Enemy::ScoutPlayer(const POINT& rPlayerCenter, bool isPlayerWalking) {
-	for (int enemyIdx = 0; enemyIdx < (int)this->enemiesInfo.size(); ++enemyIdx) {
+	for (UINT8 enemyIdx = 0; enemyIdx < this->enemiesInfo.size(); ++enemyIdx) {
 		POINT enemyCenter;
 		CalcCenter(enemyIdx, &enemyCenter);
 		double distance = CharacterCommon::CalcDistance(rPlayerCenter, enemyCenter);
@@ -196,7 +196,7 @@ void Enemy::ScoutPlayer(const POINT& rPlayerCenter, bool isPlayerWalking) {
 
 AppCommon::GateKeyType Enemy::GetStolen(const Rectangle<POINT>& rPlayerRect, bool isPlayerStealing) {
 	AppCommon::GateKeyType ret = AppCommon::GateKeyType::None;
-	for (int enemyIdx = 0; enemyIdx < (int)this->enemiesInfo.size(); ++enemyIdx) {
+	for (UINT8 enemyIdx = 0; enemyIdx < this->enemiesInfo.size(); ++enemyIdx) {
 		if (this->enemiesInfo[enemyIdx].state == State::GOT_STOLEN) {
 			--this->enemiesInfo[enemyIdx].restTimeForBackingToNormal;
 			if (this->enemiesInfo[enemyIdx].restTimeForBackingToNormal == 0) {
@@ -223,7 +223,7 @@ AppCommon::GateKeyType Enemy::GetStolen(const Rectangle<POINT>& rPlayerRect, boo
 	return ret;
 }
 
-void Enemy::Attack(int enemyIdx, bool canSeePlayer) {
+void Enemy::Attack(UINT8 enemyIdx, bool canSeePlayer) {
 	EnemyInfo* pEnemyInfo = &this->enemiesInfo[enemyIdx];
 	if (pEnemyInfo->state == Enemy::State::GOT_STOLEN) {
 		// 盗まれ中の場合は動かない
@@ -258,7 +258,7 @@ void Enemy::Attack(int enemyIdx, bool canSeePlayer) {
 
 bool Enemy::CanKillPlayer(const Rectangle<POINT>& rPlayerRect) const {
 	bool ret = false;
-	for (int enemyIdx = 0; enemyIdx < (int)this->enemiesInfo.size(); enemyIdx++) {
+	for (UINT8 enemyIdx = 0; enemyIdx < this->enemiesInfo.size(); enemyIdx++) {
 		if (this->enemiesInfo[enemyIdx].state == Enemy::State::GOT_STOLEN) {
 			continue;
 		}
@@ -284,8 +284,8 @@ void Enemy::BackToDefaultPosition() {
 
 
 /* Private Functions  ------------------------------------------------------------------------------- */
-void Enemy::CreateDrawingVertexRect(int enemyIdx, Rectangle<Drawing::DrawingVertex>* pRet) const {
-	Rectangle<FloatPoint> chip;
+void Enemy::CreateDrawingVertexRect(UINT8 enemyIdx, Rectangle<Drawing::DrawingVertex>* pRet) const {
+	Rectangle<Point<float>> chip;
 	int animationNum = CharacterCommon::GetAnimationNumber(this->enemiesInfo[enemyIdx].currentAnimationCnt);
 	switch (this->enemiesInfo[enemyIdx].headingDirection) {
 		case AppCommon::Direction::TOP:
@@ -305,7 +305,7 @@ void Enemy::CreateDrawingVertexRect(int enemyIdx, Rectangle<Drawing::DrawingVert
 	CharacterCommon::CreateDrawingVertexRect(this->enemiesInfo[enemyIdx].topLeftPoint, &CharacterCommon::ConvertTopLeftPointToRect, chip, pRet);
 }
 
-void Enemy::TurnTo(const POINT& rTargetPoint, int enemyIdx) {
+void Enemy::TurnTo(const POINT& rTargetPoint, UINT8 enemyIdx) {
 	POINT enemyCenter;
 	CalcCenter(enemyIdx, &enemyCenter);
 

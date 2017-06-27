@@ -5,13 +5,13 @@ namespace BestStealReplica {
 namespace Character {
 
 /* Static Public Functions -------------------------------------------------------------------------- */
-void CharacterCommon::CreateTexRect(int chipCount, int rowIdx, int colIdx, Rectangle<FloatPoint> pRetArr[]) {
+void CharacterCommon::CreateTexRect(int chipCount, int rowIdx, int colIdx, Rectangle<Point<float>> pRetArr[]) {
 	for (int i = 0; i < chipCount; ++i) {
 		CreateTexRect(rowIdx, colIdx + i, pRetArr + i);
 	}
 }
 
-void CharacterCommon::CreateTexRect(int rowIdx, int colIdx, Rectangle<FloatPoint>* pRet) {
+void CharacterCommon::CreateTexRect(int rowIdx, int colIdx, Rectangle<Point<float>>* pRet) {
 	pRet->topLeft.x = colIdx / (float)CharacterCommon::CHIP_COUNT_PER_COL;
 	pRet->topLeft.y = rowIdx / (float)CharacterCommon::CHIP_COUNT_PER_ROW;
 	pRet->bottomRight.x = (colIdx + 1) / (float)CharacterCommon::CHIP_COUNT_PER_COL;
@@ -29,7 +29,7 @@ int CharacterCommon::GetAnimationNumber(int currentAnimationCnt) {
 	return currentAnimationCnt / AppCommon::FRAME_COUNT_PER_CUT;
 }
 
-void CharacterCommon::CreateDrawingVertexRect(const POINT& rTopLeftPoint, void(*convertTopLeftToRect)(const POINT&, Rectangle<POINT>*), const Rectangle<FloatPoint>& rChip, Rectangle<Drawing::DrawingVertex>* pRet) {
+void CharacterCommon::CreateDrawingVertexRect(const POINT& rTopLeftPoint, void(*convertTopLeftToRect)(const POINT&, Rectangle<POINT>*), const Rectangle<Point<float>>& rChip, Rectangle<Drawing::DrawingVertex>* pRet) {
 	Rectangle<POINT> rect;
 	convertTopLeftToRect(rTopLeftPoint, &rect);
 

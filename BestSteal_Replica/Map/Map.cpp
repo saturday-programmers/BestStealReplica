@@ -1,14 +1,14 @@
-﻿#include <algorithm>
+﻿#include <stdint.h>
 
 #include "Map.h"
-#include "../AppCommon.h"
-#include "../Map/MapChip.h"
-#include "../Map/MapChipWall.h"
-#include "../Map/MapChipGate.h"
-#include "../Map/MapChipJewelry.h"
-#include "../Drawing/Drawer.h"
-#include "../Stage/IStage.h"
-#include "../Map/Stone.h"
+#include "AppCommon.h"
+#include "Map/MapChip.h"
+#include "Map/MapChipWall.h"
+#include "Map/MapChipGate.h"
+#include "Map/MapChipJewelry.h"
+#include "Drawing/Drawer.h"
+#include "Stage/IStage.h"
+#include "Map/Stone.h"
 
 
 namespace BestStealReplica {
@@ -34,7 +34,7 @@ Map::~Map() {
 
 
 /* Getters / Setters -------------------------------------------------------------------------------- */
-MapChipType Map::GetMapChipType(const POINT& rMapChipPos) const {
+MapChipType Map::GetMapChipType(const Point<UINT16>& rMapChipPos) const {
 	return this->pMapData[rMapChipPos.y][rMapChipPos.x]->GetChipType();
 }
 
@@ -60,14 +60,14 @@ void Map::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pRet) cons
 }
 
 void Map::Load(const Stage::IStage& rStage) {
-	int yChipCount = rStage.GetYChipCount();
-	int xChipCount = rStage.GetXChipCount();
+	UINT16 yChipCount = rStage.GetYChipCount();
+	UINT16 xChipCount = rStage.GetXChipCount();
 
 	this->pMapData.resize(yChipCount);
-	for (int rowIdx = 0; rowIdx < yChipCount; ++rowIdx) {
+	for (UINT16 rowIdx = 0; rowIdx < yChipCount; ++rowIdx) {
 		this->pMapData[rowIdx].resize(xChipCount);
 
-		for (int colIdx = 0; colIdx < xChipCount; ++colIdx) {			
+		for (UINT16 colIdx = 0; colIdx < xChipCount; ++colIdx) {			
 			this->pMapData[rowIdx][colIdx] = MapChip::Create(rStage.GetMapChipType(rowIdx, colIdx));
 
 			switch (this->pMapData[rowIdx][colIdx]->GetChipType()) {
@@ -85,7 +85,7 @@ void Map::Load(const Stage::IStage& rStage) {
 	}
 
 	// プレイヤーが画面中央になる場合の座標を計算
-	POINT playerChipPos;
+	Point<UINT16> playerChipPos;
 	rStage.GetPlayerFirstChipPos(&playerChipPos);
 	POINT center;
 	center.x = AppCommon::GetWindowWidth() / 2;
@@ -141,28 +141,28 @@ bool Map::IsMovableY(int pixel) const {
 
 bool Map::IsOnRoad(const Rectangle<POINT>& rRect) const {
 	// 4頂点のチップ位置を取得
-	POINT topLeftChipPos;
+	Point<UINT16> topLeftChipPos;
 	ConvertToMapChipPos(rRect.topLeft, &topLeftChipPos);
 
 	POINT topRightPoint;
 	topRightPoint.x = rRect.bottomRight.x;
 	topRightPoint.y = rRect.topLeft.y;
-	POINT topRightChipPos;
+	Point<UINT16> topRightChipPos;
 	ConvertToMapChipPos(topRightPoint, &topRightChipPos);
 
-	POINT bottomRightChipPos;
+	Point<UINT16> bottomRightChipPos;
 	ConvertToMapChipPos(rRect.bottomRight, &bottomRightChipPos);
 
 	POINT bottomLeftPoint;
 	bottomLeftPoint.x = rRect.topLeft.x;
 	bottomLeftPoint.y = rRect.bottomRight.y;
-	POINT bottomLeftChipPos;
+	Point<UINT16> bottomLeftChipPos;
 	ConvertToMapChipPos(bottomLeftPoint, &bottomLeftChipPos);
 
 	return IsOnRoad(topLeftChipPos) && IsOnRoad(topRightChipPos) && IsOnRoad(bottomRightChipPos) && IsOnRoad(bottomLeftChipPos);
 }
 
-void Map::ConvertMapChipPosToTopLeftPoint(const POINT& rMapChipPos, POINT* pRet) const {
+void Map::ConvertMapChipPosToTopLeftPoint(const Point<UINT16>& rMapChipPos, POINT* pRet) const {
 	this->pMapData[rMapChipPos.y][rMapChipPos.x]->GetTopLeftPoint(pRet);
 }
 
@@ -187,7 +187,7 @@ void Map::KeepOpeningGates() {
  * @param[in] headingDirection キャラクターの向き
  * @param[out] pRet キャラクターの目の前のマップチップの行列番号を格納して返却
  */
-void Map::ConvertToCharacterFrontMapChipPos(const Rectangle<POINT>& rCharacterRect, AppCommon::Direction headingDirection, POINT* pRet) const {
+void Map::ConvertToCharacterFrontMapChipPos(const Rectangle<POINT>& rCharacterRect, AppCommon::Direction headingDirection, Point<UINT16>* pRet) const {
 	POINT characterCenter;
 	characterCenter.x = (rCharacterRect.bottomRight.x + rCharacterRect.topLeft.x) / 2;
 	characterCenter.y = (rCharacterRect.bottomRight.y + rCharacterRect.topLeft.y) / 2;
@@ -217,7 +217,7 @@ void Map::ConvertToCharacterFrontMapChipPos(const Rectangle<POINT>& rCharacterRe
 	}
 }
 
-bool Map::StartOpeningGate(const POINT& rMapChipPos) {
+bool Map::StartOpeningGate(const Point<UINT16>& rMapChipPos) {
 	bool ret = false;
 	switch (this->pMapData[rMapChipPos.y][rMapChipPos.x]->GetChipType()) {
 		case MapChipType::GATE:
@@ -240,7 +240,7 @@ bool Map::StartOpeningGate(const POINT& rMapChipPos) {
 	return ret;
 }
 
-bool Map::IsGateOpened(const POINT& rMapChipPos) const {
+bool Map::IsGateOpened(const Point<UINT16>& rMapChipPos) const {
 	bool ret = false;
 	MapChip& rChip = *(this->pMapData[rMapChipPos.y][rMapChipPos.x]);
 	switch (rChip.GetChipType()) {
@@ -256,16 +256,16 @@ bool Map::IsGateOpened(const POINT& rMapChipPos) const {
 
 bool Map::ExistsWallBetween(const POINT& rPoint1, const POINT& rPoint2) const {
 	bool ret = false;
-	POINT pos1;
+	Point<UINT16> pos1;
 	ConvertToMapChipPos(rPoint1, &pos1);
-	POINT pos2;
+	Point<UINT16> pos2;
 	ConvertToMapChipPos(rPoint2, &pos2);
 
 	if (pos1.x != pos2.x && pos1.y != pos2.y) {
 		return true;
 	}
 
-	POINT checkPos = pos1;
+	Point<UINT16> checkPos = pos1;
 	while (pos1.x == pos2.x ? checkPos.y != pos2.y : checkPos.x != pos2.x) {
 		switch (this->pMapData[checkPos.y][checkPos.x]->GetChipType()) {
 			case MapChipType::WALL:
@@ -307,17 +307,17 @@ void Map::OpenJewelryBox() {
 	this->pJewelryMapChip->OpenBox();
 }
 
-void Map::ConvertToMapChipPos(const POINT& rPoint, POINT* pRet) const {
+void Map::ConvertToMapChipPos(const POINT& rPoint, Point<UINT16>* pRet) const {
 	if (rPoint.x < this->topLeftPoint.x) {
-		pRet->x = -1;
+		pRet->x = UINT16_MAX;
 	} else {
-		pRet->x = (rPoint.x - this->topLeftPoint.x) / MapChip::WIDTH;
+		pRet->x = static_cast<UINT16>((rPoint.x - this->topLeftPoint.x) / MapChip::WIDTH);
 	}
 
 	if (rPoint.y < this->topLeftPoint.y) {
-		pRet->y = -1;
+		pRet->y = UINT16_MAX;
 	} else {
-		pRet->y = (rPoint.y - this->topLeftPoint.y) / MapChip::HEIGHT;
+		pRet->y = static_cast<UINT16>((rPoint.y - this->topLeftPoint.y) / MapChip::HEIGHT);
 	}
 }
 
@@ -326,7 +326,7 @@ void Map::AddStone(const POINT& rTopLeftPoint, AppCommon::Direction direction) {
 }
 
 void Map::AnimateStones() {
-	for (int i = 0; i < (int)this->pStones.size(); ++i) {
+	for (UINT8 i = 0; i < this->pStones.size(); ++i) {
 		this->pStones[i]->KeepBeingThrown();
 		
 		if (this->pStones[i]->Exists()) {
@@ -369,8 +369,8 @@ void Map::CalcDroppedStonesRect(std::vector<Rectangle<POINT>>* pRet) const {
 
 /* Private Functions  ------------------------------------------------------------------------------- */
 void Map::AssignChipNumber() {
-	for (int rowIdx = 0; rowIdx < (int)this->pMapData.size(); ++rowIdx) {
-		for (int colIdx = 0; colIdx < (int)this->pMapData[rowIdx].size(); ++colIdx) {
+	for (UINT16 rowIdx = 0; rowIdx < this->pMapData.size(); ++rowIdx) {
+		for (UINT16 colIdx = 0; colIdx < this->pMapData[rowIdx].size(); ++colIdx) {
 
 			if (this->pMapData[rowIdx][colIdx]->GetChipType() == MapChipType::WALL) {
 				MapChipWall* chip = (MapChipWall*)this->pMapData[rowIdx][colIdx];
@@ -378,7 +378,7 @@ void Map::AssignChipNumber() {
 				if (rowIdx == 0) {
 					chip->SetNeedsTopLine();
 				} else {
-					if (this->pMapData[rowIdx - 1][colIdx]->GetChipType() != MapChipType::WALL) {
+					if (this->pMapData[rowIdx - 1U][colIdx]->GetChipType() != MapChipType::WALL) {
 						chip->SetNeedsTopLine();
 					}
 				}
@@ -386,23 +386,23 @@ void Map::AssignChipNumber() {
 				if (colIdx == 0) {
 					chip->SetNeedsLeftLine();
 				} else {
-					if (this->pMapData[rowIdx][colIdx - 1]->GetChipType() != MapChipType::WALL) {
+					if (this->pMapData[rowIdx][colIdx - 1U]->GetChipType() != MapChipType::WALL) {
 						chip->SetNeedsLeftLine();
 					}
 				}
 
-				if (rowIdx == this->pMapData.size() - 1) {
+				if (rowIdx == this->pMapData.size() - 1U) {
 					chip->SetNeedsBottomLine();
 				} else {
-					if (this->pMapData[rowIdx + 1][colIdx]->GetChipType() != MapChipType::WALL) {
+					if (this->pMapData[rowIdx + 1U][colIdx]->GetChipType() != MapChipType::WALL) {
 						chip->SetNeedsBottomLine();
 					}
 				}
 
-				if (colIdx == this->pMapData[rowIdx].size() - 1) {
+				if (colIdx == this->pMapData[rowIdx].size() - 1U) {
 					chip->SetNeedsRightLine();
 				} else {
-					if (this->pMapData[rowIdx][colIdx + 1]->GetChipType() != MapChipType::WALL) {
+					if (this->pMapData[rowIdx][colIdx + 1U]->GetChipType() != MapChipType::WALL) {
 						chip->SetNeedsRightLine();
 					}
 				}
@@ -415,8 +415,8 @@ void Map::AssignChipNumber() {
 
 void Map::ConfigureChipPoint() {
 	POINT point;
-	for (int rowIdx = 0; rowIdx < (int)this->pMapData.size(); ++rowIdx) {
-		for (int colIdx = 0; colIdx < (int)this->pMapData[rowIdx].size(); ++colIdx) {
+	for (UINT16 rowIdx = 0; rowIdx < this->pMapData.size(); ++rowIdx) {
+		for (UINT16 colIdx = 0; colIdx < this->pMapData[rowIdx].size(); ++colIdx) {
 			point.x = this->topLeftPoint.x + (colIdx * MapChip::WIDTH);
 			point.y = this->topLeftPoint.y + (rowIdx * MapChip::HEIGHT);
 			this->pMapData[rowIdx][colIdx]->SetTopLeftPoint(point);
@@ -424,8 +424,8 @@ void Map::ConfigureChipPoint() {
 	}
 }
 
-bool Map::IsOnRoad(const POINT& rMapChipPos) const {
-	if (rMapChipPos.x < 0 || rMapChipPos.x >= (int)this->pMapData[0].size() || rMapChipPos.y < 0 || rMapChipPos.y >= (int)this->pMapData.size()) {
+bool Map::IsOnRoad(const Point<UINT16>& rMapChipPos) const {
+	if (rMapChipPos.x == UINT16_MAX || rMapChipPos.x >= (int)this->pMapData[0].size() || rMapChipPos.y == UINT16_MAX || rMapChipPos.y >= (int)this->pMapData.size()) {
 		return false;
 	}
 	switch (this->pMapData[rMapChipPos.y][rMapChipPos.x]->GetChipType()) {
@@ -439,20 +439,22 @@ bool Map::IsOnRoad(const POINT& rMapChipPos) const {
 				return false;
 			}
 			break;
+		default:
+			break;
 	}
 	return true;
 }
 
-bool Map::IsMovable(int targetPoint, int topLeftPoint, int mapChipCount, int mapChipSize, int windowSize) const {
-	if (targetPoint == 0) {
+bool Map::IsMovable(int argTargetPoint, int argTopLeftPoint, int argMapChipCount, int argMapChipSize, int argWindowSize) const {
+	if (argTargetPoint == 0) {
 		return true;
 	}
-	if (targetPoint > 0) {
-		if (topLeftPoint + targetPoint > 0) {
+	if (argTargetPoint > 0) {
+		if (argTopLeftPoint + argTargetPoint > 0) {
 			return false;
 		}
-	} else if (targetPoint < 0) {
-		if (topLeftPoint + mapChipCount * mapChipSize <= windowSize) {
+	} else if (argTargetPoint < 0) {
+		if (argTopLeftPoint + argMapChipCount * argMapChipSize <= argWindowSize) {
 			return false;
 		}
 	}

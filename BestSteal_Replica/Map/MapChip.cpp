@@ -1,7 +1,7 @@
 ﻿#include "MapChip.h"
-#include "../Map/MapChipWall.h"
-#include "../Map/MapChipGate.h"
-#include "../Map/MapChipJewelry.h"
+#include "Map/MapChipWall.h"
+#include "Map/MapChipGate.h"
+#include "Map/MapChipJewelry.h"
 
 
 namespace BestStealReplica {
@@ -25,7 +25,7 @@ MapChip* MapChip::Create(MapChipType chipType) {
 	}
 }
 
-void MapChip::ConvertChipNumberToTexRect(int mapChipNumber, Rectangle<FloatPoint>* pRet) {
+void MapChip::ConvertChipNumberToTexRect(int mapChipNumber, Rectangle<Point<float>>* pRet) {
 	int chipPosX = mapChipNumber % CHIP_COUNT_PER_ROW;
 	int chipPosY = mapChipNumber / CHIP_COUNT_PER_ROW;
 
@@ -88,7 +88,7 @@ MapChip::MapChip(MapChipType chipType) : chipType(chipType) {}
 
 /* Private Functions -------------------------------------------------------------------------------- */
 void MapChip::ConfigureTexRect() {
-	Rectangle<FloatPoint> texRect;
+	Rectangle<Point<float>> texRect;
 	ConvertChipNumberToTexRect(this->chipNumber, &texRect);
 	this->drawingVertexRect.topLeft.tu = texRect.topLeft.x;
 	this->drawingVertexRect.topLeft.tv = texRect.topLeft.y;

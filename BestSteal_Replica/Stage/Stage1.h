@@ -1,7 +1,7 @@
 ﻿#ifndef STAGE1_H_
 #define STAGE1_H_
 
-#include "../Stage/IStage.h"
+#include "IStage.h"
 
 namespace BestStealReplica {
 namespace Stage {
@@ -14,20 +14,20 @@ public:
 	Stage1(const Stage1&) = delete;
 
 	/* Getters / Setters -------------------------------------------------------------------------------- */
-	int GetYChipCount() const;
-	int GetXChipCount() const;
-	Map::MapChipType GetMapChipType(int y, int x) const;
-	void GetPlayerFirstChipPos(POINT* pRet) const;
+	UINT16 GetYChipCount() const;
+	UINT16 GetXChipCount() const;
+	Map::MapChipType GetMapChipType(UINT16 y, UINT16 x) const;
+	void GetPlayerFirstChipPos(Point<UINT16>* pRet) const;
 	void GetEnemiesInfo(std::vector<Character::Enemy::EnemyInfo>* pRet) const;
 	int GetEnemyScoutableRadius() const;
-	int GetMaxStoneCount() const;
+	UINT8 GetMaxStoneCount() const;
 
 	/* Operator Overloads ------------------------------------------------------------------------------- */
 	Stage1& operator=(const Stage1&) = delete;
 
 private:
 	/* Constants ---------------------------------------------------------------------------------------- */
-	static const int MAX_STONE_COUNT = 3;
+	static const UINT8 MAX_STONE_COUNT = 3;
 
 };
 

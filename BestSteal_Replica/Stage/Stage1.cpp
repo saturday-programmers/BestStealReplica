@@ -1,6 +1,6 @@
 ﻿#include "Stage1.h"
-#include "../AppCommon.h"
-#include "../Character/Enemy.h"
+#include "AppCommon.h"
+#include "Character/Enemy.h"
 
 
 namespace BestStealReplica {
@@ -35,31 +35,31 @@ DataTable<Map::MapChipType> mapChipTypes = {
 };
 
 std::vector<Enemy::EnemyInfo> enemiesInfo = {
-	Enemy::EnemyInfo(6, 4, AppCommon::Direction::RIGHT, AppCommon::GateKeyType::None),
-	Enemy::EnemyInfo(24, 0, AppCommon::Direction::LEFT, AppCommon::GateKeyType::Silver),
-	Enemy::EnemyInfo(1, 20, AppCommon::Direction::RIGHT, AppCommon::GateKeyType::Silver),
-	Enemy::EnemyInfo(22, 7, AppCommon::Direction::LEFT, AppCommon::GateKeyType::None),
-	Enemy::EnemyInfo(3, 16, AppCommon::Direction::BOTTOM, AppCommon::GateKeyType::Silver),
-	Enemy::EnemyInfo(9, 20, AppCommon::Direction::RIGHT, AppCommon::GateKeyType::Silver),
-	Enemy::EnemyInfo(21, 14, AppCommon::Direction::RIGHT, AppCommon::GateKeyType::Gold)
+	Enemy::EnemyInfo(6U, 4U, AppCommon::Direction::RIGHT, AppCommon::GateKeyType::None),
+	Enemy::EnemyInfo(24U, 0U, AppCommon::Direction::LEFT, AppCommon::GateKeyType::Silver),
+	Enemy::EnemyInfo(1U, 20U, AppCommon::Direction::RIGHT, AppCommon::GateKeyType::Silver),
+	Enemy::EnemyInfo(22U, 7U, AppCommon::Direction::LEFT, AppCommon::GateKeyType::None),
+	Enemy::EnemyInfo(3U, 16U, AppCommon::Direction::BOTTOM, AppCommon::GateKeyType::Silver),
+	Enemy::EnemyInfo(9U, 20U, AppCommon::Direction::RIGHT, AppCommon::GateKeyType::Silver),
+	Enemy::EnemyInfo(21U, 14U, AppCommon::Direction::RIGHT, AppCommon::GateKeyType::Gold)
 };
 
 }
 
 /* Getters / Setters -------------------------------------------------------------------------------- */
-int Stage1::GetYChipCount() const {
-	return mapChipTypes.size();
+UINT16 Stage1::GetYChipCount() const {
+	return (UINT16)mapChipTypes.size();
 }
 
-int Stage1::GetXChipCount() const {
-	return mapChipTypes[0].size();
+UINT16 Stage1::GetXChipCount() const {
+	return (UINT16)mapChipTypes[0].size();
 }
 
-Map::MapChipType Stage1::GetMapChipType(int y, int x) const {
+Map::MapChipType Stage1::GetMapChipType(UINT16 y, UINT16 x) const {
 	return mapChipTypes[y][x];
 }
 
-void Stage1::GetPlayerFirstChipPos(POINT* pRet) const {
+void Stage1::GetPlayerFirstChipPos(Point<UINT16>* pRet) const {
 	pRet->x = 14;
 	pRet->y = 20;
 }
@@ -74,7 +74,7 @@ int Stage1::GetEnemyScoutableRadius() const {
 	return 260;
 }
 
-int Stage1::GetMaxStoneCount() const {
+UINT8 Stage1::GetMaxStoneCount() const {
 	return MAX_STONE_COUNT;
 }
 

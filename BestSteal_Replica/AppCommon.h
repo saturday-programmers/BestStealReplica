@@ -1,36 +1,30 @@
 ﻿#ifndef APP_COMMON_H_
 #define APP_COMMON_H_
 
-#include <vector>
-#include <windows.h>
-
-// new演算子をオーバーロードしているクラスはcrtdbg.hより前にincludeする必要有
-#include <d3dx9math.h>
-
-#if _DEBUG
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#endif
-
 
 namespace BestStealReplica {
 
-struct FloatPoint {
-	float x;
-	float y;
+/**
+ * Point構造体のジェネリック型
+ *
+ * 当構造体はコピー可能とする。
+ */
+template<typename T> struct Point {
+	T x;
+	T y;
 
-	FloatPoint() = default;
-	FloatPoint(float x, float y);
-	FloatPoint(const FloatPoint&) = delete;
+	Point() = default;
+	Point(T x, T y);
 };
 
+/**
+ * 四角形の頂点情報を保有する構造体
+ *
+ * 当構造体はコピー可能とする。
+ */
 template<typename T> struct Rectangle {
 	T topLeft;
 	T bottomRight;
-
-	Rectangle() = default;
-	Rectangle(const Rectangle&) = default;
 };
 
 template<typename T>
