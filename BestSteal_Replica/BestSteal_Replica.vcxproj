@@ -93,6 +93,7 @@
     <ClCompile Include="Drawing\Drawer.cpp" />
     <ClCompile Include="Character\Enemy.cpp" />
     <ClCompile Include="Map\MapChipJewelry.cpp" />
+    <ClCompile Include="SideBar\SideBar.cpp" />
     <ClCompile Include="StageController.cpp" />
     <ClCompile Include="Stage\IStage.h" />
     <ClCompile Include="Main.cpp" />
@@ -125,6 +126,7 @@
     <ClInclude Include="Map\MapChipWall.h" />
     <ClInclude Include="Map\MapCommon.h" />
     <ClInclude Include="Character\Player.h" />
+    <ClInclude Include="SideBar\SideBar.h" />
     <ClInclude Include="StageController.h" />
     <ClInclude Include="Stage\Stage1.h" />
     <ClInclude Include="stdafx.h" />

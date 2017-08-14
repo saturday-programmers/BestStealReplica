@@ -175,28 +175,31 @@ void Drawer::Draw(const DrawingContext& rContext) {
 	for (auto& vertex : customVertexArr) {
 		vertex.z = 0.5f;
 		vertex.rhw = 1.0f;
-		vertex.color = D3DCOLOR_ARGB(rContext.alpha, 255, 255, 255);
+		vertex.color = D3DCOLOR_ARGB(rContext.alpha, rContext.r, rContext.g, rContext.b);
 	}
 
 	customVertexArr[0].x = (float)rContext.rect.topLeft.x;
 	customVertexArr[0].y = (float)rContext.rect.topLeft.y;
-	customVertexArr[0].tu = rContext.rect.topLeft.tu;
-	customVertexArr[0].tv = rContext.rect.topLeft.tv;
 
 	customVertexArr[1].x = (float)rContext.rect.bottomRight.x;
 	customVertexArr[1].y = (float)rContext.rect.topLeft.y;
-	customVertexArr[1].tu = rContext.rect.bottomRight.tu;
-	customVertexArr[1].tv = rContext.rect.topLeft.tv;
 
 	customVertexArr[2].x = (float)rContext.rect.bottomRight.x;
 	customVertexArr[2].y = (float)rContext.rect.bottomRight.y;
-	customVertexArr[2].tu = rContext.rect.bottomRight.tu;
-	customVertexArr[2].tv = rContext.rect.bottomRight.tv;
 
 	customVertexArr[3].x = (float)rContext.rect.topLeft.x;
 	customVertexArr[3].y = (float)rContext.rect.bottomRight.y;
-	customVertexArr[3].tu = rContext.rect.topLeft.tu;
-	customVertexArr[3].tv = rContext.rect.bottomRight.tv;
+
+	if (rContext.textureType != TextureType::NONE) {
+		customVertexArr[0].tu = rContext.rect.topLeft.tu;
+		customVertexArr[0].tv = rContext.rect.topLeft.tv;
+		customVertexArr[1].tu = rContext.rect.bottomRight.tu;
+		customVertexArr[1].tv = rContext.rect.topLeft.tv;
+		customVertexArr[2].tu = rContext.rect.bottomRight.tu;
+		customVertexArr[2].tv = rContext.rect.bottomRight.tv;
+		customVertexArr[3].tu = rContext.rect.topLeft.tu;
+		customVertexArr[3].tv = rContext.rect.bottomRight.tv;
+	}
 
 	pD3Device->SetTexture(0, textures.at(rContext.textureType));
 	pD3Device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, customVertexArr, sizeof(CUSTOMVERTEX));

@@ -22,6 +22,7 @@ struct DrawingVertex {
 
 /* Enums -------------------------------------------------------------------------------------------- */
 enum struct TextureType {
+	NONE,
 	MAP,
 	CHARACTER
 };
@@ -30,7 +31,10 @@ enum struct TextureType {
 struct DrawingContext {
 	Rectangle<DrawingVertex> rect;
 	TextureType textureType;
-	UINT16 alpha = 0xFF;
+	UINT8 r = 0xFF;
+	UINT8 g = 0xFF;
+	UINT8 b = 0xFF;
+	UINT8 alpha = 0xFF;
 
 	DrawingContext() = default;
 	DrawingContext(const DrawingContext&) = default;
