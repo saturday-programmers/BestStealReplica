@@ -4,6 +4,7 @@
 #include "Map/Map.h"
 #include "Character/Player.h"
 #include "Character/Enemy.h"
+#include "SideBar/SideBar.h"
 
 using namespace BestStealReplica::Character;
 
@@ -11,7 +12,7 @@ using namespace BestStealReplica::Character;
 namespace BestStealReplica {
 
 /* Constructor / Destructor ------------------------------------------------------------------------- */
-StageController::StageController() : pStage(nullptr), pMap(nullptr), pPlayer(nullptr), pEnemy(nullptr) {}
+StageController::StageController() : pStage(nullptr), pMap(nullptr), pPlayer(nullptr), pEnemy(nullptr), pSideBar(nullptr) {}
 
 StageController::~StageController() {
 	delete this->pEnemy;
@@ -47,6 +48,10 @@ void StageController::LoadStage(const Stage::IStage& rStage) {
 	}
 	this->pEnemy = new Enemy(enemiesInfo, enemiesTopLeftPoint, this->pStage->GetEnemyScoutableRadius());
 	Drawing::Drawer::AddDrawable(*this->pEnemy);
+
+	// サイドバー
+	this->pSideBar = new SideBar/SideBar();
+	Drawing::Drawer::AddDrawable(*this->pSideBar);
 }
 
 void StageController::Control(const AppCommon::Key& rkey) {

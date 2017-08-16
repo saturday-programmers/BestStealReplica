@@ -17,6 +17,10 @@ namespace Stage {
 class IStage;
 }
 
+namespace SideBar {
+class SideBar;
+}
+
 class Drawer;
 
 class StageController {
@@ -64,6 +68,7 @@ private:
 	Map::Map* pMap;
 	Character::Player* pPlayer;
 	Character::Enemy* pEnemy;
+	SideBar::SideBar* pSideBar;
 	StageController::Handling lastTimeHandling;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
