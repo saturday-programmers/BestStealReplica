@@ -30,7 +30,7 @@ public:
 	Stone& operator=(const Stone&) = delete;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void Stone::CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const;
+	void CreateDrawingContexts(std::vector<Drawing::DrawingContext>* pDrawingContexts) const;
 	void KeepBeingThrown();
 	bool Exists() const;
 	void Move(const POINT& rPixel);
@@ -62,7 +62,7 @@ private:
 	POINT topLeftPointOnGnd;
 
 	/* Functions ---------------------------------------------------------------------------------------- */
-	void Stone::CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) const;
+	void CreateDrawingVertexRect(Rectangle<Drawing::DrawingVertex>* pRet) const;
 
 };
 
